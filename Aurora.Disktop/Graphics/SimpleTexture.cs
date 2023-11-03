@@ -1,0 +1,156 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace Aurora.Disktop.Graphics
+{
+
+    public abstract class ITexture
+    {
+
+        internal ITexture(GraphicsDevice graphics)
+        {
+            this.device = graphics;
+        }
+        protected Texture2D? tex { get; set; }
+
+        public  Vector2 Offset;
+
+        public abstract Texture2D? Tex();
+
+        public GraphicsDevice device { get; private set; }
+
+
+
+        /// <summary>
+        /// 获取纹理大小范围
+        /// 这个值是可以改变的
+        /// </summary>
+        public Rectangle SourceRect { get; protected set; }
+
+
+        public Int32 Width
+        {
+            get
+            {
+                return this.SourceRect.Width;
+            }
+        }
+
+        public Int32 Height
+        {
+            get
+            {
+                return this.SourceRect.Height;
+            }
+        }
+
+
+        public Boolean GetPixel(Point position, out Color color )
+        {
+            Color[] colors = new Color[1];
+            color = colors[0];
+            if (this.tex == null) return false;
+            if (!this.SourceRect.Contains(position)) return false;
+            this.tex.GetData(0, 0, new Rectangle(position.X, position.Y, 1, 1), colors, 0, 1);
+            color = colors[0];
+            return true;
+        }
+
+
+
+    }
+
+    /// <summary>
+    /// 简单纹理
+    /// </summary>
+    public class SimpleTexture : ITexture
+    {
+
+        private SimpleTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+
+        }
+
+
+        private async Task FromStrean(Stream stream)
+        {
+            this.tex = Texture2D.FromStream(this.device, stream, null);
+            this.SourceRect = new Rectangle(0, 0, this.tex.Width, this.tex.Height);
+        }
+
+
+
+
+        public static SimpleTexture FromStream(GraphicsDevice graphicsDevice, Stream stream)
+        {
+            var context = new SimpleTexture(graphicsDevice);
+            context.FromStrean(stream).Wait();
+            return context;
+        }
+
+
+        public static SimpleTexture FromFile(GraphicsDevice graphicsDevice, String filename)
+        {
+            var context = new SimpleTexture(graphicsDevice);
+            using (var fs = File.Open(filename, FileMode.Open, FileAccess.Read))
+            {
+                context.FromStrean(fs).Wait();
+            }
+            return context;
+        }
+
+        public static SimpleTexture FromTexture2D(Texture2D texture)
+        {
+            var context = new SimpleTexture(texture.GraphicsDevice);
+            context.tex = texture;
+            return context;
+        }
+
+        public override Texture2D? Tex()
+        {
+            return this.tex;
+        }
+
+    }
+
+
+
+    /// <summary>
+    /// 渲染目标纹理
+    /// </summary>
+    public class TargetTexture : ITexture
+    {
+
+        private TargetTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+
+        }
+
+
+        public static TargetTexture Create(GraphicsDevice graphicsDevice, Int32 width, Int32 height)
+        {
+            var context = new TargetTexture(graphicsDevice);
+            context.Resize(width,height);
+            return context;
+        }
+
+
+        public void Resize(Int32 width, Int32 height)
+        {
+
+            var raw = this.tex;
+            this.tex = new RenderTarget2D(device, width, height);
+            this.SourceRect = new Rectangle(0, 0, width, height);
+            if (raw != null)
+            {
+                raw.Dispose();
+            }
+        }
+
+
+        public override RenderTarget2D? Tex()
+        {
+            return this.tex as RenderTarget2D;
+        }
+    }
+}
