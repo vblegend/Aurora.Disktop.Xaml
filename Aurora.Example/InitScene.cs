@@ -14,23 +14,23 @@ namespace Aurora.Example
 
         }
 
-        private SimpleTexture dialog { get; set; }
+        //private SimpleTexture dialog { get; set; }
 
-        private SimpleTexture texture { get; set; }
-        private SimpleTexture effectTexture { get; set; }
+        //private SimpleTexture texture { get; set; }
+        //private SimpleTexture effectTexture { get; set; }
 
-        private TargetTexture target { get; set; }
+        //private TargetTexture target { get; set; }
 
 
-        private Effect disableEffect { get; set; }
+        //private Effect disableEffect { get; set; }
 
         protected override async Task OnInitialize()
         {
-            this.dialog  = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000193.png");
-            this.texture = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0004834.png");
-            this.effectTexture = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000889.png");
-            var targetTmp = this.Renderer.CreateRenderTarget(128, 64);
-            this.target = this.Renderer.CreateRenderTarget(128, 64);
+            //this.dialog  = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000193.png");
+            //this.texture = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0004834.png");
+            //this.effectTexture = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000889.png");
+            //var targetTmp = this.Renderer.CreateRenderTarget(128, 64);
+            //this.target = this.Renderer.CreateRenderTarget(128, 64);
 
             try
             {
@@ -43,42 +43,29 @@ namespace Aurora.Example
 
 
 
-            Stopwatch sw = Stopwatch.StartNew();
 
-            if (this.dialog.GetPixel(new Point(5, 5), out var color))
-            {
-  
-            }
+            //byte[] bytecode = File.ReadAllBytes(@"D:\SourceCode\Aurora\Aurora.Disktop\Shaders\disable_gl.mgfx");
+            //this.disableEffect = new Effect(this.Renderer.GraphicsDevice, bytecode);
 
-
-            sw.Stop ();
-
-            Trace.WriteLine(sw.ElapsedMilliseconds);
-
-
-
-            byte[] bytecode = File.ReadAllBytes(@"D:\SourceCode\Aurora\Aurora.Disktop\Shaders\disable_gl.mgfx");
-            this.disableEffect = new Effect(this.Renderer.GraphicsDevice, bytecode);
-
-            using (var render = this.Renderer.TargetRender(targetTmp))
-            {
-                this.Renderer.SetState(effect: this.disableEffect);
-                this.Renderer.Clear(Color.Yellow);
-                this.Renderer.Draw(this.texture, new Vector2(0, 0), Color.White);
-            }
+            //using (var render = this.Renderer.TargetRender(targetTmp))
+            //{
+            //    this.Renderer.SetState(effect: this.disableEffect);
+            //    this.Renderer.Clear(Color.Yellow);
+            //    this.Renderer.Draw(this.texture, new Vector2(0, 0), Color.White);
+            //}
 
 
 
-            using (this.Renderer.TargetRender(this.target))
-            {
+            //using (this.Renderer.TargetRender(this.target))
+            //{
 
-                this.Renderer.Clear(Color.Sienna);
-                this.Renderer.Draw(this.texture, new Vector2(0, 0), Color.White);
+            //    this.Renderer.Clear(Color.Sienna);
+            //    this.Renderer.Draw(this.texture, new Vector2(0, 0), Color.White);
 
 
-                //this.Renderer.SetBlendState(null, null);
-                this.Renderer.Draw(targetTmp, new Vector2(64, 0), Color.White);
-            }
+            //    //this.Renderer.SetBlendState(null, null);
+            //    this.Renderer.Draw(targetTmp, new Vector2(64, 0), Color.White);
+            //}
 
             //var window = this.Add(new Window());
             //window.Name = "Window-测试";

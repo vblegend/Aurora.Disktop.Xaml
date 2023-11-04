@@ -2,7 +2,7 @@
 using Aurora.Disktop.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
- 
+
 
 namespace Aurora.Disktop
 {
@@ -36,7 +36,12 @@ namespace Aurora.Disktop
         private Control? ProcessMessage(Control control, EventMessage msg)
         {
             if (control == null) return null;
-            if (!control.GlobalBounds.Contains(msg.Location)) return null;
+            if (control.IgnoreMouseEvents) return null;
+            var mouseInControl = control.HitTest(msg.Location);
+            if (!mouseInControl)
+            {
+                if (!control.ExtendBounds.Contains(msg.Location)) return null;
+            }
             var controlHandler = control as IXamlEventHandler;
             // 处理被标记为吃掉消息的控件
             if (this.Pressed != null)
@@ -63,10 +68,21 @@ namespace Aurora.Disktop
                     if (item != null)
                     {
                         var result = this.ProcessMessage(item, msg);
+                        if (result != null && item is Dialog dialog && msg.Message == WM_MESSAGE.MOUSE_DOWN && dialog.AutoTop)
+                        {
+                            dialog.MoveTop();
+                        }
                         if (result != null) return result;
                     }
                 }
             }
+            else if (control is ContentControl item && item.Content is Control contentControl)
+            {
+                var result = this.ProcessMessage(contentControl, msg);
+                if (result != null) return result;
+            }
+            // 鼠标未在控件本体区域内
+            if (!mouseInControl) return null;
             // 处理当前控件消息
             if (msg.Message == WM_MESSAGE.MOUSE_DOWN)
             {

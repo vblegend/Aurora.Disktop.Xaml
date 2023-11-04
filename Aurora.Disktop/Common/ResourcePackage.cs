@@ -4,6 +4,7 @@ using Resource.Package.Assets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace Aurora.Disktop.Common
 
 
 
-        public SimpleTexture ?Read(Int32 index)
+        public SimpleTexture? Read(Int32 index)
         {
 
             var device = AuroraState.Services.GetService<GraphicsDevice>();
@@ -44,6 +45,27 @@ namespace Aurora.Disktop.Common
             }
             return null;
         }
+
+        public SimpleTexture[] ReadTextures(params Int32[] indexs)
+        {
+            var result = new SimpleTexture[indexs.Length];
+            var device = AuroraState.Services.GetService<GraphicsDevice>();
+            for (int i = 0; i < indexs.Length; i++)
+            {
+                var node = this.assetFileStream.Read((UInt32)indexs[i]);
+                if (node != null)
+                {
+                    using (var ms = new MemoryStream(node.Data))
+                    {
+                        result[i] = SimpleTexture.FromStream(device, ms);
+                        result[i].Offset = new Microsoft.Xna.Framework.Vector2(node.OffsetX, node.OffsetY);
+                    }
+                }
+            }
+            return result;
+        }
+
+
 
 
         public Texture2D? Read2D(Int32 index)

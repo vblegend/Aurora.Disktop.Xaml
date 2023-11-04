@@ -25,7 +25,12 @@ namespace Aurora.Disktop.Xaml.Converters
                 var texture = pack.Read(Int32.Parse(tokens[2]));
                 if (tokens[0] == "texture")
                 {
-                    return new TextureBrush(texture);
+                    Graphics.FillMode fill = Graphics.FillMode.None;
+                    if (tokens.Length > 3)
+                    {
+                        fill = (Graphics.FillMode)Enum.Parse(typeof(Graphics.FillMode), tokens[3]);
+                    }
+                    return new TextureBrush(texture, fill);
                 }
                 else if (tokens[0] == "grid")
                 {

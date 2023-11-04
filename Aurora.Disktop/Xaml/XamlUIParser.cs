@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Aurora.Disktop.Xaml.Converters;
 using Aurora.Disktop.Graphics;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace Aurora.Disktop.Xaml
 {
@@ -40,6 +41,9 @@ namespace Aurora.Disktop.Xaml
             {
                 throw new Exception("");
             }
+
+            this.parseNodeResource(this.Host, doc.DocumentElement);
+
             foreach (XmlElement element in doc.DocumentElement.ChildNodes)
             {
                 this.internalParse(this.Host, element);
@@ -47,9 +51,19 @@ namespace Aurora.Disktop.Xaml
         }
 
 
+        private void parseNodeResource(Control control, XmlElement element)
+        {
+            var resources = element.GetElementsByTagName($"{element.LocalName}.Resource");
+            if (resources.Count == 1)
+            {
+                this.ParsePropertys(this.Host, resources.Item(0) as XmlElement);
+            }
+        }
+
 
         private void internalParse(Control parent, XmlElement element)
         {
+            if (element.LocalName.Contains(".")) return;
             var typedName = element.Name;
             // Control 抽象接口， 这里返回接口处理组件或其他模块
             IXamlComponent? component = GenerateComponent(element.LocalName, element.NamespaceURI);
@@ -64,6 +78,19 @@ namespace Aurora.Disktop.Xaml
                 if (parent is IPanelControl panel)
                 {
                     panel.Add(control);
+                    // Children
+                    foreach (XmlElement item in element.ChildNodes)
+                    {
+                        this.internalParse(control, item);
+                    }
+                }
+                else if (parent is ContentControl contentControl)
+                {
+                    if (contentControl.Content != null)
+                    {
+                        throw new Exception("Content 只能有一个");
+                    }
+                    contentControl.Content = control;
                     // Children
                     foreach (XmlElement item in element.ChildNodes)
                     {
@@ -89,7 +116,7 @@ namespace Aurora.Disktop.Xaml
                 }
                 else
                 {
-                    var typed = ModuleMain.ResolvingType(namespaceUrl, attribute.LocalName);
+                    var typed = this.typedResolver.ResolveXamlComponent(namespaceUrl, attribute.LocalName);
                     if (typed != null)
                     {
                         var component = (IXamlComponent?)Activator.CreateInstance(typed);
@@ -111,7 +138,7 @@ namespace Aurora.Disktop.Xaml
         {
             var type = control.GetType();
             // 事件绑定
-            var eventInfo = type.GetEvent(attribute.LocalName);
+            var eventInfo = type.GetEvent(attribute.LocalName, BindingFlags.Instance | BindingFlags.Public);
             if (eventInfo != null)
             {
                 var methodInfo = this.bindContextType.GetMethod(attribute.Value);
@@ -125,7 +152,7 @@ namespace Aurora.Disktop.Xaml
             }
 
             // 字段绑定
-            var fieldInfo = type.GetField(attribute.LocalName);
+            var fieldInfo = type.GetField(attribute.LocalName, BindingFlags.Instance | BindingFlags.Public);
             if (fieldInfo != null)
             {
                 if (fieldInfo.FieldType != null)
@@ -143,7 +170,7 @@ namespace Aurora.Disktop.Xaml
 
 
             // 属性赋值
-            var propertyInfo = type.GetProperty(attribute.LocalName);
+            var propertyInfo = type.GetProperty(attribute.LocalName, BindingFlags.Instance | BindingFlags.Public);
             if (propertyInfo != null)
             {
                 if (propertyInfo.PropertyType != null)
@@ -164,7 +191,7 @@ namespace Aurora.Disktop.Xaml
 
         private IXamlComponent? GenerateComponent(String typeName, String namespaceURI)
         {
-            var typed = ModuleMain.ResolvingType(namespaceURI, typeName);
+            var typed = this.typedResolver.ResolveXamlComponent(namespaceURI, typeName);
             if (typed != null && typed.GetConstructor(Array.Empty<Type>()) != null)
             {
                 return (IXamlComponent?)Activator.CreateInstance(typed);

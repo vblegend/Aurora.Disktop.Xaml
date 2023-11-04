@@ -22,6 +22,9 @@
 	  <None Update="Fonts\default.ttf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	  <None Update="Fonts\汉仪北魏写经.ttf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Images\button.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>

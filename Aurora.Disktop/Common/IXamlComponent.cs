@@ -9,7 +9,7 @@ namespace Aurora.Disktop.Common
 
 
 
-    public interface IControl : IXamlComponent
+    public interface IXamlControl : IXamlComponent
     {
     }
 

@@ -1,22 +1,54 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Template xmlns="http://schemas.l2030.com/xaml/ui/controls"
 	  xmlns:events="http://schemas.l2030.com/xaml/ui/events"
+	  xmlns:x="http://schemas.l2030.com/xaml/ui/default"
 	  xmlns:sys="http://schemas.l2030.com/xaml/ui/system"
 	  xmlns:ext="http://schemas.l2030.com/xaml/ui/extends">
 
-	<Window Name="Window01" Background="package://grid,ui,192" AutoTop="True"  CanMove="True" Click="xxxxx_ssss" Location="300,300" Size="400,150" BackColor="#FF00FF">
 
-		<Button Name="Close" Image="package://ui,32,3,1" Content="Click Me" Location="380,0" Click="Button_Click" />
+	<Template.Resource DefaultFont="ttf://./Fonts/汉仪北魏写经.ttf,24">
+		<DialogTemplate Id="" Type="Dialog">
+		</DialogTemplate>
+	</Template.Resource>
 
 
-		<Button Name="Btn01" Image="package://ui,68,3,1" Content="Click Me" Location="48,48" Size="126,44" Click="Button_Click" />
 
-		<Button Name="Btn02" Image="package://ui,69,3,1" Content="Click Me" Location="200,48" Size="126,44" Enabled="False" Click="Button_Click" />
 
-	</Window>
+	<Dialog Name="Window01" Background="package://grid,ui,60" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Location="300,300" Size="400,150">
+
+		<Button Name="Close" Image="package://ui,25,3,1" Location="400,0" Click="Button_Click" />
+
+		<Button Name="Btn01" Image="package://ui,38,3,1" TextColor="#e7dbb5" Content="选 择" Location="48,48" Size="126,44" Click="Button_Click" />
+
+		<Button Name="Btn02" Image="package://ui,38,3,1" TextColor="#e7dbb5" Content="禁 用" Location="200,48" Size="126,44" Enabled="False" Click="Button_Click" />
+
+	</Dialog>
+
+
+	<Dialog Name="Window01" Background="package://texture,ui,37" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Location="800,230" Size="300,419">
+
+		<Label Name="Btn01" Content="这是一段字符串" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+			   TextColor="#e7dbb5" vv="#d6c79c" Location="48,80" Size="200,75" />
+
+		<Label Name="Btn01" TextColor="#e7dbb5" Location="50,190" Size="200,200">
+
+	
+			<Button Name="Btn01" Image="package://ui,38,3,1" TextColor="#e7dbb5" Content="选 择" Location="48,48" Size="126,44" Click="Button_Click" />
+
+ 
+			
+			
+		</Label>
+	</Dialog>
+
+
 
 	<sys:Include Url="Xaml/abc.xml" />
-	<Window Name="Window02" Background="package://grid,ui,192" AutoTop="True" CanMove="False" Location="0,740" Size="1440,160" BackColor="#FF00FF">
-		<Image Name="Image01" Location="200,10" Texture="package://ui,240" FillMode="Tile" Size="100,100" Click="Button_Click" />
-	</Window>
+	<Dialog Name="Window02" Background="package://grid,ui,60" AutoTop="True" Pinned="True" Location="0,740" Size="1440,160">
+		<Image Name="Image01" Location="200,10" Texture="package://ui,70" FillMode="Tile" Size="100,100" Click="Button_Click" />
+
+
+		<Animation Location="500,10" Textures="package://ui,0-23" Size="100,100" FillMode="Stretch" Interval="50" ></Animation>
+
+	</Dialog>
 </Template>

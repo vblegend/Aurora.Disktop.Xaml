@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Aurora.Disktop.Controls
 {
-    public class Button : Control
+    public class Button : ContentControl
     {
 
         private const Int32 BUTTON_SPRITE_DEFAULT_INDEX = 0;
@@ -39,7 +39,7 @@ namespace Aurora.Disktop.Controls
             if (button == MouseButtons.Left)
             {
                 this.spriteIndex = this.IsHover ? BUTTON_SPRITE_HOVER_INDEX : BUTTON_SPRITE_DEFAULT_INDEX;
-                if (this.GlobalBounds.Contains(point)  && this.Enabled)
+                if (this.GlobalBounds.Contains(point) && this.Enabled)
                 {
                     this.Click?.Invoke(this);
                 }
@@ -67,22 +67,35 @@ namespace Aurora.Disktop.Controls
 
         protected override void OnRender(GameTime gameTime)
         {
-            base.OnRender(gameTime);
+            GraphicContext.ContextState? state = null;
+            if (!this.Enabled)
+            {
+                this.spriteIndex = BUTTON_SPRITE_DISABLED_INDEX;
+                state = this.Renderer.SetState(effect: Effects.Disabled);
+            }
+            // 渲染背景，如果有
+            if (this.Background != null)
+            {
+                this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
+            }
+            // 渲染按钮状态
             if (this.sprite != null)
             {
-                GraphicContext.ContextState? state = null;
-                if (!this.Enabled)
-                {
-                    this.spriteIndex = BUTTON_SPRITE_DISABLED_INDEX;
-                    state = this.Renderer.SetState(effect: Effects.Disabled);
-                }
                 var sourceRect = sprite.GetFrameRectangle(this.spriteIndex);
-                //var dist = new Rectangle(this.BoundsOfControl.Location + position, this.BoundsOfControl.Size);
                 this.Renderer.Draw(sprite.Texture, this.GlobalBounds, sourceRect, Color.White);
-                if (state.HasValue) this.Renderer.RestoreState(state.Value);
             }
-        }
+            if (state.HasValue) this.Renderer.RestoreState(state.Value);
 
+        }
+        protected override void DrawContentString()
+        {
+            var content = this.content.ToString();
+            var size = this.Renderer.MeasureString(this.Font, content);
+            var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
+            var local = this.GlobalLocation.ToVector2() + offset;
+            if (this.Enabled && this.IsPressed) local += new Vector2(1, 1);
+            this.Renderer.DrawString(this.Font, content, local, this.Enabled ? this.TextColor : Color.Gray);
+        }
 
 
 

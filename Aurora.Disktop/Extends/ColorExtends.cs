@@ -6,24 +6,28 @@ namespace Aurora.Disktop
 
         // #FFFFFFFF
         // #FFFFFF
-        public static void FromHtml(this Color color ,  string htmlColor)
+        public static Color FromHtml(string htmlColor)
         {
-
             if ((htmlColor[0] == '#') && ((htmlColor.Length == 7) || (htmlColor.Length == 9)))
             {
+                var A = 255;
+                var R = 0;
+                var G = 0;
+                var B = 0;
                 if (htmlColor.Length == 7)
                 {
-                    color.R = (Byte)Convert.ToInt32(htmlColor.Substring(1, 2), 16);
-                    color.G = (Byte)Convert.ToInt32(htmlColor.Substring(3, 2), 16);
-                    color.B = (Byte)Convert.ToInt32(htmlColor.Substring(5, 2), 16);
+                    R = (Byte)Convert.ToInt32(htmlColor.Substring(1, 2), 16);
+                    G = (Byte)Convert.ToInt32(htmlColor.Substring(3, 2), 16);
+                    B = (Byte)Convert.ToInt32(htmlColor.Substring(5, 2), 16);
                 }
                 else
                 {
-                    color.A = (Byte)Convert.ToInt32(htmlColor.Substring(1, 2), 16);
-                    color.R = (Byte)Convert.ToInt32(htmlColor.Substring(3, 2), 16);
-                    color.G = (Byte)Convert.ToInt32(htmlColor.Substring(5, 2), 16);
-                    color.B = (Byte)Convert.ToInt32(htmlColor.Substring(7, 2), 16);
+                    A = (Byte)Convert.ToInt32(htmlColor.Substring(1, 2), 16);
+                    R = (Byte)Convert.ToInt32(htmlColor.Substring(3, 2), 16);
+                    G = (Byte)Convert.ToInt32(htmlColor.Substring(5, 2), 16);
+                    B = (Byte)Convert.ToInt32(htmlColor.Substring(7, 2), 16);
                 }
+                return new Color(R, G, B, A);
             }
             else
             {

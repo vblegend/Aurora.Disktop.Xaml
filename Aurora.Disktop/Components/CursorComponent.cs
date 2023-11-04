@@ -93,7 +93,7 @@ namespace Aurora.Disktop.Services
 
         public void Update(GameTime gameTime)
         {
-            if (window.IsMouseVisible) return;
+            if (window.IsMouseVisible || this.textures.Length == 0) return;
             MouseState mouseState = Mouse.GetState(window.Window);
             this.position.X = (float)mouseState.X;
             this.position.Y = (float)mouseState.Y;
@@ -106,7 +106,7 @@ namespace Aurora.Disktop.Services
 
         public void Draw(GameTime gameTime)
         {
-            if (window.IsMouseVisible) return;
+            if (window.IsMouseVisible || this.textures.Length == 0) return;
             if (currentIndex >= 0 && currentIndex < this.textures.Length)
             {
                 var texture = this.textures[currentIndex];

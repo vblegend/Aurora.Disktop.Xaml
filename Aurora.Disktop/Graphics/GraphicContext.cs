@@ -403,14 +403,14 @@ namespace Aurora.Disktop.Graphics
 
         public float DrawString(DynamicSpriteFont font, string _string_, Vector2 pos, Color color)
         {
-            this.SetState();
+            //this.SetState();
             return font.DrawString(this.SpriteBatch, _string_, pos, color);
         }
 
 
         public float DrawString(DynamicSpriteFont font, string _string_, Vector2 pos, Color color, Vector2 scale)
         {
-            this.SetState();
+            //this.SetState();
             return font.DrawString(this.SpriteBatch, _string_, pos, color, scale);
         }
 

@@ -3,6 +3,7 @@ using Aurora.Disktop.Graphics;
 using Aurora.Disktop.Xaml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using SpriteFontPlus;
 using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -33,6 +34,7 @@ namespace Aurora.Disktop
 
         public PlayScene(PlayWindow Window)
         {
+            this.Root = this;
             this.Window = Window;
             this.eventManager = new EventProcManager(this);
             this.Window.Window.ClientSizeChanged += Window_ClientSizeChanged;
@@ -65,21 +67,13 @@ namespace Aurora.Disktop
             await this.OnInitialize();
         }
 
-
-
         internal async Task UnInitialize()
         {
             await this.OnUnInitialize();
         }
 
-
-
         internal void Draw(GameTime gameTime)
         {
-            this.OnDrawing(gameTime);
-
-
-
             (this as IRenderable).ProcessRender(gameTime);
         }
 
@@ -94,8 +88,7 @@ namespace Aurora.Disktop
                 if (this.Window.IsActive) this.eventManager.Update(gameTime, currentMouseState);
             }
 
-
-            //UpdateEvent();
+            (this as IRenderable).ProcessUpdate(gameTime);
         }
 
 
@@ -127,19 +120,6 @@ namespace Aurora.Disktop
 
 
 
-
-        //protected Control? DispatchMouseEvent()
-        //{
-        //}
-
-
-
-        #region 鼠标状态
-        private Int32 ScrollWheelValue { get; set; }
-        private ButtonState LeftButton { get; set; }
-        private ButtonState RightButton { get; set; }
-        private Point MousePosition { get; set; }
-        #endregion
-
+        public DynamicSpriteFont DefaultFont { get; set; }
     }
 }

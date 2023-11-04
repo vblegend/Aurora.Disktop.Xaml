@@ -51,7 +51,7 @@ namespace Aurora.Disktop.Graphics
 
         public ColorBrush(String htmlColor)
         {
-            this.Color.FromHtml(htmlColor);
+            this.Color = ColorExtends.FromHtml(htmlColor);
         }
 
         public void Draw(GraphicContext context, Rectangle destrect, Color color)
@@ -72,14 +72,18 @@ namespace Aurora.Disktop.Graphics
         public FillMode FillMode { get; set; }
 
 
-        private SimpleTexture Texture;
+        public readonly SimpleTexture Texture;
 
         public TextureBrush(SimpleTexture texture)
         {
             this.Texture = texture;
-            this.FillMode = FillMode.Stretch;
+            this.FillMode = FillMode.None;
         }
-
+        public TextureBrush(SimpleTexture texture, FillMode fillMode)
+        {
+            this.Texture = texture;
+            this.FillMode = fillMode;
+        }
         public void Draw(GraphicContext context, Rectangle destrect, Color color)
         {
             if (FillMode == FillMode.Tile)

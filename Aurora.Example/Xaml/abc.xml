@@ -3,13 +3,13 @@
 	  xmlns:events="http://schemas.l2030.com/xaml/ui/events"
 	  xmlns:sys="http://schemas.l2030.com/xaml/ui/system"
 	  xmlns:ext="http://schemas.l2030.com/xaml/ui/extends">
-	
-	<Window Name="Panel01" Location="0,400" Size="128,128" Background="package://texture,ui,193">
+
+	<Dialog Name="Panel01" Location="0,400" Size="128,128" AutoTop="False" Background="package://texture,ui,68,Stretch">
 		<Icon Location="10,10" Size="6,6"  BackColor="#F0880F" ext:Target="Panel01" xxxx="brush://texture,package,1000"> </Icon>
 		<Icon Location="20,10" Size="6,6"  BackColor="#F0880F" ext:xxxx="brush://grid,package,1000"> </Icon>
 		<Icon Location="30,10" Size="6,6"  BackColor="#F0880F" xxxx="brush://color,#FFFFFFFF"> </Icon>
 		<Icon Location="40,10" Size="6,6" BackColor="#F0880F" xxxx="brush://sprite,package,1000,4,3"> </Icon>
-	</Window>
+	</Dialog>
 </Template>
 
 

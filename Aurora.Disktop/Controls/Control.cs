@@ -1,6 +1,7 @@
 ﻿using Aurora.Disktop.Common;
 using Aurora.Disktop.Graphics;
 using Microsoft.Xna.Framework;
+using SpriteFontPlus;
 using System.Diagnostics;
 
 namespace Aurora.Disktop.Controls
@@ -13,8 +14,15 @@ namespace Aurora.Disktop.Controls
 
     public interface IRenderable
     {
+        void ProcessUpdate(GameTime gameTime);
         void ProcessRender(GameTime gameTime);
     }
+
+    public interface IPointHitTestable
+    {
+        Boolean HitTest(Point position);
+    }
+
 
     public interface ILayoutUpdatable
     {
@@ -22,11 +30,11 @@ namespace Aurora.Disktop.Controls
         /// 
         /// </summary>
         /// <param name="parentPosition">父对象的绝对坐标</param>
-        void LayoutUpdate();
+        void LayoutUpdate(Boolean updateChildren);
     }
 
 
-    public abstract class Control : IQuery, IXamlEventHandler, IRenderable, IControl, ILayoutUpdatable
+    public abstract class Control : IQuery, IXamlEventHandler, IRenderable, IXamlControl, ILayoutUpdatable, IPointHitTestable
     {
 
         public GraphicContext Renderer { get; private set; }
@@ -42,12 +50,18 @@ namespace Aurora.Disktop.Controls
         /// <summary>
         /// 布局更新 更新全局位置
         /// </summary>
-        void ILayoutUpdatable.LayoutUpdate()
+        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren)
         {
             if (this.Parent != null)
             {
                 this.globalBounds.Location = this.Parent.GlobalLocation.Add(this.Location);
+                this.extendBounds = this.globalBounds;
             }
+        }
+
+        void IRenderable.ProcessUpdate(GameTime gameTime)
+        {
+            this.OnUpdate(gameTime);
         }
 
         /// <summary>
@@ -144,13 +158,14 @@ namespace Aurora.Disktop.Controls
             {
                 this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
             }
+        }
 
 
-
-
-   
+        protected virtual void OnUpdate(GameTime gameTime)
+        {
 
         }
+
 
         #endregion
 
@@ -163,10 +178,6 @@ namespace Aurora.Disktop.Controls
         {
             get
             {
-                //for (int i = 0; i < Children.Count; i++)
-                //{
-                //    if (Children[i].Name == name) return Children[i];
-                //}
                 return null;
             }
         }
@@ -186,15 +197,40 @@ namespace Aurora.Disktop.Controls
             return control as T;
         }
 
+        public virtual bool HitTest(Point position)
+        {
+            return this.GlobalBounds.Contains(position);
+        }
+
 
 
         #endregion
+
+        public DynamicSpriteFont? Font
+        {
+            get
+            {
+                return this._font != null ? this._font :  this.Root != null ? this.Root.DefaultFont : null ;
+            }
+            set
+            {
+                this._font = value;
+            }
+        }
+
+        private DynamicSpriteFont? _font;
+
 
 
         /// <summary>
         /// 父控件对象
         /// </summary>
         public virtual Control? Parent { get; set; }
+
+        /// <summary>
+        /// 根对象
+        /// </summary>
+        public PlayScene Root { get; set; }
 
         public IXamlBrush? Background { get; set; }
 
@@ -234,8 +270,24 @@ namespace Aurora.Disktop.Controls
             }
         }
 
+        /// <summary>
+        /// 获取控件扩展边界框（包含子控件边界）
+        /// </summary>
+        public Rectangle ExtendBounds
+        {
+
+            get
+            {
+                return this.extendBounds;
+            }
+        }
+
+
+
 
         protected Rectangle globalBounds;
+
+        protected Rectangle extendBounds;
 
 
         private Point location;
@@ -251,7 +303,7 @@ namespace Aurora.Disktop.Controls
             set
             {
                 this.location = value;
-                (this as ILayoutUpdatable).LayoutUpdate();
+                (this as ILayoutUpdatable).LayoutUpdate(true);
             }
         }
 
