@@ -16,17 +16,17 @@ namespace Aurora.Disktop.Xaml
 
     public interface IXamlPropertyConverter
     {
-        
         public Object? Convert(Type propertyType, String value);
+
     }
 
 
 
-    public class InvalidConvertTypeException: Exception
+    public class InvalidConvertTypeException : Exception
     {
         public InvalidConvertTypeException(String message) : base(message)
         {
-            
+
         }
     }
 

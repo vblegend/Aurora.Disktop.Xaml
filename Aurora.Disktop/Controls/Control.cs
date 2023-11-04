@@ -246,7 +246,7 @@ namespace Aurora.Disktop.Controls
 
         #region Position
 
-
+        public Thickness Margin { get; set; }
         /// <summary>
         /// 获取对象全局坐标
         /// </summary>

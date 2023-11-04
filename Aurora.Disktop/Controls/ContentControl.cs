@@ -94,13 +94,33 @@ namespace Aurora.Disktop.Controls
             {
                 this.globalBounds.Location = this.Parent.GlobalLocation.Add(this.Location);
                 this.extendBounds = this.globalBounds;
-                //this.extendBounds = Rectangle.Union(this.extendBounds, this.content.GlobalBounds);
                 if (updateChildren && this.content is ILayoutUpdatable updatable)
                 {
                     updatable.LayoutUpdate(true);
                 }
             }
         }
+
+
+
+        public Thickness Padding
+        {
+            get
+            {
+                return  padding;
+            }
+            set
+            {
+                padding =value;
+
+            }
+        }
+
+
+
+
+        private Thickness padding;
+
 
 
 

@@ -1,10 +1,6 @@
 ﻿using Aurora.Disktop.Common;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Aurora.Disktop.Controls
 {
@@ -18,8 +14,8 @@ namespace Aurora.Disktop.Controls
         }
         protected override void OnRender(GameTime gameTime)
         {
+            
             base.OnRender(gameTime);
-
         }
         
     }

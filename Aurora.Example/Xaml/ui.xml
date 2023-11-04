@@ -30,10 +30,10 @@
 		<Label Name="Btn01" Content="这是一段字符串" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
 			   TextColor="#e7dbb5" vv="#d6c79c" Location="48,80" Size="200,75" />
 
-		<Label Name="Btn01" TextColor="#e7dbb5" Location="50,190" Size="200,200">
+		<Label Name="Btn01" TextColor="#e7dbb5" Location="50,191" Size="200,200" Padding="20,15">
 
 	
-			<Button Name="Btn01" Image="package://ui,38,3,1" TextColor="#e7dbb5" Content="选 择" Location="48,48" Size="126,44" Click="Button_Click" />
+			<Button Name="Btn01" Image="package://ui,72,3,1" TextColor="#e7dbb5" Content="选 择" Location="5,48" Padding="10,5" Click="Button_Click" />
 
  
 			

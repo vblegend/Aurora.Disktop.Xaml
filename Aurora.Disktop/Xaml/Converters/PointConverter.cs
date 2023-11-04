@@ -9,7 +9,7 @@ namespace Aurora.Disktop.Xaml.Converters
     [XamlConverter(typeof(Point))]
     internal class PointConverter : IXamlPropertyConverter
     {
-        public object? Convert(Type propertyType, string value)
+        public Object? Convert(Type propertyType, string value)
         {
             if (value == null) throw new Exception();
             var arr = value.Split(",", StringSplitOptions.RemoveEmptyEntries);
@@ -26,7 +26,7 @@ namespace Aurora.Disktop.Xaml.Converters
         // file://filename,3,1
         // content://filename,3,1
 
-        public object? Convert(Type propertyType, string value)
+        public Object? Convert(Type propertyType, string value)
         {
             if (value == null) throw new Exception();
 

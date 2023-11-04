@@ -6,7 +6,7 @@ namespace Aurora.Disktop.Xaml.Converters
     [XamlConverter(typeof(DynamicSpriteFont))]
     internal class FontConverter : IXamlPropertyConverter
     {
-        public object? Convert(Type propertyType, string value)
+        public Object? Convert(Type propertyType, string value)
         {
             if (String.IsNullOrEmpty(value)) return null;
             if (value.StartsWith("font://"))

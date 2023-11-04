@@ -8,7 +8,7 @@ namespace Aurora.Disktop.Xaml.Converters
     internal class XamlBrushConverter : IXamlPropertyConverter
     {
 
-        public object? Convert(Type propertyType, string value)
+        public Object? Convert(Type propertyType, string value)
         {
             if (String.IsNullOrEmpty(value)) return null;
             if (value.StartsWith("color://"))
