@@ -45,6 +45,9 @@ namespace Aurora.Disktop.Controls
             this.Renderer = AuroraState.Services.GetService<GraphicContext>();
             this.Enabled = true;
             this.Visible = true;
+            this.HorizontalAlignment = HorizontalAlignment.Left;
+            this.VerticalAlignment = VerticalAlignment.Top;
+
         }
 
         /// <summary>
@@ -52,12 +55,75 @@ namespace Aurora.Disktop.Controls
         /// </summary>
         void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren)
         {
+            this.CalcGlobalBounds();
+        }
+
+
+        protected Boolean CalcGlobalBounds()
+        {
             if (this.Parent != null)
             {
-                this.globalBounds.Location = this.Parent.GlobalLocation.Add(this.Location);
+                var l = 0;
+                var t = 0;
+                var w = 0;
+                var h = 0;
+                // 横向对齐方式
+                if (this.HorizontalAlignment == HorizontalAlignment.Left)
+                {
+                    l = this.Parent.globalBounds.Left + this.margin.Left;
+                    w = this.Width;
+                }
+                else if (this.HorizontalAlignment == HorizontalAlignment.Right)
+                {
+                    l = this.Parent.globalBounds.Right - this.margin.Right - this.Width;
+                    w = this.Width;
+                }
+                else if (this.HorizontalAlignment == HorizontalAlignment.Center)
+                {
+                    l = this.Parent.globalBounds.Left + (this.margin.Left - this.margin.Right) + (this.Parent.globalBounds.Width - this.Width) / 2;
+                    w = this.Width;
+                }
+                else if (this.HorizontalAlignment == HorizontalAlignment.Stretch)
+                {
+                    // Stretch 时 width 无效
+                    l = this.Parent.globalBounds.Left + this.margin.Left;
+                    w = this.Parent.globalBounds.Width - this.margin.Left - this.margin.Right;
+                }
+
+                // 纵向对齐方式
+                if (this.VerticalAlignment == VerticalAlignment.Top)
+                {
+                    t = this.Parent.globalBounds.Top + this.margin.Top;
+                    h = this.Height;
+                }
+                else if (this.VerticalAlignment == VerticalAlignment.Bottom)
+                {
+                    t = this.Parent.globalBounds.Bottom - this.margin.Bottom - this.Height;
+                    h = this.Height;
+                }
+                else if (this.VerticalAlignment == VerticalAlignment.Center)
+                {
+                    t = this.Parent.globalBounds.Top + (this.margin.Top - this.margin.Bottom) + (this.Parent.globalBounds.Height - this.Height) / 2;
+                    h = this.Height;
+                }
+                else if (this.VerticalAlignment == VerticalAlignment.Stretch)
+                {
+                    // Stretch 时 width 无效
+                    t = this.Parent.globalBounds.Top + this.margin.Top;
+                    h = this.Parent.globalBounds.Height - this.margin.Top - this.margin.Bottom;
+                }
+                this.globalBounds = new Rectangle(l, t, w, h);
                 this.extendBounds = this.globalBounds;
+                return true;
             }
+            return false;   
         }
+
+
+
+
+
+
 
         void IRenderable.ProcessUpdate(GameTime gameTime)
         {
@@ -210,7 +276,7 @@ namespace Aurora.Disktop.Controls
         {
             get
             {
-                return this._font != null ? this._font :  this.Root != null ? this.Root.DefaultFont : null ;
+                return this._font != null ? this._font : this.Root != null ? this.Root.DefaultFont : null;
             }
             set
             {
@@ -244,9 +310,39 @@ namespace Aurora.Disktop.Controls
         public Boolean IgnoreKeyboardEvents { get; set; }
         public Boolean IsLayoutChanged { get; set; }
 
-        #region Position
 
-        public Thickness Margin { get; set; }
+
+
+        #region Position  Layout
+
+        public HorizontalAlignment HorizontalAlignment { get; set; }
+
+        public VerticalAlignment VerticalAlignment { get; set; }
+
+        public Thickness Margin
+        {
+
+            get
+            {
+                return this.margin;
+            }
+            set
+            {
+                margin = value;
+                (this as ILayoutUpdatable).LayoutUpdate(true);
+            }
+        }
+
+
+
+
+
+
+
+        private Thickness margin;
+
+
+
         /// <summary>
         /// 获取对象全局坐标
         /// </summary>
@@ -289,23 +385,6 @@ namespace Aurora.Disktop.Controls
 
         protected Rectangle extendBounds;
 
-
-        private Point location;
-        /// <summary>
-        /// 获取/设置 控件本地坐标
-        /// </summary>
-        public Point Location
-        {
-            get
-            {
-                return this.location;
-            }
-            set
-            {
-                this.location = value;
-                (this as ILayoutUpdatable).LayoutUpdate(true);
-            }
-        }
 
         /// <summary>
         /// 获取控件大小

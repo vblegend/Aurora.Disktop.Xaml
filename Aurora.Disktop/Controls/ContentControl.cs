@@ -90,10 +90,8 @@ namespace Aurora.Disktop.Controls
 
         void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren)
         {
-            if (this.Parent != null)
+            if (this.CalcGlobalBounds())
             {
-                this.globalBounds.Location = this.Parent.GlobalLocation.Add(this.Location);
-                this.extendBounds = this.globalBounds;
                 if (updateChildren && this.content is ILayoutUpdatable updatable)
                 {
                     updatable.LayoutUpdate(true);

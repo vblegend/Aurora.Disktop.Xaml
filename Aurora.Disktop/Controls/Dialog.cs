@@ -27,7 +27,9 @@ namespace Aurora.Disktop.Controls
 
         protected override void OnMouseDown(MouseButtons button, Point point)
         {
-            if (button == MouseButtons.Left && !this.Pinned)
+            if (button == MouseButtons.Left && !this.Pinned && 
+                (this.VerticalAlignment == VerticalAlignment.Top || this.VerticalAlignment == VerticalAlignment.Bottom) &&
+                (this.HorizontalAlignment == HorizontalAlignment.Left || this.HorizontalAlignment == HorizontalAlignment.Right))
             {
                 dropPosition = point;
             }
@@ -38,7 +40,24 @@ namespace Aurora.Disktop.Controls
             if (dropPosition.HasValue)
             {
                 var offset = point.Sub(dropPosition.Value);
-                this.Location = this.Location.Add(offset);
+                var l = this.Margin.Left;
+                var r = this.Margin.Right;
+                var t = this.Margin.Top;
+                var b = this.Margin.Bottom;
+
+
+                // 纵
+                if (this.VerticalAlignment == VerticalAlignment.Top)
+                    t += offset.Y;
+                else
+                    b -= offset.Y;
+                // 横
+                if (this.HorizontalAlignment == HorizontalAlignment.Left)
+                    l += offset.X;
+                else
+                    r -= offset.X;
+                // 
+                this.Margin =  new Thickness(l,t,r,b);
                 if (this is ILayoutUpdatable updatable)
                 {
                     updatable.LayoutUpdate(true);

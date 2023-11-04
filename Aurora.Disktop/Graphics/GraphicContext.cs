@@ -376,7 +376,7 @@ namespace Aurora.Disktop.Graphics
             for (int x = dest.X + borderSize.X; x < dest.X + dest.Width - borderSize.X; x += borderSize.X)
             {
                 int width = Math.Min(borderSize.X, dest.X + dest.Width - borderSize.X - x);
-                this.SpriteBatch.Draw(tex, new Rectangle(x, dest.Y, width, borderSize.X), new Rectangle(borderSize.X, 0, width, borderSize.Y), Color.White);
+                this.SpriteBatch.Draw(tex, new Rectangle(x, dest.Y, width, borderSize.Y), new Rectangle(borderSize.X, 0, width, borderSize.Y), Color.White);
                 this.SpriteBatch.Draw(tex, new Rectangle(x, dest.Y + dest.Height - borderSize.Y, width, borderSize.Y), new Rectangle(borderSize.X, tex.Height - borderSize.Y, width, borderSize.Y), Color.White);
             }
 
@@ -384,7 +384,7 @@ namespace Aurora.Disktop.Graphics
             {
                 int height = Math.Min(borderSize.Y, dest.Y + dest.Height - borderSize.Y - y);
                 this.SpriteBatch.Draw(tex, new Rectangle(dest.X, y, borderSize.X, height), new Rectangle(0, borderSize.Y, borderSize.X, height), Color.White);
-                this.SpriteBatch.Draw(tex, new Rectangle(dest.X + dest.Width - borderSize.X, y, borderSize.X, height), new Rectangle(tex.Width - borderSize.X, borderSize.Y, borderSize.X, height), Color.White);
+                this.SpriteBatch.Draw(tex, new Rectangle(dest.Right - borderSize.X, y, borderSize.X, height), new Rectangle(tex.Width - borderSize.X, borderSize.Y, borderSize.X, height), Color.White);
             }
 
             // 绘制九宫格的中间部分，使用 Tiling 方式填充
