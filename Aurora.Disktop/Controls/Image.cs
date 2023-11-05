@@ -71,6 +71,19 @@ namespace Aurora.Disktop.Controls
         }
 
 
+        protected override void CalcAutoSize()
+        {
+            if (this.NeedCalcAutoHeight && this.texture != null)
+            {
+                this.globalBounds.Height = texture.Height;
+            }
+            if (this.NeedCalcAutoWidth && this.texture != null)
+            {
+                this.globalBounds.Width = texture.Width;
+            }
+        }
+
+
         // Declare the event.
         public event XamlClickEventHandler<Image> Click;
 

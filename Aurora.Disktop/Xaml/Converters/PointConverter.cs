@@ -13,7 +13,9 @@ namespace Aurora.Disktop.Xaml.Converters
         {
             if (value == null) throw new Exception();
             var arr = value.Split(",", StringSplitOptions.RemoveEmptyEntries);
-            return new Point(Int32.Parse(arr[0]), Int32.Parse(arr[1]));
+            var x = arr[0] == "auto" ? Int32.MinValue : Int32.Parse(arr[0]);
+            var y = arr[1] == "auto" ? Int32.MinValue : Int32.Parse(arr[1]);
+            return new Point(x, y);
         }
     }
 

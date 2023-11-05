@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 namespace Aurora.Disktop.Common
 {
 
-    public enum HorizontalAlignment
+    public enum XamlHorizontalAlignment
     {
         Left = 0,
         Center = 1,
@@ -14,7 +14,7 @@ namespace Aurora.Disktop.Common
         Stretch = 3
     }
 
-    public enum VerticalAlignment
+    public enum XamlVerticalAlignment
     {
         Top = 0,
         Center = 1,
@@ -58,29 +58,36 @@ namespace Aurora.Disktop.Common
     }
 
 
-    public class Sized
+    public enum XamlProgressBarStyle
     {
-        public Int32 Width;
-        public Int32 Height;
+        /// <summary>
+        /// 从左到右
+        /// </summary>
+        LeftToRight = 0,
+        /// <summary>
+        /// 从下到上
+        /// </summary>
+        BottomToTop = 1,
+        /// <summary>
+        /// 从右到左
+        /// </summary>
+        RightToLeft = 2,
+        /// <summary>
+        /// 从上到下
+        /// </summary>
+        TopToBottom = 3
+    }
 
 
-
-
-        public Boolean AutoWidth { get; private set; }
-        public Boolean AutoHeight { get; private set; }
-
-
-
-
-        public Point ToPoint()
-        {
-            return new Point(Width, Height);
-        }
-
-        public Vector2 ToVector2()
-        {
-            return new Vector2(Width, Height);
-        }
+    public enum XamlOrientation {
+        /// <summary>
+        /// 横向的
+        /// </summary>
+        Horizontal,
+        /// <summary>
+        /// 纵向的
+        /// </summary>
+        Vertical,
     }
 
 

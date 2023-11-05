@@ -30,7 +30,6 @@ namespace Aurora.Disktop.Controls
             {
                 this.spriteIndex = BUTTON_SPRITE_PRESSED_INDEX;
             }
-
         }
 
         protected override void OnMouseUp(MouseButtons button, Point point)
@@ -42,7 +41,6 @@ namespace Aurora.Disktop.Controls
                 {
                     this.Click?.Invoke(this);
                 }
-
             }
         }
 
@@ -66,10 +64,8 @@ namespace Aurora.Disktop.Controls
 
         protected override void OnRender(GameTime gameTime)
         {
-            var dest = new Rectangle(this.GlobalBounds.Left + this.Padding.Left, this.GlobalBounds.Top + this.Padding.Top, this.GlobalBounds.Width - this.Padding.Right, this.GlobalBounds.Height - this.Padding.Bottom);
+            var dest = new Rectangle(this.GlobalBounds.Left + this.Padding.Left, this.GlobalBounds.Top + this.Padding.Top, this.GlobalBounds.Width - this.Padding.Left - this.Padding.Right, this.GlobalBounds.Height - this.Padding.Top - this.Padding.Bottom);
             this.RenderButton(dest);
-
-
         }
 
 
@@ -110,6 +106,24 @@ namespace Aurora.Disktop.Controls
 
 
 
+        /// <summary>
+        /// 计算自动大小
+        /// </summary>
+        /// <returns></returns>
+        protected override void CalcAutoSize()
+        {
+            if (this.NeedCalcAutoHeight && this.Image != null)
+            {
+                this.globalBounds.Height = Image.Height + this.Padding.Left + this.Padding.Right;
+            }
+            if (this.NeedCalcAutoWidth && this.Image != null)
+            {
+                this.globalBounds.Width = Image.Width + this.Padding.Top + this.Padding.Bottom;
+            }
+        }
+
+
+
         public SpriteObject Image
         {
             get
@@ -132,7 +146,7 @@ namespace Aurora.Disktop.Controls
 
 
         // Declare the event.
-        public event XamlClickEventHandler<Button> Click;
+        public virtual event XamlClickEventHandler<Button> Click;
         private Int32 spriteIndex;
         private SpriteObject sprite;
     }

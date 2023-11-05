@@ -35,6 +35,17 @@ namespace Aurora.Disktop.Controls
     }
 
 
+    public interface IAttachable
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parentPosition">父对象的绝对坐标</param>
+        void OnAttached();
+    }
+
+
+
     public abstract class Control : IQuery, IXamlEventHandler, IRenderable, IXamlControl, ILayoutUpdatable, IPointHitTestable
     {
 
@@ -46,8 +57,8 @@ namespace Aurora.Disktop.Controls
             this.Renderer = AuroraState.Services.GetService<GraphicContext>();
             this.Enabled = true;
             this.Visible = true;
-            this.HorizontalAlignment = HorizontalAlignment.Left;
-            this.VerticalAlignment = VerticalAlignment.Top;
+            this.HorizontalAlignment = XamlHorizontalAlignment.Left;
+            this.VerticalAlignment = XamlVerticalAlignment.Top;
 
         }
 
@@ -56,11 +67,19 @@ namespace Aurora.Disktop.Controls
         /// </summary>
         void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)
         {
+            this.CalcAutoSize();
             this.CalcGlobalBounds();
         }
 
 
-        protected Boolean CalcGlobalBounds()
+        /// <summary>
+        /// 计算自动大小
+        /// </summary>
+        protected abstract void CalcAutoSize();
+
+
+
+        protected virtual Boolean CalcGlobalBounds()
         {
             if (this.Parent != null)
             {
@@ -69,22 +88,22 @@ namespace Aurora.Disktop.Controls
                 var w = 0;
                 var h = 0;
                 // 横向对齐方式
-                if (this.HorizontalAlignment == HorizontalAlignment.Left)
+                if (this.HorizontalAlignment == XamlHorizontalAlignment.Left)
                 {
                     l = this.Parent.globalBounds.Left + this.margin.Left;
                     w = this.Width;
                 }
-                else if (this.HorizontalAlignment == HorizontalAlignment.Right)
+                else if (this.HorizontalAlignment == XamlHorizontalAlignment.Right)
                 {
                     l = this.Parent.globalBounds.Right - this.margin.Right - this.Width;
                     w = this.Width;
                 }
-                else if (this.HorizontalAlignment == HorizontalAlignment.Center)
+                else if (this.HorizontalAlignment == XamlHorizontalAlignment.Center)
                 {
                     l = this.Parent.globalBounds.Left + (this.margin.Left - this.margin.Right) + (this.Parent.globalBounds.Width - this.Width) / 2;
                     w = this.Width;
                 }
-                else if (this.HorizontalAlignment == HorizontalAlignment.Stretch)
+                else if (this.HorizontalAlignment == XamlHorizontalAlignment.Stretch)
                 {
                     // Stretch 时 width 无效
                     l = this.Parent.globalBounds.Left + this.margin.Left;
@@ -92,22 +111,22 @@ namespace Aurora.Disktop.Controls
                 }
 
                 // 纵向对齐方式
-                if (this.VerticalAlignment == VerticalAlignment.Top)
+                if (this.VerticalAlignment == XamlVerticalAlignment.Top)
                 {
                     t = this.Parent.globalBounds.Top + this.margin.Top;
                     h = this.Height;
                 }
-                else if (this.VerticalAlignment == VerticalAlignment.Bottom)
+                else if (this.VerticalAlignment == XamlVerticalAlignment.Bottom)
                 {
                     t = this.Parent.globalBounds.Bottom - this.margin.Bottom - this.Height;
                     h = this.Height;
                 }
-                else if (this.VerticalAlignment == VerticalAlignment.Center)
+                else if (this.VerticalAlignment == XamlVerticalAlignment.Center)
                 {
                     t = this.Parent.globalBounds.Top + (this.margin.Top - this.margin.Bottom) + (this.Parent.globalBounds.Height - this.Height) / 2;
                     h = this.Height;
                 }
-                else if (this.VerticalAlignment == VerticalAlignment.Stretch)
+                else if (this.VerticalAlignment == XamlVerticalAlignment.Stretch)
                 {
                     // Stretch 时 width 无效
                     t = this.Parent.globalBounds.Top + this.margin.Top;
@@ -216,12 +235,12 @@ namespace Aurora.Disktop.Controls
 
         protected virtual void OnGotFocus()
         {
-
+            // 已实现
         }
 
         protected virtual void OnLostFocus()
         {
-
+            // 已实现
         }
 
         protected virtual void OnMouseEnter()
@@ -269,12 +288,8 @@ namespace Aurora.Disktop.Controls
 
         #endregion
 
-
-
-
-
         #region IQuery
-        public Control this[string name]
+        public virtual Control this[string name]
         {
             get
             {
@@ -282,7 +297,7 @@ namespace Aurora.Disktop.Controls
             }
         }
 
-        public T Query<T>(string path) where T : Control
+        public virtual T Query<T>(string path) where T : Control
         {
             var paths = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             Control control = this;
@@ -354,9 +369,9 @@ namespace Aurora.Disktop.Controls
 
         #region Position  Layout
 
-        public HorizontalAlignment HorizontalAlignment { get; set; }
+        public XamlHorizontalAlignment HorizontalAlignment { get; set; }
 
-        public VerticalAlignment VerticalAlignment { get; set; }
+        public XamlVerticalAlignment VerticalAlignment { get; set; }
 
         public Thickness Margin
         {
@@ -371,12 +386,6 @@ namespace Aurora.Disktop.Controls
                 (this as ILayoutUpdatable).LayoutUpdate(true);
             }
         }
-
-
-
-
-
-
 
         private Thickness margin;
 
@@ -417,12 +426,11 @@ namespace Aurora.Disktop.Controls
             }
         }
 
-
-
-
         protected Rectangle globalBounds;
 
         protected Rectangle extendBounds;
+
+
 
 
         /// <summary>
@@ -438,18 +446,50 @@ namespace Aurora.Disktop.Controls
             {
                 if (value.X == Int32.MinValue)
                 {
-
+                    this.AutoWidth = true;
+                    value.X = 0;
                 }
-
+                if (value.Y == Int32.MinValue)
+                {
+                    this.AutoHeight = true;
+                    value.Y = 0;
+                }
                 this.globalBounds.Size = value;
-
             }
         }
 
+        /// <summary>
+        /// 控件宽度自动
+        /// </summary>
         public Boolean AutoWidth { get; private set; }
+
+        /// <summary>
+        /// 控件高度自动
+        /// </summary>
         public Boolean AutoHeight { get; private set; }
 
 
+        /// <summary>
+        /// 是否需要计算自动宽度
+        /// </summary>
+        protected Boolean NeedCalcAutoWidth
+        {
+            get
+            {
+                return this.HorizontalAlignment != XamlHorizontalAlignment.Stretch && this.AutoWidth;
+            }
+        }
+
+        /// <summary>
+        /// 是否需要计算自动高度
+        /// </summary>
+        protected Boolean NeedCalcAutoHeight
+        {
+            get
+            {
+                return this.VerticalAlignment != XamlVerticalAlignment.Stretch && this.AutoHeight;
+            }
+        }
 
         /// <summary>
         /// 获取控件宽度

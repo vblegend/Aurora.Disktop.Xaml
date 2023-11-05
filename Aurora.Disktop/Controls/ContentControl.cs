@@ -8,13 +8,13 @@ using System;
 namespace Aurora.Disktop.Controls
 {
 
-    public class ContentControl : Control, ILayoutUpdatable, IRenderable, IQuery
+    public abstract class ContentControl : Control, ILayoutUpdatable, IRenderable, IQuery
     {
         public ContentControl()
         {
             this.TextColor = Color.White;
-            this.HorizontalContentAlignment = HorizontalAlignment.Center;
-            this.VerticalContentAlignment = VerticalAlignment.Center;
+            this.HorizontalContentAlignment = XamlHorizontalAlignment.Center;
+            this.VerticalContentAlignment = XamlVerticalAlignment.Center;
         }
 
         protected override void OnRender(GameTime gameTime)
@@ -69,20 +69,20 @@ namespace Aurora.Disktop.Controls
             var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
             var local = this.GlobalLocation.ToVector2() + offset;
 
-            if (this.HorizontalContentAlignment == HorizontalAlignment.Left)
+            if (this.HorizontalContentAlignment == XamlHorizontalAlignment.Left)
             {
                 local.X = this.GlobalLocation.X;
             }
-            else if (this.HorizontalContentAlignment == HorizontalAlignment.Right)
+            else if (this.HorizontalContentAlignment == XamlHorizontalAlignment.Right)
             {
                 local.X = this.GlobalBounds.Right - size.X;
             }
 
-            if (this.VerticalContentAlignment == VerticalAlignment.Top)
+            if (this.VerticalContentAlignment == XamlVerticalAlignment.Top)
             {
                 local.Y = this.GlobalLocation.Y;
             }
-            else if (this.VerticalContentAlignment == VerticalAlignment.Bottom)
+            else if (this.VerticalContentAlignment == XamlVerticalAlignment.Bottom)
             {
                 local.Y = this.GlobalBounds.Bottom - size.Y;
             }
@@ -92,10 +92,12 @@ namespace Aurora.Disktop.Controls
         }
 
 
+ 
 
 
         void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)
         {
+            this.CalcAutoSize();
             if (this.CalcGlobalBounds() || force)
             {
                 if (updateChildren && this.content is ILayoutUpdatable updatable)
@@ -133,9 +135,9 @@ namespace Aurora.Disktop.Controls
         public Color TextColor { get; set; }
 
 
-        public HorizontalAlignment HorizontalContentAlignment { get; set; }
+        public XamlHorizontalAlignment HorizontalContentAlignment { get; set; }
 
-        public VerticalAlignment VerticalContentAlignment { get; set; }
+        public XamlVerticalAlignment VerticalContentAlignment { get; set; }
 
 
         public Object Content
@@ -151,6 +153,7 @@ namespace Aurora.Disktop.Controls
                 {
                     control.Parent = this;
                     control.Root = this.Root;
+                    if (control is IAttachable attachable) attachable.OnAttached();
                 }
                 if (value is ILayoutUpdatable updatable)
                 {

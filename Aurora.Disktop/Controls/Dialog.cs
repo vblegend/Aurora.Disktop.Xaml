@@ -26,8 +26,8 @@ namespace Aurora.Disktop.Controls
         protected override void OnMouseDown(MouseButtons button, Point point)
         {
             if (button == MouseButtons.Left && !this.Pinned && 
-                (this.VerticalAlignment == VerticalAlignment.Top || this.VerticalAlignment == VerticalAlignment.Bottom) &&
-                (this.HorizontalAlignment == HorizontalAlignment.Left || this.HorizontalAlignment == HorizontalAlignment.Right))
+                (this.VerticalAlignment == XamlVerticalAlignment.Top || this.VerticalAlignment == XamlVerticalAlignment.Bottom) &&
+                (this.HorizontalAlignment == XamlHorizontalAlignment.Left || this.HorizontalAlignment == XamlHorizontalAlignment.Right))
             {
                 dropPosition = point;
             }
@@ -45,12 +45,12 @@ namespace Aurora.Disktop.Controls
 
 
                 // 纵
-                if (this.VerticalAlignment == VerticalAlignment.Top)
+                if (this.VerticalAlignment == XamlVerticalAlignment.Top)
                     t += offset.Y;
                 else
                     b -= offset.Y;
                 // 横
-                if (this.HorizontalAlignment == HorizontalAlignment.Left)
+                if (this.HorizontalAlignment == XamlHorizontalAlignment.Left)
                     l += offset.X;
                 else
                     r -= offset.X;

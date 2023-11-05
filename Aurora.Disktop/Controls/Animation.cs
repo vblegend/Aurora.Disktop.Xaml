@@ -3,6 +3,7 @@ using Aurora.Disktop.Graphics;
 using Microsoft.Xna.Framework;
 
 
+
 namespace Aurora.Disktop.Controls
 {
     public class Animation : Control
@@ -16,7 +17,7 @@ namespace Aurora.Disktop.Controls
         public Animation()
         {
             this.textures = new SimpleTexture[0];
-            this.Interval = new TimeSpan(0,0,1);
+            this.Interval = new TimeSpan(0, 0, 1);
             this.FillMode = FillMode.None;
             this.IgnoreMouseEvents = true;
             this.currentIndex = 0;
@@ -59,7 +60,17 @@ namespace Aurora.Disktop.Controls
             }
         }
 
-
+        protected override void CalcAutoSize()
+        {
+            if (this.NeedCalcAutoHeight && this.textures != null && this.textures.Length > 0)
+            {
+                this.globalBounds.Height = this.textures[0].Height;
+            }
+            if (this.NeedCalcAutoWidth && this.textures != null && this.textures.Length > 0)
+            {
+                this.globalBounds.Width = this.textures[0].Width;
+            }
+        }
 
         public SimpleTexture[] Textures
         {

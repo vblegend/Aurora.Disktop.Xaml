@@ -34,7 +34,7 @@ namespace Aurora.Disktop
             this.Graphics.SynchronizeWithVerticalRetrace = true;
 
             //AuroraState.Services.AddService(this.Cursor);
-            //this.IsFixedTimeStep = true;//false;
+            //this.IsFixedTimeStep = false;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d); //60);
             //AuroraState.Services = this.Services;
             AuroraState.Services.AddService(this);
@@ -125,15 +125,6 @@ namespace Aurora.Disktop
             base.Update(gameTime);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.RightShift) && Keyboard.GetState().IsKeyDown(Keys.F12))
-            {
-                this.Graphics.IsFullScreen = !this.Graphics.IsFullScreen;
-                this.Graphics.PreferredBackBufferWidth = 1440;
-                this.Graphics.PreferredBackBufferHeight = 900;
-                this.Graphics.ApplyChanges();
-                Thread.Sleep(100);
-            }
             this.Scene?.Update(gameTime);
             this.FpsCounter?.Update(gameTime);
         }

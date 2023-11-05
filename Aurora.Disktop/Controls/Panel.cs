@@ -45,6 +45,7 @@ namespace Aurora.Disktop.Controls
             this.Children.Add(control);
             control.Parent = this;
             control.Root = this.Root;
+            if (control is IAttachable attachable) attachable.OnAttached();
             if (this is ILayoutUpdatable updatable)
             {
                 updatable.LayoutUpdate(true, true);
@@ -103,6 +104,7 @@ namespace Aurora.Disktop.Controls
 
         void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)
         {
+            this.CalcAutoSize();
             if (this.CalcGlobalBounds() || force)
             {
                 for (int i = 0; i < Children.Count; i++)
@@ -116,8 +118,13 @@ namespace Aurora.Disktop.Controls
             }
         }
 
+        protected override void CalcAutoSize()
+        {
+
+        }
+
         #region IQuery
-        public new Control this[string name]
+        public override Control this[string name]
         {
             get
             {

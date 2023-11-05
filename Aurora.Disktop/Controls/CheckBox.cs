@@ -7,29 +7,24 @@ namespace Aurora.Disktop.Controls
 {
     public class CheckBox : Button
     {
-
-
-
-
-
-
-
-
-
-
-
+        public CheckBox()
+        {
+            this.Size = new Point(Int32.MinValue, 20);
+        }
 
         protected override void OnRender(GameTime gameTime)
         {
             var dest = new Rectangle(this.GlobalBounds.Left + this.Padding.Left, this.GlobalBounds.Top + this.Padding.Top, this.GlobalBounds.Height - this.Padding.Bottom, this.GlobalBounds.Height - this.Padding.Bottom);
-
             this.RenderButton(dest);
             if (this.Value && this.Icon != null)
             {
                 var iconDest = new Rectangle(this.GlobalBounds.Location, new Point(this.GlobalBounds.Height));
+                if (this.IsPressed)
+                {
+                    iconDest.Location += new Point(1, 1);
+                }
                 this.Renderer.Draw(this.Icon, iconDest, Color.White);
             }
-
         }
 
 
@@ -37,7 +32,7 @@ namespace Aurora.Disktop.Controls
         protected override void DrawContentString()
         {
             var content = this.content.ToString();
-            var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.Font.Size ;
+            var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.Font.Size;
 
             var size = this.Renderer.MeasureString(this.Font, content) * fontSize;
             var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
@@ -51,6 +46,28 @@ namespace Aurora.Disktop.Controls
 
 
 
+
+
+        /// <summary>
+        /// 计算自动大小
+        /// </summary>
+        /// <returns></returns>
+        protected override void CalcAutoSize()
+        {
+            if (this.NeedCalcAutoHeight)
+            {
+                this.globalBounds.Height = 20;
+            }
+            if (this.NeedCalcAutoWidth && this.Font != null)
+            {
+                var content = this.content.ToString();
+                var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.Font.Size;
+                var size = this.Renderer.MeasureString(this.Font, content) * fontSize;
+                var px = size + new Vector2(this.Padding.Left + this.Padding.Right + this.Height, 0);
+                this.globalBounds.Width = (Int32)px.X;
+            }
+        }
+
         protected override void OnMouseUp(MouseButtons button, Point point)
         {
             if (button == MouseButtons.Left)
@@ -58,6 +75,7 @@ namespace Aurora.Disktop.Controls
                 if (this.GlobalBounds.Contains(point) && this.Enabled)
                 {
                     this.Value = !this.Value;
+                    this.Click?.Invoke(this);
                 }
             }
             base.OnMouseUp(button, point);
@@ -65,7 +83,7 @@ namespace Aurora.Disktop.Controls
 
 
 
-        public new XamlClickEventHandler<CheckBox> Click;
+        public event XamlClickEventHandler<CheckBox> Click;
 
         public SimpleTexture Icon;
 

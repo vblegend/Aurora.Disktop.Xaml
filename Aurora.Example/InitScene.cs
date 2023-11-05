@@ -19,11 +19,12 @@ namespace Aurora.Example
             try
             {
                 this.LoadXamlFromFile("Xaml\\ui.xml");
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Trace.WriteLine(ex.ToString());
             }
-    
+
 
 
 
@@ -118,6 +119,40 @@ namespace Aurora.Example
         {
             Trace.WriteLine("Image Click事件触发");
         }
+
+
+        public void Debuging_Click(CheckBox sender)
+        {
+            this.Debuging = sender.Value;
+        }
+
+
+        public void FullScreen_Click(CheckBox sender)
+        {
+            var _graphics = AuroraState.Services.GetService<GraphicsDeviceManager>();
+            _graphics.IsFullScreen = sender.Value;
+            //_graphics.PreferredBackBufferWidth = 1440;
+            //_graphics.PreferredBackBufferHeight = 900;
+            _graphics.ApplyChanges();
+        }
+
+
+        public void PBAdd_Click(Button sender)
+        {
+            var hp = this.Query<ProgressBar>("Status/HP");
+            var mp = this.Query<ProgressBar>("Status/MP");
+            hp.Value += Math.Min(hp.MaxValue - hp.Value, Random.Shared.Next(0, 40));
+            mp.Value += Math.Min(mp.MaxValue - mp.Value, Random.Shared.Next(0, 40));
+        }
+        public void PBDec_Click(Button sender)
+        {
+            var hp = this.Query<ProgressBar>("Status/HP");
+            var mp = this.Query<ProgressBar>("Status/MP");
+            hp.Value -= Math.Min(hp.Value, Random.Shared.Next(0, 40));
+            mp.Value -= Math.Min(mp.Value, Random.Shared.Next(0, 40));
+        }
+
+
 
     }
 }
