@@ -6,7 +6,7 @@ namespace Aurora.Disktop.Xaml.Converters
     [XamlConverter(typeof(Thickness))]
     internal class ThicknessConverter : IXamlPropertyConverter
     {
-        public Object? Convert(Type propertyType, string value)
+        public Object Convert(Type propertyType, string value)
         {
             var tokens = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
             if (tokens.Length == 1)

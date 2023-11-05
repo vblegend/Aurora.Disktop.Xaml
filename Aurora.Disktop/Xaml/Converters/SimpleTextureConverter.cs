@@ -8,7 +8,7 @@ namespace Aurora.Disktop.Xaml.Converters
     [XamlConverter(typeof(SimpleTexture))]
     internal class SimpleTextureConverter : IXamlPropertyConverter
     {
-        public Object? Convert(Type propertyType, string value)
+        public Object Convert(Type propertyType, string value)
         {
             if (String.IsNullOrEmpty(value)) return null;
             if (value.StartsWith("package://"))
@@ -35,7 +35,7 @@ namespace Aurora.Disktop.Xaml.Converters
     [XamlConverter(typeof(SimpleTexture[]))]
     internal class SimpleTextureArrayConverter : IXamlPropertyConverter
     {
-        public Object? Convert(Type propertyType, string value)
+        public Object Convert(Type propertyType, string value)
         {
             if (String.IsNullOrEmpty(value)) return null;
             if (value.StartsWith("package://"))

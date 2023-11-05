@@ -14,24 +14,8 @@ namespace Aurora.Example
 
         }
 
-        //private SimpleTexture dialog { get; set; }
-
-        //private SimpleTexture texture { get; set; }
-        //private SimpleTexture effectTexture { get; set; }
-
-        //private TargetTexture target { get; set; }
-
-
-        //private Effect disableEffect { get; set; }
-
         protected override async Task OnInitialize()
         {
-            //this.dialog  = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000193.png");
-            //this.texture = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0004834.png");
-            //this.effectTexture = SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000889.png");
-            //var targetTmp = this.Renderer.CreateRenderTarget(128, 64);
-            //this.target = this.Renderer.CreateRenderTarget(128, 64);
-
             try
             {
                 this.LoadXamlFromFile("Xaml\\ui.xml");
@@ -66,31 +50,6 @@ namespace Aurora.Example
             //    //this.Renderer.SetBlendState(null, null);
             //    this.Renderer.Draw(targetTmp, new Vector2(64, 0), Color.White);
             //}
-
-            //var window = this.Add(new Window());
-            //window.Name = "Window-测试";
-            //window.Location = new Point(100,100);
-            //window.Size = new Point(400,200);
-            //window.Background = new UIBrush()
-            //{
-            //    Texture = this.dialog
-            //};
-
-
-            //var button1 = window.Add(new Button());
-            //button1.Name = "Button-正常";
-            //button1.Location = new Point(0, 0);
-            ////button1.Size = new Point(100, 100);
-            //button1.SetTheme(SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000112.png"));
-
-            //var button2 = window.Add(new Button());
-            //button2.Name = "Button-禁用";
-            //button2.Location = new Point(100, 100);
-            ////button2.Size = new Point(100, 100);
-            //button2.SetTheme(SimpleTexture.FromFile(this.Renderer.GraphicsDevice, @"D:\game_root\0000112.png"));
-            //button2.Disabled = true;
-
-
         }
 
 
@@ -143,11 +102,6 @@ namespace Aurora.Example
 
         }
 
-        protected override void OnDrawing(GameTime gameTime)
-        {
-
-
-        }
         protected override async Task OnUnInitialize()
         {
 
@@ -157,9 +111,13 @@ namespace Aurora.Example
 
         public void Button_Click(Button sender)
         {
-            Trace.WriteLine("按钮事件触发");
+            Trace.WriteLine("Button Click事件触发");
         }
 
+        public void Image_Click(Image sender)
+        {
+            Trace.WriteLine("Image Click事件触发");
+        }
 
     }
 }

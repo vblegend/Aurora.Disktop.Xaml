@@ -12,7 +12,7 @@ namespace Aurora.Disktop.Common
         private Dictionary<String, ResourcePackage> keyValuePairs = new Dictionary<String, ResourcePackage>();
 
 
-        public ResourcePackage? this[String packageName]
+        public ResourcePackage this[String packageName]
         {
             get
             {

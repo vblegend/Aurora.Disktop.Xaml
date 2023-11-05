@@ -6,7 +6,7 @@ namespace Aurora.Disktop.Xaml.Converters
     [XamlConverter(typeof(Boolean))]
     internal class BooleanConverter : IXamlPropertyConverter
     {
-        public Object? Convert(Type propertyType, string value)
+        public Object Convert(Type propertyType, string value)
         {
             if (value == null) throw new Exception();
             if (value == "True") return true;
@@ -21,7 +21,7 @@ namespace Aurora.Disktop.Xaml.Converters
     [XamlConverter(typeof(Boolean?))]
     internal class BooleanNullableConverter : IXamlPropertyConverter
     {
-        public Object? Convert(Type propertyType, string value)
+        public Object Convert(Type propertyType, string value)
         {
             if (value == null) throw new Exception();
             if (value == "True") return true;

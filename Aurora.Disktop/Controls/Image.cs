@@ -58,11 +58,21 @@ namespace Aurora.Disktop.Controls
         }
 
 
+        protected override void OnMouseUp(MouseButtons button, Point point)
+        {
+            if (button == MouseButtons.Left)
+            {
+                if (this.GlobalBounds.Contains(point) && this.Enabled)
+                {
+                    this.Click?.Invoke(this);
+                }
 
+            }
+        }
 
 
         // Declare the event.
-        public event XamlClickEventHandler<Button> Click;
+        public event XamlClickEventHandler<Image> Click;
 
         private SimpleTexture texture;
 

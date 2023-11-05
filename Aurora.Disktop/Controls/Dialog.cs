@@ -17,13 +17,11 @@ namespace Aurora.Disktop.Controls
 
 
 
+
         protected override void OnRender(GameTime gameTime)
         {
             base.OnRender(gameTime);
         }
-
-
-
 
         protected override void OnMouseDown(MouseButtons button, Point point)
         {
@@ -105,20 +103,17 @@ namespace Aurora.Disktop.Controls
         /// <summary>
         /// 固定对话框，不可移动
         /// </summary>
-        public Boolean Pinned { get; set; }
+        public Boolean Pinned = false;
 
         /// <summary>
         /// 对话框获取焦点后自动置顶
         /// </summary>
-        public Boolean AutoTop { get; set; }
+        public Boolean AutoTop = true;
 
 
         private Point? dropPosition;
 
-        /// <summary>
-        /// 命中过滤器
-        /// </summary>
-        private Boolean HitFilter { get; set; }
+
 
         // Declare the event.
         public event XamlClickEventHandler<Dialog> Click;

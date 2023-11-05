@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SpriteFontPlus;
-
-
-
+using System.Diagnostics;
 
 namespace Aurora.Disktop.Graphics
 {
@@ -17,7 +15,7 @@ namespace Aurora.Disktop.Graphics
 
         public struct ContextState
         {
-            public ContextState(SpriteSortMode sortMode, BlendState? blending, Effect? effect, Boolean beginCalled)
+            public ContextState(SpriteSortMode sortMode, BlendState blending, Effect effect, Boolean beginCalled)
             {
                 this.Effect = effect;
                 this.BeginCalled = beginCalled;
@@ -25,8 +23,8 @@ namespace Aurora.Disktop.Graphics
                 this.Blending = blending;
 
             }
-            public readonly BlendState? Blending;
-            public readonly Effect? Effect;
+            public readonly BlendState Blending;
+            public readonly Effect Effect;
             public readonly SpriteSortMode SortMode;
             public readonly Boolean BeginCalled;
         }
@@ -38,9 +36,9 @@ namespace Aurora.Disktop.Graphics
 
         private BasicEffect _basicEffect { get; set; }
 
-        private BlendState? currentBlending { get; set; } = null;
+        private BlendState currentBlending { get; set; } = null;
 
-        private Effect? currentEffect { get; set; } = null;
+        private Effect currentEffect { get; set; } = null;
 
         private SpriteSortMode currentSortMode { get; set; } = SpriteSortMode.Deferred;
 
@@ -89,7 +87,7 @@ namespace Aurora.Disktop.Graphics
         }
 
 
-        public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState? blendState = null, Effect? effect = null)
+        public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, Effect effect = null)
         {
             if (!this._beginCalled)
             {
@@ -102,8 +100,47 @@ namespace Aurora.Disktop.Graphics
         }
 
 
+        public ContextState? SetState(SpriteSortMode sortMode = SpriteSortMode.Deferred)
+        {
+            if (sortMode != currentSortMode)
+            {
+                var state = new ContextState(currentSortMode, currentBlending, currentEffect, this._beginCalled);
+                if (this._beginCalled) this.End();
+                this.currentSortMode = sortMode;
+                this.Begin(sortMode: currentSortMode, blendState: currentBlending, effect: currentEffect);
+                return state;
+            }
+            return null;
+        }
 
-        public ContextState? SetState(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState? blendState = null, Effect? effect = null)
+
+        public ContextState? SetState(Effect effect = null)
+        {
+            if (effect != currentEffect)
+            {
+                var state = new ContextState(currentSortMode, currentBlending, currentEffect, this._beginCalled);
+                if (this._beginCalled) this.End();
+                this.currentEffect = effect;
+                this.Begin(sortMode: currentSortMode, blendState: currentBlending, effect: effect);
+                return state;
+            }
+            return null;
+        }
+
+        public ContextState? SetState(BlendState blendState = null)
+        {
+            if (blendState != currentBlending)
+            {
+                var state = new ContextState(currentSortMode, currentBlending, currentEffect, this._beginCalled);
+                if (this._beginCalled) this.End();
+                this.currentBlending = blendState;
+                this.Begin(sortMode: currentSortMode, blendState: currentBlending, effect: currentEffect);
+                return state;
+            }
+            return null;
+        }
+
+        public ContextState? SetState(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, Effect effect = null)
         {
             if (blendState != currentBlending || effect != currentEffect || sortMode != currentSortMode)
             {
@@ -124,10 +161,11 @@ namespace Aurora.Disktop.Graphics
         {
             var result = new ContextState(this.currentSortMode, this.currentBlending, this.currentEffect, this._beginCalled);
             if (this._beginCalled) this.End();
-
             return result;
         }
 
+
+ 
 
 
 
@@ -145,7 +183,7 @@ namespace Aurora.Disktop.Graphics
 
 
 
-        public BlendState? End()
+        public BlendState End()
         {
             if (this._beginCalled)
             {
@@ -162,7 +200,7 @@ namespace Aurora.Disktop.Graphics
 
 
 
-        public Boolean PushState(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState? blendState = null, Effect? effect = null)
+        public Boolean PushState(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, Effect effect = null)
         {
             if (blendState != currentBlending || effect != currentEffect || sortMode != currentSortMode)
             {
@@ -212,8 +250,10 @@ namespace Aurora.Disktop.Graphics
             var tex = sprite.Texture.Tex();
             if (tex != null)
             {
+                var state = this.SetState(sprite.Texture.BlendState);
                 var sourceRectangle = sprite.GetFrameRectangle(index);
                 this.SpriteBatch.Draw(tex, position + sprite.Texture.Offset, sourceRectangle, color);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -222,8 +262,10 @@ namespace Aurora.Disktop.Graphics
             var tex = sprite.Texture.Tex();
             if (tex != null)
             {
+                var state = this.SetState(sprite.Texture.BlendState);
                 var sourceRectangle = sprite.GetFrameRectangle(index);
                 this.SpriteBatch.Draw(tex, destinationRectangle.Add(sprite.Texture.Offset), sourceRectangle, color);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -233,7 +275,9 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
+                var state = this.SetState(context.BlendState);
                 this.SpriteBatch.Draw(tex, position + context.Offset, color);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -242,7 +286,9 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
+                var state = this.SetState(context.BlendState);
                 this.SpriteBatch.Draw(tex, position + context.Offset, sourceRectangle, color);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Color color)
@@ -250,8 +296,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
+                var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, color);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color)
@@ -259,8 +307,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
+                var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, sourceRectangle, color);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Color color, float rotation, Vector2 origin)
@@ -268,8 +318,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
+                var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, tex.Bounds, color, rotation, origin, SpriteEffects.None, 0);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin)
@@ -277,8 +329,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
+                var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, sourceRectangle, color, rotation, origin, SpriteEffects.None, 0);
+                if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -294,6 +348,7 @@ namespace Aurora.Disktop.Graphics
         public void DrawTitle(ITexture texure, Rectangle Destination, Color color)
         {
             var tex = texure.Tex();
+            var state = this.SetState(texure.BlendState);
             Point Local = new Point(Destination.Left, Destination.Top);
             while (true)
             {
@@ -317,6 +372,7 @@ namespace Aurora.Disktop.Graphics
                 Local.X = Destination.Left;
                 if (Local.Y >= Destination.Bottom) break;
             }
+            if (state != null) this.RestoreState(state.Value);
         }
 
 
@@ -330,6 +386,7 @@ namespace Aurora.Disktop.Graphics
         public void DrawTitle(ITexture texure, Rectangle Destination, Rectangle srcRect, Color color)
         {
             var tex = texure.Tex();
+            var state = this.SetState(texure.BlendState);
             Point Local = new Point(Destination.Left, Destination.Top);
             while (true)
             {
@@ -353,6 +410,7 @@ namespace Aurora.Disktop.Graphics
                 Local.X = Destination.Left;
                 if (Local.Y >= Destination.Bottom) break;
             }
+            if (state != null) this.RestoreState(state.Value);
         }
 
 
@@ -365,7 +423,7 @@ namespace Aurora.Disktop.Graphics
             // 计算边框的大小
             Point borderSize = new Point(texure.Width / 3, texure.Height / 3);
             var tex = texure.Tex();
-
+            var state = this.SetState(texure.BlendState);
             // 绘制九宫格的四个角
             this.SpriteBatch.Draw(tex, new Rectangle(dest.X, dest.Y, borderSize.X, borderSize.Y), new Rectangle(0, 0, borderSize.X, borderSize.Y), Color.White);
             this.SpriteBatch.Draw(tex, new Rectangle(dest.X + dest.Width - borderSize.X, dest.Y, borderSize.X, borderSize.Y), new Rectangle(tex.Width - borderSize.X, 0, borderSize.X, borderSize.Y), Color.White);
@@ -397,27 +455,31 @@ namespace Aurora.Disktop.Graphics
                     this.SpriteBatch.Draw(tex, new Rectangle(x, y, width, height), new Rectangle(borderSize.X, borderSize.Y, width, height), Color.White);
                 }
             }
+            if (state != null) this.RestoreState(state.Value);
         }
 
 
 
         public float DrawString(DynamicSpriteFont font, string _string_, Vector2 pos, Color color)
         {
-            //this.SetState();
-            return font.DrawString(this.SpriteBatch, _string_, pos, color);
+            var state = this.SetState(blendState: null);
+            var val = font.DrawString(this.SpriteBatch, _string_, pos, color);
+            if (state != null) this.RestoreState(state.Value);
+            return val;
         }
 
 
         public float DrawString(DynamicSpriteFont font, string _string_, Vector2 pos, Color color, Vector2 scale)
         {
-            //this.SetState();
-            return font.DrawString(this.SpriteBatch, _string_, pos, color, scale);
+            var state = this.SetState(blendState: null);
+            var val = font.DrawString(this.SpriteBatch, _string_, pos, color, scale);
+            if (state != null) this.RestoreState(state.Value);
+            return val;
         }
 
         public Vector2 MeasureString(DynamicSpriteFont font, string text)
         {
             return font.MeasureString(text);
-
         }
 
         public Rectangle GetTextBounds(DynamicSpriteFont font, Vector2 position, string text)

@@ -64,7 +64,7 @@ namespace Aurora.Disktop.Xaml
                     var attribute = type.GetCustomAttribute<XamlConverterAttribute>();
                     if (attribute != null && type.IsClass && type.GetInterface(typeof(IXamlPropertyConverter).Name) != null && type.GetConstructor(Type.EmptyTypes) != null)
                     {
-                        var converter = (IXamlPropertyConverter?)Activator.CreateInstance(type);
+                        var converter = (IXamlPropertyConverter)Activator.CreateInstance(type);
                         if (converter != null)
                         {
                             this.XamlConverters.Add(attribute.TargetType, converter);
@@ -90,7 +90,7 @@ namespace Aurora.Disktop.Xaml
             }
         }
 
-        public Type? ResolveXamlComponent(String xmlns, String type)
+        public Type ResolveXamlComponent(String xmlns, String type)
         {
             if (xmlnsMap.TryGetValue(xmlns, out var map))
             {
@@ -102,7 +102,7 @@ namespace Aurora.Disktop.Xaml
             return null;
         }
 
-        public IXamlPropertyConverter? ResolveXamlConverter(Type typed)
+        public IXamlPropertyConverter ResolveXamlConverter(Type typed)
         {
             if (typed.IsEnum) typed = typeof(Enum);
             if (this.XamlConverters.TryGetValue(typed, out var value))

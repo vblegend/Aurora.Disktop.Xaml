@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aurora.Disktop", "Aurora.Di
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Document", "Document", "{DF2B47D8-9D24-4418-A0A7-0881284A7B89}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		readme.md = readme.md
 	EndProjectSection
 EndProject

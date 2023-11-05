@@ -1,5 +1,8 @@
 ﻿
 
+using Microsoft.Xna.Framework;
+
+
 namespace Aurora.Disktop.Common
 {
 
@@ -55,7 +58,30 @@ namespace Aurora.Disktop.Common
     }
 
 
+    public class Sized
+    {
+        public Int32 Width;
+        public Int32 Height;
 
+
+
+
+        public Boolean AutoWidth { get; private set; }
+        public Boolean AutoHeight { get; private set; }
+
+
+
+
+        public Point ToPoint()
+        {
+            return new Point(Width, Height);
+        }
+
+        public Vector2 ToVector2()
+        {
+            return new Vector2(Width, Height);
+        }
+    }
 
 
 }

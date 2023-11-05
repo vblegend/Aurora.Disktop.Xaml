@@ -3,12 +3,19 @@
 
 namespace Aurora.Disktop.Common
 {
+
+    /// <summary>
+    /// Xaml Component
+    /// </summary>
     public interface IXamlComponent
     {
     }
 
 
 
+    /// <summary>
+    /// Xaml UI Control
+    /// </summary>
     public interface IXamlControl : IXamlComponent
     {
     }
@@ -16,4 +23,5 @@ namespace Aurora.Disktop.Common
 
 
     public delegate void XamlClickEventHandler<T>(T sender) where T : Control;
+    public delegate void XamlCheckedEventHandler<T>(T sender,Boolean value) where T : Control;
 }

@@ -29,9 +29,8 @@ namespace Aurora.Disktop.Common
 
 
 
-        public SimpleTexture? Read(Int32 index)
+        public SimpleTexture Read(Int32 index)
         {
-
             var device = AuroraState.Services.GetService<GraphicsDevice>();
             var node = this.assetFileStream.Read((UInt32)index);
             if (node != null)
@@ -40,6 +39,7 @@ namespace Aurora.Disktop.Common
                 {
                     var texture = SimpleTexture.FromStream(device, ms);
                     texture.Offset = new Microsoft.Xna.Framework.Vector2(node.OffsetX, node.OffsetY);
+                    texture.BlendState = node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal? null : BlendState.Additive;
                     return texture;
                 }
             }
@@ -59,6 +59,7 @@ namespace Aurora.Disktop.Common
                     {
                         result[i] = SimpleTexture.FromStream(device, ms);
                         result[i].Offset = new Microsoft.Xna.Framework.Vector2(node.OffsetX, node.OffsetY);
+                        result[i].BlendState = node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal ? null : BlendState.Additive;
                     }
                 }
             }
@@ -68,7 +69,7 @@ namespace Aurora.Disktop.Common
 
 
 
-        public Texture2D? Read2D(Int32 index)
+        public Texture2D Read2D(Int32 index)
         {
 
             var device = AuroraState.Services.GetService<GraphicsDevice>();

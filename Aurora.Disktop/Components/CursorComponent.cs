@@ -110,7 +110,6 @@ namespace Aurora.Disktop.Services
             if (currentIndex >= 0 && currentIndex < this.textures.Length)
             {
                 var texture = this.textures[currentIndex];
-                this.window.GraphicContext.SetState();
                 this.window.GraphicContext.Draw(texture, this.position, Color.White);
             }
         }

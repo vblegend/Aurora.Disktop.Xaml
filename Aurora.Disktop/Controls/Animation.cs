@@ -38,7 +38,6 @@ namespace Aurora.Disktop.Controls
             base.OnRender(gameTime);
             if (this.textures != null)
             {
-                var state = this.Renderer.PushState(blendState: Microsoft.Xna.Framework.Graphics.BlendState.Additive);
                 var texture = this.textures[this.currentIndex];
                 if (this.FillMode == FillMode.None)
                 {
@@ -57,7 +56,6 @@ namespace Aurora.Disktop.Controls
                 {
                     this.Renderer.DrawTitle(texture, this.GlobalBounds, Color.White);
                 }
-                if (state) this.Renderer.PopState();
             }
         }
 
@@ -83,11 +81,21 @@ namespace Aurora.Disktop.Controls
         }
 
 
+        protected override void OnMouseUp(MouseButtons button, Point point)
+        {
+            if (button == MouseButtons.Left)
+            {
+                if (this.GlobalBounds.Contains(point) && this.Enabled)
+                {
+                    this.Click?.Invoke(this);
+                }
 
+            }
+        }
 
 
         // Declare the event.
-        public event XamlClickEventHandler<Button> Click;
+        public event XamlClickEventHandler<Animation> Click;
 
         private SimpleTexture[] textures;
 

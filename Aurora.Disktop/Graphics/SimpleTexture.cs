@@ -11,11 +11,13 @@ namespace Aurora.Disktop.Graphics
         {
             this.device = graphics;
         }
-        protected Texture2D? tex { get; set; }
+        protected Texture2D tex { get; set; }
 
         public  Vector2 Offset;
 
-        public abstract Texture2D? Tex();
+        public BlendState BlendState;
+
+        public abstract Texture2D Tex();
 
         public GraphicsDevice device { get; private set; }
 
@@ -110,7 +112,7 @@ namespace Aurora.Disktop.Graphics
             return context;
         }
 
-        public override Texture2D? Tex()
+        public override Texture2D Tex()
         {
             return this.tex;
         }
@@ -150,7 +152,7 @@ namespace Aurora.Disktop.Graphics
         }
 
 
-        public override RenderTarget2D? Tex()
+        public override RenderTarget2D Tex()
         {
             return this.tex as RenderTarget2D;
         }

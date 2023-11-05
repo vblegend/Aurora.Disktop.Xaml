@@ -14,7 +14,7 @@ namespace Aurora.Disktop
         public GraphicsDeviceManager Graphics { get; private set; }
         public SdlIMEHandler ImeHandler { get; private set; }
         public GraphicContext GraphicContext { get; private set; }
-        public PlayScene? Scene { get; private set; }
+        public PlayScene Scene { get; private set; }
         public SimpleFpsCounter FpsCounter { get; private set; }
         // resources
         public DynamicSpriteFont Font { get; set; }
@@ -49,7 +49,7 @@ namespace Aurora.Disktop
             Window.TextInput += Window_TextInput;
         }
 
-        private void Window_TextInput(object? sender, Microsoft.Xna.Framework.TextInputEventArgs e)
+        private void Window_TextInput(object sender, Microsoft.Xna.Framework.TextInputEventArgs e)
         {
             if (this.Scene is KeyboardEvent @event)
             {
@@ -57,7 +57,7 @@ namespace Aurora.Disktop
             }
         }
 
-        private void Window_KeyUp(object? sender, InputKeyEventArgs e)
+        private void Window_KeyUp(object sender, InputKeyEventArgs e)
         {
             if (this.Scene is KeyboardEvent @event)
             {
@@ -65,7 +65,7 @@ namespace Aurora.Disktop
             }
         }
 
-        private void Window_KeyDown(object? sender, InputKeyEventArgs e)
+        private void Window_KeyDown(object sender, InputKeyEventArgs e)
         {
             if (this.Scene is KeyboardEvent @event)
             {
@@ -98,7 +98,7 @@ namespace Aurora.Disktop
                 this.Scene = null;
                 scene?.UnInitialize();
             }
-            scene = (T?)Activator.CreateInstance(typeof(T), new Object[] { this });
+            scene = (T)Activator.CreateInstance(typeof(T), new Object[] { this });
             if (scene != null)
             {
                 await scene.Initialize();

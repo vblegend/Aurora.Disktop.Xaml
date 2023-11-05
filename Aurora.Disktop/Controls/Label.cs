@@ -12,11 +12,5 @@ namespace Aurora.Disktop.Controls
             this.HorizontalContentAlignment = HorizontalAlignment.Left;
             this.VerticalContentAlignment = VerticalAlignment.Top;
         }
-        protected override void OnRender(GameTime gameTime)
-        {
-            
-            base.OnRender(gameTime);
-        }
-        
     }
 }

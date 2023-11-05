@@ -50,15 +50,7 @@ namespace Aurora.Disktop
         protected abstract Task OnUnInitialize();
 
 
-        protected abstract void OnUpdate(GameTime gameTime);
-
-        protected abstract void OnDrawing(GameTime gameTime);
-
-        //protected abstract void OnEnterScene();
-
-        //protected abstract void OnLeaveScene();
-
-        private void Window_ClientSizeChanged(object? sender, EventArgs e)
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
         {
 
         }
@@ -120,7 +112,7 @@ namespace Aurora.Disktop
         }
 
 
-
+        public Boolean Debuging;
         public DynamicSpriteFont DefaultFont { get; set; }
     }
 }

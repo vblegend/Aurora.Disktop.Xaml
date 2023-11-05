@@ -1,5 +1,7 @@
 ﻿using Aurora.Disktop.Common;
+using Aurora.Disktop.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,7 @@ namespace Aurora.Disktop.Controls
     {
         T Add<T>(T control) where T : Control;
         void Remove(Control control);
-        Control? this[Int32 index] { get; }
+        Control this[Int32 index] { get; }
         Int32 Count { get; }
         Int32 IndexOf(Control control);
     }
@@ -36,7 +38,7 @@ namespace Aurora.Disktop.Controls
             this.Children = new List<Control>();
         }
         public List<Control> Children { get; protected set; }
-        public Control? this[int index] => this.Children[index];
+        public Control this[int index] => this.Children[index];
         public int Count => this.Children.Count;
         public T Add<T>(T control) where T : Control
         {
@@ -83,7 +85,11 @@ namespace Aurora.Disktop.Controls
         /// <param name="gameTime"></param>
         void IRenderable.ProcessRender(GameTime gameTime)
         {
+            var effect = !this.Enabled ? Effects.Disabled : null;
+            GraphicContext.ContextState? state = this.Renderer.SetState(effect);
             this.OnRender(gameTime);
+            if (state.HasValue) this.Renderer.RestoreState(state.Value);
+ 
             for (int i = 0; i < this.Children.Count; i++)
             {
                 var child = this.Children[i];
@@ -95,7 +101,7 @@ namespace Aurora.Disktop.Controls
             this.DrawDebugBounds();
         }
 
-        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force = false)
+        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)
         {
             if (this.CalcGlobalBounds() || force)
             {
@@ -111,7 +117,7 @@ namespace Aurora.Disktop.Controls
         }
 
         #region IQuery
-        public new Control? this[string name]
+        public new Control this[string name]
         {
             get
             {

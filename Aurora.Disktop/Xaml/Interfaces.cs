@@ -16,7 +16,7 @@ namespace Aurora.Disktop.Xaml
 
     public interface IXamlPropertyConverter
     {
-        public Object? Convert(Type propertyType, String value);
+        public Object Convert(Type propertyType, String value);
 
     }
 

@@ -66,7 +66,7 @@ namespace Aurora.Disktop.Xaml
             if (element.LocalName.Contains(".")) return;
             var typedName = element.Name;
             // Control 抽象接口， 这里返回接口处理组件或其他模块
-            IXamlComponent? component = GenerateComponent(element.LocalName, element.NamespaceURI);
+            IXamlComponent component = GenerateComponent(element.LocalName, element.NamespaceURI);
             if (component is IXamlHandler pipeline)
             {
                 pipeline.Process(this.Host, this.bindContext, parent, element);
@@ -119,7 +119,7 @@ namespace Aurora.Disktop.Xaml
                     var typed = this.typedResolver.ResolveXamlComponent(namespaceUrl, attribute.LocalName);
                     if (typed != null)
                     {
-                        var component = (IXamlComponent?)Activator.CreateInstance(typed);
+                        var component = (IXamlComponent)Activator.CreateInstance(typed);
                         if (component is IXamlHandler handler)
                         {
                             handler.Process(this.Host, this.bindContext, control, attribute);
@@ -189,12 +189,12 @@ namespace Aurora.Disktop.Xaml
             Trace.WriteLine($"Unknown Namespace: {attribute.NamespaceURI} Property: {attribute.LocalName}");
         }
 
-        private IXamlComponent? GenerateComponent(String typeName, String namespaceURI)
+        private IXamlComponent GenerateComponent(String typeName, String namespaceURI)
         {
             var typed = this.typedResolver.ResolveXamlComponent(namespaceURI, typeName);
             if (typed != null && typed.GetConstructor(Array.Empty<Type>()) != null)
             {
-                return (IXamlComponent?)Activator.CreateInstance(typed);
+                return (IXamlComponent)Activator.CreateInstance(typed);
             }
             return null;
         }

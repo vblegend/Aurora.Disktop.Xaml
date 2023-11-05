@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Aurora.Disktop.Graphics
 {
@@ -86,6 +86,7 @@ namespace Aurora.Disktop.Graphics
         }
         public void Draw(GraphicContext context, Rectangle destrect, Color color)
         {
+         //   var state = context.PushState(blendState: BlendState.Additive);
             if (FillMode == FillMode.Tile)
             {
                 context.DrawTitle(this.Texture, destrect, color);
@@ -103,6 +104,7 @@ namespace Aurora.Disktop.Graphics
                 var pos = destrect.Location - this.Texture.SourceRect.Center;
                 context.Draw(this.Texture, pos.ToVector2(), color);
             }
+         //   if (state) context.PopState();
         }
     }
 
@@ -121,11 +123,11 @@ namespace Aurora.Disktop.Graphics
 
         public void Draw(GraphicContext context, Rectangle destrect, Color color)
         {
-            if (destrect.Width < this.Texture.Width || destrect.Height < this.Texture.Height)
-            {
-                context.Draw(this.Texture, destrect, color);
-                return;
-            }
+            //if (destrect.Width < this.Texture.Width || destrect.Height < this.Texture.Height)
+            //{
+            //    context.Draw(this.Texture, destrect, color);
+            //    return;
+            //}
             context.DrawNineSlice(this.Texture, destrect);
         }
 

@@ -19,7 +19,6 @@ namespace Aurora.Disktop.Controls
         public Button()
         {
             this.spriteIndex = BUTTON_SPRITE_DEFAULT_INDEX;
-            Console.WriteLine(this.Renderer);
         }
 
 
@@ -67,26 +66,38 @@ namespace Aurora.Disktop.Controls
 
         protected override void OnRender(GameTime gameTime)
         {
-            GraphicContext.ContextState? state = null;
+            var dest = new Rectangle(this.GlobalBounds.Left + this.Padding.Left, this.GlobalBounds.Top + this.Padding.Top, this.GlobalBounds.Width - this.Padding.Right, this.GlobalBounds.Height - this.Padding.Bottom);
+            this.RenderButton(dest);
+
+
+        }
+
+
+        protected void RenderButton(Rectangle rectangle)
+        {
+            //GraphicContext.ContextState? state = null;
             if (!this.Enabled)
             {
                 this.spriteIndex = BUTTON_SPRITE_DISABLED_INDEX;
-                state = this.Renderer.SetState(effect: Effects.Disabled);
+                //state = this.Renderer.SetState(effect: Effects.Disabled);
             }
             // 渲染背景，如果有
             if (this.Background != null)
             {
-                this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
+                this.Background.Draw(Renderer, rectangle, Color.White);
             }
             // 渲染按钮状态
             if (this.sprite != null)
             {
                 var sourceRect = sprite.GetFrameRectangle(this.spriteIndex);
-                this.Renderer.Draw(sprite.Texture, this.GlobalBounds, sourceRect, Color.White);
+                this.Renderer.Draw(sprite.Texture, rectangle, sourceRect, Color.White);
             }
-            if (state.HasValue) this.Renderer.RestoreState(state.Value);
-
+            //if (state.HasValue) this.Renderer.RestoreState(state.Value);
         }
+
+
+
+
         protected override void DrawContentString()
         {
             var content = this.content.ToString();

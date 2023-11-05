@@ -1,6 +1,7 @@
 ﻿using Aurora.Disktop.Common;
 using Aurora.Disktop.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using SpriteFontPlus;
 using System.Diagnostics;
 
@@ -53,7 +54,7 @@ namespace Aurora.Disktop.Controls
         /// <summary>
         /// 布局更新 更新全局位置
         /// </summary>
-        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force = false)
+        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)
         {
             this.CalcGlobalBounds();
         }
@@ -136,13 +137,17 @@ namespace Aurora.Disktop.Controls
         /// <param name="gameTime"></param>
         void IRenderable.ProcessRender(GameTime gameTime)
         {
+            var effect = !this.Enabled ? Effects.Disabled : null;
+            GraphicContext.ContextState? state = this.Renderer.SetState(effect);
             this.OnRender(gameTime);
+            if (state.HasValue) this.Renderer.RestoreState(state.Value);
             this.DrawDebugBounds();
         }
 
 
         protected void DrawDebugBounds()
         {
+            if (!this.Root.Debuging) return;
             if (this.IsFocus)
             {
                 this.Renderer.DrawRectangle(GlobalBounds, Color.Green, 1);
@@ -250,6 +255,7 @@ namespace Aurora.Disktop.Controls
         {
             if (this.Background != null)
             {
+
                 this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
             }
         }
@@ -268,7 +274,7 @@ namespace Aurora.Disktop.Controls
 
 
         #region IQuery
-        public Control? this[string name]
+        public Control this[string name]
         {
             get
             {
@@ -276,10 +282,10 @@ namespace Aurora.Disktop.Controls
             }
         }
 
-        public T? Query<T>(string path) where T : Control
+        public T Query<T>(string path) where T : Control
         {
             var paths = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            Control? control = this;
+            Control control = this;
             foreach (var item in paths)
             {
                 control = control[item];
@@ -300,7 +306,7 @@ namespace Aurora.Disktop.Controls
 
         #endregion
 
-        public DynamicSpriteFont? Font
+        public DynamicSpriteFont Font
         {
             get
             {
@@ -312,21 +318,21 @@ namespace Aurora.Disktop.Controls
             }
         }
 
-        private DynamicSpriteFont? _font;
+        private DynamicSpriteFont _font;
 
 
 
         /// <summary>
         /// 父控件对象
         /// </summary>
-        public Control? Parent;
+        public Control Parent;
 
         /// <summary>
         /// 根对象
         /// </summary>
         public PlayScene Root;
 
-        public IXamlBrush? Background;
+        public IXamlBrush Background;
 
         /// <summary>
         /// 控件名字
@@ -430,10 +436,20 @@ namespace Aurora.Disktop.Controls
             }
             set
             {
+                if (value.X == Int32.MinValue)
+                {
+
+                }
+
                 this.globalBounds.Size = value;
 
             }
         }
+
+        public Boolean AutoWidth { get; private set; }
+        public Boolean AutoHeight { get; private set; }
+
+
 
         /// <summary>
         /// 获取控件宽度

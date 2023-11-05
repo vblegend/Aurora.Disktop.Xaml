@@ -1,5 +1,7 @@
 ﻿using Aurora.Disktop.Common;
+using Aurora.Disktop.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 
 
@@ -15,7 +17,7 @@ namespace Aurora.Disktop.Controls
             this.VerticalContentAlignment = VerticalAlignment.Center;
         }
 
-        protected virtual void OnRender(GameTime gameTime)
+        protected override void OnRender(GameTime gameTime)
         {
             if (this.Background != null)
             {
@@ -42,7 +44,10 @@ namespace Aurora.Disktop.Controls
         /// <param name="gameTime"></param>
         void IRenderable.ProcessRender(GameTime gameTime)
         {
+            var effect = !this.Enabled ? Effects.Disabled : null;
+            GraphicContext.ContextState? state = this.Renderer.SetState(effect);
             this.OnRender(gameTime);
+            if (state.HasValue) this.Renderer.RestoreState(state.Value);
             if (this.content is Control control && control.Visible)
             {
                 if (this.content is IRenderable renderable)
@@ -89,7 +94,7 @@ namespace Aurora.Disktop.Controls
 
 
 
-        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force = false)
+        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)
         {
             if (this.CalcGlobalBounds() || force)
             {
@@ -133,7 +138,7 @@ namespace Aurora.Disktop.Controls
         public VerticalAlignment VerticalContentAlignment { get; set; }
 
 
-        public Object? Content
+        public Object Content
         {
             get
             {
@@ -153,7 +158,7 @@ namespace Aurora.Disktop.Controls
                 }
             }
         }
-        public Object? content;
+        public Object content;
         #endregion
     }
 }

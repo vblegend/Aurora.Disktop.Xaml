@@ -16,17 +16,17 @@ namespace Aurora.Disktop
         /// <summary>
         /// 焦点所在控件
         /// </summary>
-        internal Control? Activeed { get; private set; }
+        internal Control Activeed { get; private set; }
 
         /// <summary>
         /// 鼠标悬停的控件
         /// </summary>
-        internal Control? Hovering { get; private set; }
+        internal Control Hovering { get; private set; }
 
         /// <summary>
         /// 鼠标按下的控件
         /// </summary>
-        internal Control? Pressed { get; private set; }
+        internal Control Pressed { get; private set; }
 
 
         internal List<Control> FocusPath { get; private set; }
@@ -38,7 +38,7 @@ namespace Aurora.Disktop
         }
 
 
-        private Control? ProcessMessage(Control control, EventMessage msg)
+        private Control ProcessMessage(Control control, EventMessage msg)
         {
             if (control == null) return null;
             if (control.IgnoreMouseEvents) return null;
@@ -132,7 +132,10 @@ namespace Aurora.Disktop
 
 
 
-
+        /// <summary>
+        /// 聚焦控件，转移焦点
+        /// </summary>
+        /// <param name="control"></param>
         private void focusControl(Control control)
         {
             if (this.FocusPath.Count > 0 && this.FocusPath[0] == control)
@@ -140,19 +143,16 @@ namespace Aurora.Disktop
                 return;
             }
             var currentPath = this.GetControlPath(control);
-
             foreach (var lostFocus in this.FocusPath.Except(currentPath))
             {
-                Trace.WriteLine($"Focus Lost ({lostFocus.Name})");
+                //Trace.WriteLine($"Focus Lost ({lostFocus.Name})");
                 (lostFocus as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.LOSTFOCUS));
             }
-
             foreach (var gotFocus in currentPath.Except(this.FocusPath).Reverse())
             {
-                Trace.WriteLine($"Focus Got ({gotFocus.Name})");
+                //Trace.WriteLine($"Focus Got ({gotFocus.Name})");
                 (gotFocus as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.GOTFOCUS));
             }
-
             this.FocusPath = currentPath;
         }
 
@@ -219,7 +219,7 @@ namespace Aurora.Disktop
                 {
                     this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_UP, state.Position, MouseButtons.Middle));
                 }
-                this.RightButton = state.RightButton;
+                this.MiddleButton = state.MiddleButton;
             }
             if (!state.Position.Equals(this.MousePosition))
             {

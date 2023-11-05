@@ -18,7 +18,7 @@ namespace Aurora.Disktop
 
 
 
-        public static Effect? Disabled { get; internal set; }
+        public static Effect Disabled { get; internal set; }
 
 
 
@@ -32,7 +32,7 @@ namespace Aurora.Disktop
 
 
 
-        internal static Effect? LoadEffectFromShaders(GraphicsDevice graphicsDevice,String filename)
+        internal static Effect LoadEffectFromShaders(GraphicsDevice graphicsDevice,String filename)
         {
             //var ss = CurrentAssembly.GetManifestResourceNames();
             var streamSmall = CurrentAssembly.GetManifestResourceStream($"Aurora.Disktop.Shaders.{filename}_gl.mgfx");

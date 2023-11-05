@@ -1,20 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-
+using static Aurora.Disktop.Graphics.GraphicContext;
 
 namespace Aurora.Disktop.Graphics
 {
     public class TargetRenderer : IDisposable
     {
-        private GraphicContext? context;
-        private BlendState? originBlendState;
+        private GraphicContext context;
+        private ContextState state;
 
         private RenderTargetBinding[] originTargets;
 
         internal TargetRenderer(GraphicContext context, TargetTexture target)
         {
-            this.originBlendState = context.End();
+            this.state = context.EndState();
             this.context = context;
             this.originTargets = this.context.GraphicsDevice.GetRenderTargets();
             var targets = new RenderTargetBinding[this.originTargets.Length + 1];
@@ -23,8 +22,8 @@ namespace Aurora.Disktop.Graphics
                 Array.Copy(this.originTargets, 0, targets, 1, this.originTargets.Length);
             }
             this.context.GraphicsDevice.SetRenderTargets(targets);
-            this.context.Begin(SpriteSortMode.Immediate);
-            //this.context.GraphicsDevice.Clear(Color.Transparent);
+            this.context.SetState(SpriteSortMode.Immediate);
+            this.context.GraphicsDevice.Clear(Color.Transparent);
         }
 
 
@@ -39,11 +38,10 @@ namespace Aurora.Disktop.Graphics
             {
                 this.context.End();
                 this.context.GraphicsDevice.SetRenderTargets(this.originTargets);
-                this.context.Begin(blendState: this.originBlendState);
+                this.context.RestoreState(this.state);
                 this.context = null;
             }
             this.originTargets = null;
-            this.originBlendState = null;
         }
     }
 }

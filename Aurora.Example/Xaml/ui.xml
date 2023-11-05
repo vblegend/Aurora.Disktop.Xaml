@@ -5,40 +5,49 @@
 	  xmlns:ext="http://schemas.l2030.com/xaml/ui/extends">
 
 
-	<Template.Resource DefaultFont="ttf://./Fonts/汉仪北魏写经.ttf,24">
+	<Template.Resource DefaultFont="ttf://./Fonts/汉仪北魏写经.ttf,24" Debuging="True">
 		<DialogTemplate Id="" Type="Dialog">
 		</DialogTemplate>
 	</Template.Resource>
 
-	<Dialog Name="Window01" Background="package://grid,ui,60" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Margin="300,300,0,0" Size="400,150">
-		<Button Name="Close" Image="package://ui,25,3,1"  Margin="400,0,0,0"   Click="Button_Click" />
-		<Button Name="Btn01" Image="package://ui,38,3,1" TextColor="#e7dbb5" Content="选 择" Margin="48,48,0,0" Size="126,44" Click="Button_Click" />
-		<Button Name="Btn02" Image="package://ui,38,3,1" TextColor="#e7dbb5" Content="禁 用" Margin="200,48,0,0" Size="126,44" Enabled="False" Click="Button_Click" />
+	<Dialog Name="Window01" Background="package://grid,ui,30" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Margin="300,300,0,0" Size="400,150">
+		<Button Name="Close" Image="package://ui,82,3,1"  Margin="0,7,10,0" HorizontalAlignment="Right"  Click="Button_Click" />
+		<Button Name="Btn01" Image="package://ui,66,3,1" TextColor="#e7dbb5" Content="选 择" Margin="48,48,0,0" Size="126,44" Click="Button_Click" />
+		<Button Name="Btn02" Image="package://ui,66,3,1" TextColor="#e7dbb5" Content="禁 用" Margin="200,48,0,0" Size="126,44" Enabled="False" Click="Button_Click" />
+
+
+		<CheckBox Name="CheckBox01"  Image="package://ui,32,3,1" Icon="package://ui,33" Content="记住密码AA"  Margin="100,0,0,20" VerticalAlignment="Bottom"  Size="64,16"   />
+
+		<CheckBox Name="CheckBox01"  Image="package://ui,32,3,1" Icon="package://ui,33" Content="自动捡物"  Margin="200,0,0,20" Value="True" Enabled="False" VerticalAlignment="Bottom"  Size="64,22"   />
+
+
 	</Dialog>
 
 
-	<Dialog Name="Window02" Background="package://texture,ui,37" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Margin="800,230,0,0" Size="300,419">
+	<Dialog Name="Window02" Background="package://texture,ui,48" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Margin="800,230,0,0" Size="309,439">
 		<Label Name="Label01" Content="这是一段字符串" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
 			   TextColor="#e7dbb5" vv="#d6c79c" Margin="48,80,0,0" Size="200,75" />
-		<Label Name="Label02" TextColor="#e7dbb5" Margin="50,191,0,0" Size="200,200" Padding="20,15">
-			<Button Name="LabBtn" Image="package://ui,72,3,1" TextColor="#e7dbb5" Content="选 择" Margin="0,0,0,0" HorizontalAlignment="Stretch"  VerticalAlignment="Top"  Padding="10,5" Click="Button_Click" />
+		<Label Name="Label02" TextColor="#e7dbb5" Margin="50,191,0,0" Size="200,160" Padding="20,15">
+			<Button Name="LabBtn" Image="package://ui,66,3,1" TextColor="#e7dbb5" Content="选 择" Margin="0,0,0,0" HorizontalAlignment="Stretch"  VerticalAlignment="Top"   Click="Button_Click" />
 		</Label>
+		<Button Name="Btn02" Image="package://ui,68,3,1"
+				VerticalAlignment="Bottom"
+			     HorizontalAlignment="Center"
+			Margin="0,0,0,50" Click="Button_Click" />
 	</Dialog>
 
 	<ListBox>
 		<ListBox.Slot>
 			<ScrollBar x:Name="#TMP_VERTICAL" ></ScrollBar>
 			<ScrollBar x:Name="#TMP_HORIZONTAL" ></ScrollBar>
-
-
-
 		</ListBox.Slot>
 	</ListBox>
 
 
 	<sys:Include Url="Xaml/abc.xml" />
-	<Dialog Name="MainConsole" Background="package://grid,ui,71" AutoTop="True" Pinned="True" Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Size="1440,120">
-		<Image Name="Image01" Margin="200,10,0,0" Texture="package://ui,70" FillMode="Tile" Size="100,100" Click="Button_Click" />
+	<Dialog Name="MainConsole" Background="package://grid,ui,30" AutoTop="True" Pinned="True" Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Size="1440,120">
+		<Image Name="Image01" Margin="200,10,0,0" Texture="package://ui,24" FillMode="None" Size="100,100" Click="Image_Click" />
+		<Image Name="Image01" Margin="100,10,0,0" Texture="package://ui,25" FillMode="Stretch" Size="100,100" Click="Image_Click" />
 		<Animation Name="Animation01" Margin="500,10,0,0" Textures="package://ui,0-23" Size="100,100" FillMode="Stretch" Interval="50" ></Animation>
 	</Dialog>
 </Template>
