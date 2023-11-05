@@ -17,11 +17,11 @@
 	</Dialog>
 
 
-	<Dialog Name="Window01" Background="package://texture,ui,37" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Margin="800,230,0,0" Size="300,419">
-		<Label Name="Btn01" Content="这是一段字符串" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+	<Dialog Name="Window02" Background="package://texture,ui,37" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Margin="800,230,0,0" Size="300,419">
+		<Label Name="Label01" Content="这是一段字符串" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
 			   TextColor="#e7dbb5" vv="#d6c79c" Margin="48,80,0,0" Size="200,75" />
-		<Label Name="Btn01" TextColor="#e7dbb5" Margin="50,191,0,0" Size="200,200" Padding="20,15">
-			<Button Name="Btn01" Image="package://ui,72,3,1" TextColor="#e7dbb5" Content="选 择" Margin="0,0,0,0" HorizontalAlignment="Stretch"  VerticalAlignment="Top"  Padding="10,5" Click="Button_Click" />
+		<Label Name="Label02" TextColor="#e7dbb5" Margin="50,191,0,0" Size="200,200" Padding="20,15">
+			<Button Name="LabBtn" Image="package://ui,72,3,1" TextColor="#e7dbb5" Content="选 择" Margin="0,0,0,0" HorizontalAlignment="Stretch"  VerticalAlignment="Top"  Padding="10,5" Click="Button_Click" />
 		</Label>
 	</Dialog>
 
@@ -39,6 +39,6 @@
 	<sys:Include Url="Xaml/abc.xml" />
 	<Dialog Name="MainConsole" Background="package://grid,ui,71" AutoTop="True" Pinned="True" Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Size="1440,120">
 		<Image Name="Image01" Margin="200,10,0,0" Texture="package://ui,70" FillMode="Tile" Size="100,100" Click="Button_Click" />
-		<Animation Margin="500,10,0,0" Textures="package://ui,0-23" Size="100,100" FillMode="Stretch" Interval="50" ></Animation>
+		<Animation Name="Animation01" Margin="500,10,0,0" Textures="package://ui,0-23" Size="100,100" FillMode="Stretch" Interval="50" ></Animation>
 	</Dialog>
 </Template>

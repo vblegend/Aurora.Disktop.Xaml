@@ -35,6 +35,7 @@ namespace Aurora.Disktop
         public PlayScene(PlayWindow Window)
         {
             this.Root = this;
+            this.Name = "ROOT";
             this.Window = Window;
             this.eventManager = new EventProcManager(this);
             this.Window.Window.ClientSizeChanged += Window_ClientSizeChanged;

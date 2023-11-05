@@ -43,9 +43,9 @@ namespace Aurora.Disktop.Controls
             this.Children.Add(control);
             control.Parent = this;
             control.Root = this.Root;
-            if (control is ILayoutUpdatable updatable)
+            if (this is ILayoutUpdatable updatable)
             {
-                updatable.LayoutUpdate(true);
+                updatable.LayoutUpdate(true, true);
             }
             return control;
         }
@@ -59,6 +59,10 @@ namespace Aurora.Disktop.Controls
         {
             this.Children.Remove(control);
             control.Parent = null;
+            if (this is ILayoutUpdatable updatable)
+            {
+                updatable.LayoutUpdate(true);
+            }
         }
 
         void IRenderable.ProcessUpdate(GameTime gameTime)
@@ -88,12 +92,12 @@ namespace Aurora.Disktop.Controls
                     renderable.ProcessRender(gameTime);
                 }
             }
-            this.Renderer.DrawRectangle(GlobalBounds, Color.Red, 1);
+            this.DrawDebugBounds();
         }
 
-        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren)
+        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force = false)
         {
-            if (this.CalcGlobalBounds())
+            if (this.CalcGlobalBounds() || force)
             {
                 for (int i = 0; i < Children.Count; i++)
                 {

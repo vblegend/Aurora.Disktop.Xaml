@@ -30,7 +30,7 @@ namespace Aurora.Disktop.Controls
         /// 
         /// </summary>
         /// <param name="parentPosition">父对象的绝对坐标</param>
-        void LayoutUpdate(Boolean updateChildren);
+        void LayoutUpdate(Boolean updateChildren,Boolean force = false);
     }
 
 
@@ -53,7 +53,7 @@ namespace Aurora.Disktop.Controls
         /// <summary>
         /// 布局更新 更新全局位置
         /// </summary>
-        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren)
+        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force = false)
         {
             this.CalcGlobalBounds();
         }
@@ -137,8 +137,22 @@ namespace Aurora.Disktop.Controls
         void IRenderable.ProcessRender(GameTime gameTime)
         {
             this.OnRender(gameTime);
-            this.Renderer.DrawRectangle(GlobalBounds, Color.Red, 1);
+            this.DrawDebugBounds();
         }
+
+
+        protected void DrawDebugBounds()
+        {
+            if (this.IsFocus)
+            {
+                this.Renderer.DrawRectangle(GlobalBounds, Color.Green, 1);
+            }
+            else
+            {
+                this.Renderer.DrawRectangle(GlobalBounds, Color.Red, 1);
+            }
+        }
+
 
 
         void IXamlEventHandler.MessageHandler(EventMessage msg)
@@ -176,6 +190,20 @@ namespace Aurora.Disktop.Controls
             {
                 this.OnMouseWheel(msg.Location, msg.Wheel);
             }
+
+
+            if (msg.Message == WM_MESSAGE.GOTFOCUS)
+            {
+                this.IsFocus = true;
+                this.OnGotFocus();
+            }
+
+            if (msg.Message == WM_MESSAGE.LOSTFOCUS)
+            {
+                this.IsFocus = false;
+                this.OnLostFocus();
+            }
+
         }
 
 
@@ -291,24 +319,29 @@ namespace Aurora.Disktop.Controls
         /// <summary>
         /// 父控件对象
         /// </summary>
-        public virtual Control? Parent { get; set; }
+        public Control? Parent;
 
         /// <summary>
         /// 根对象
         /// </summary>
-        public PlayScene Root { get; set; }
+        public PlayScene Root;
 
-        public IXamlBrush? Background { get; set; }
+        public IXamlBrush? Background;
 
         /// <summary>
         /// 控件名字
         /// </summary>
-        public String Name { get; set; }
-        public Boolean Visible { get; set; }
-        public Boolean Enabled { get; set; }
-        public Boolean IgnoreMouseEvents { get; set; }
-        public Boolean IgnoreKeyboardEvents { get; set; }
-        public Boolean IsLayoutChanged { get; set; }
+        public String Name  = String.Empty;
+        public Boolean Visible = true;
+        public Boolean Enabled = true;
+        /// <summary>
+        /// 控件是否可聚焦
+        /// </summary>
+        public Boolean Focusable = true;
+        public Boolean IgnoreMouseEvents = false;
+        public Boolean IgnoreKeyboardEvents = false;
+
+
 
 
 
@@ -445,6 +478,8 @@ namespace Aurora.Disktop.Controls
         /// 获取控件是否获得焦点
         /// </summary>
         public Boolean IsFocus { get; private set; }
+
+
 
         /// <summary>
         /// 获取鼠标是否在控件按下

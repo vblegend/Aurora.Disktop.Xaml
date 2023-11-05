@@ -10,7 +10,7 @@ namespace Aurora.Disktop.Controls
     {
         public ContentControl()
         {
-            this.TextColor=  Color.White;   
+            this.TextColor = Color.White;
             this.HorizontalContentAlignment = HorizontalAlignment.Center;
             this.VerticalContentAlignment = VerticalAlignment.Center;
         }
@@ -27,7 +27,7 @@ namespace Aurora.Disktop.Controls
         void IRenderable.ProcessUpdate(GameTime gameTime)
         {
             this.OnUpdate(gameTime);
-            if (this.content is Control control  && control.Visible)
+            if (this.content is Control control && control.Visible)
             {
                 if (this.content is IRenderable renderable)
                 {
@@ -50,11 +50,11 @@ namespace Aurora.Disktop.Controls
                     renderable.ProcessRender(gameTime);
                 }
             }
-            else if(this.content != null)
+            else if (this.content != null)
             {
                 DrawContentString();
             }
-            this.Renderer.DrawRectangle(GlobalBounds, Color.Red, 1);
+            this.DrawDebugBounds();
         }
 
         protected virtual void DrawContentString()
@@ -67,12 +67,13 @@ namespace Aurora.Disktop.Controls
             if (this.HorizontalContentAlignment == HorizontalAlignment.Left)
             {
                 local.X = this.GlobalLocation.X;
-            } else if (this.HorizontalContentAlignment == HorizontalAlignment.Right)
+            }
+            else if (this.HorizontalContentAlignment == HorizontalAlignment.Right)
             {
                 local.X = this.GlobalBounds.Right - size.X;
             }
 
-            if (this.VerticalContentAlignment ==  VerticalAlignment.Top)
+            if (this.VerticalContentAlignment == VerticalAlignment.Top)
             {
                 local.Y = this.GlobalLocation.Y;
             }
@@ -88,9 +89,9 @@ namespace Aurora.Disktop.Controls
 
 
 
-        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren)
+        void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force = false)
         {
-            if (this.CalcGlobalBounds())
+            if (this.CalcGlobalBounds() || force)
             {
                 if (updateChildren && this.content is ILayoutUpdatable updatable)
                 {
@@ -105,11 +106,11 @@ namespace Aurora.Disktop.Controls
         {
             get
             {
-                return  padding;
+                return padding;
             }
             set
             {
-                padding =value;
+                padding = value;
 
             }
         }

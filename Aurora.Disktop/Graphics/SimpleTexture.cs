@@ -25,14 +25,19 @@ namespace Aurora.Disktop.Graphics
         /// 获取纹理大小范围
         /// 这个值是可以改变的
         /// </summary>
-        public Rectangle SourceRect { get; protected set; }
+        public Rectangle SourceRect {
+            get
+            {
+                return this.tex.Bounds;
+            }
+        }
 
 
         public Int32 Width
         {
             get
             {
-                return this.SourceRect.Width;
+                return this.tex.Bounds.Width;
             }
         }
 
@@ -40,7 +45,7 @@ namespace Aurora.Disktop.Graphics
         {
             get
             {
-                return this.SourceRect.Height;
+                return this.tex.Bounds.Height;
             }
         }
 
@@ -72,10 +77,9 @@ namespace Aurora.Disktop.Graphics
         }
 
 
-        private async Task FromStrean(Stream stream)
+        private void FromStrean(Stream stream)
         {
             this.tex = Texture2D.FromStream(this.device, stream, null);
-            this.SourceRect = new Rectangle(0, 0, this.tex.Width, this.tex.Height);
         }
 
 
@@ -84,7 +88,7 @@ namespace Aurora.Disktop.Graphics
         public static SimpleTexture FromStream(GraphicsDevice graphicsDevice, Stream stream)
         {
             var context = new SimpleTexture(graphicsDevice);
-            context.FromStrean(stream).Wait();
+            context.FromStrean(stream);
             return context;
         }
 
@@ -94,7 +98,7 @@ namespace Aurora.Disktop.Graphics
             var context = new SimpleTexture(graphicsDevice);
             using (var fs = File.Open(filename, FileMode.Open, FileAccess.Read))
             {
-                context.FromStrean(fs).Wait();
+                context.FromStrean(fs);
             }
             return context;
         }
@@ -137,10 +141,8 @@ namespace Aurora.Disktop.Graphics
 
         public void Resize(Int32 width, Int32 height)
         {
-
             var raw = this.tex;
             this.tex = new RenderTarget2D(device, width, height);
-            this.SourceRect = new Rectangle(0, 0, width, height);
             if (raw != null)
             {
                 raw.Dispose();

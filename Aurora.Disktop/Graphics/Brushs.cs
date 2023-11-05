@@ -42,7 +42,7 @@ namespace Aurora.Disktop.Graphics
     /// </summary>
     public class ColorBrush : IXamlBrush
     {
-        public Color Color { get; set; }
+        public readonly Color Color;
 
         public ColorBrush(Color color)
         {
@@ -69,7 +69,7 @@ namespace Aurora.Disktop.Graphics
         /// <summary>
         /// 填充模式
         /// </summary>
-        public FillMode FillMode { get; set; }
+        public FillMode FillMode;
 
 
         public readonly SimpleTexture Texture;
@@ -112,13 +112,11 @@ namespace Aurora.Disktop.Graphics
     /// </summary>
     public class NineGridBrush : IXamlBrush
     {
-        private SimpleTexture Texture;
+        private readonly SimpleTexture Texture;
 
         public NineGridBrush(SimpleTexture texture)
         {
             this.Texture = texture;
-            var w = texture.Width / 3;
-            var h = texture.Height / 3;
         }
 
         public void Draw(GraphicContext context, Rectangle destrect, Color color)

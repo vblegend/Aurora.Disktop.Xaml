@@ -2,6 +2,8 @@
 using Aurora.Disktop.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
+using System.Xml.Linq;
 
 
 namespace Aurora.Disktop
@@ -27,9 +29,12 @@ namespace Aurora.Disktop
         internal Control? Pressed { get; private set; }
 
 
+        internal List<Control> FocusPath { get; private set; }
+
         public EventProcManager(Control control)
         {
             this.Root = control;
+            this.FocusPath = new List<Control>();
         }
 
 
@@ -86,6 +91,7 @@ namespace Aurora.Disktop
             // 处理当前控件消息
             if (msg.Message == WM_MESSAGE.MOUSE_DOWN)
             {
+                this.focusControl(control);
                 (control as IXamlEventHandler)?.MessageHandler(msg);
                 this.Pressed = control;
             }
@@ -113,9 +119,42 @@ namespace Aurora.Disktop
         }
 
 
+        private List<Control> GetControlPath(Control control)
+        {
+            var lst = new List<Control>();
+            while (control != null)
+            {
+                lst.Add(control);
+                control = control.Parent;
+            }
+            return lst;
+        }
 
 
 
+
+        private void focusControl(Control control)
+        {
+            if (this.FocusPath.Count > 0 && this.FocusPath[0] == control)
+            {
+                return;
+            }
+            var currentPath = this.GetControlPath(control);
+
+            foreach (var lostFocus in this.FocusPath.Except(currentPath))
+            {
+                Trace.WriteLine($"Focus Lost ({lostFocus.Name})");
+                (lostFocus as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.LOSTFOCUS));
+            }
+
+            foreach (var gotFocus in currentPath.Except(this.FocusPath).Reverse())
+            {
+                Trace.WriteLine($"Focus Got ({gotFocus.Name})");
+                (gotFocus as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.GOTFOCUS));
+            }
+
+            this.FocusPath = currentPath;
+        }
 
 
 
