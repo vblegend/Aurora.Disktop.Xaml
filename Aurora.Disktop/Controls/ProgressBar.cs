@@ -1,4 +1,5 @@
 ﻿using Aurora.Disktop.Common;
+using Aurora.Disktop.Common.Tweens;
 using Aurora.Disktop.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -7,10 +8,15 @@ namespace Aurora.Disktop.Controls
 {
     public class ProgressBar : Control
     {
+
+        public TweenRectangle rectangle = new TweenRectangle();
+
+
         public ProgressBar()
         {
             this.FillMode = FillMode.None;
             this.Style = XamlProgressBarStyle.TopToBottom;
+            this.rectangle.ChangeTo(new Rectangle(), new TimeSpan(0));
         }
 
 
@@ -60,7 +66,7 @@ namespace Aurora.Disktop.Controls
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            //this.Value = ++this.Value % this.MaxValue;
+            if (this.rectangle is ITweenUpdateable tween) tween.Update(gameTime);
         }
 
 
@@ -107,6 +113,7 @@ namespace Aurora.Disktop.Controls
             {
                 this.globalBounds.Width = texture.Width;
             }
+            this.rectangle.ChangeTo(this.globalBounds, new TimeSpan(0));
         }
 
 

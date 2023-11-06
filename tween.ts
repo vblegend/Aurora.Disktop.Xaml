@@ -297,7 +297,7 @@ export namespace Tween {
     };
 
     /**
-     * 插值函数列表类
+     * 插值函数列表类 
      */
     export class Interpolation {
 
