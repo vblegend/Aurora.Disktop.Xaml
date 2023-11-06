@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Aurora.Disktop.Common.Tweens
+﻿namespace Aurora.Disktop.Tweens
 {
-    public delegate Double InterpolationFunction(Double[] v, Double k);
+    public delegate double InterpolationFunction(double[] v, double k);
 
     public class Interpolation
     {
-        public static Double Linear(Double[] v, Double k)
+        public static double Linear(double[] v, double k)
         {
             int m = v.Length - 1;
-            Double f = m * k;
+            double f = m * k;
             int i = (int)f;
 
             if (k < 0)
@@ -26,12 +20,12 @@ namespace Aurora.Disktop.Common.Tweens
                 return UtilsLinear(v[m], v[m - 1], m - f);
             }
 
-            return UtilsLinear(v[i], (i + 1 > m) ? v[m] : v[i + 1], f - i);
+            return UtilsLinear(v[i], i + 1 > m ? v[m] : v[i + 1], f - i);
         }
 
-        public static Double Bezier(Double[] v, Double k)
+        public static double Bezier(double[] v, double k)
         {
-            Double b = 0;
+            double b = 0;
             int n = v.Length - 1;
 
             for (int i = 0; i <= n; i++)
@@ -42,10 +36,10 @@ namespace Aurora.Disktop.Common.Tweens
             return b;
         }
 
-        public static Double CatmullRom(Double[] v, Double k)
+        public static double CatmullRom(double[] v, double k)
         {
             int m = v.Length - 1;
-            Double f = m * k;
+            double f = m * k;
             int i = (int)f;
 
             if (v[0] == v[m])
@@ -79,21 +73,21 @@ namespace Aurora.Disktop.Common.Tweens
             }
         }
 
-        private static Double UtilsLinear(Double p0, Double p1, Double t)
+        private static double UtilsLinear(double p0, double p1, double t)
         {
             return (p1 - p0) * t + p0;
         }
 
-        private static Double UtilsBernstein(int n, int i)
+        private static double UtilsBernstein(int n, int i)
         {
             return UtilsFactorial(n) / (UtilsFactorial(i) * UtilsFactorial(n - i));
         }
 
-        private static Double[] a = new Double[] { 1.0 };
+        private static double[] a = new double[] { 1.0 };
 
-        private static Double UtilsFactorial(int n)
+        private static double UtilsFactorial(int n)
         {
-            Double s = 1.0;
+            double s = 1.0;
             if (a.Length > n)
             {
                 return a[n];
@@ -107,12 +101,12 @@ namespace Aurora.Disktop.Common.Tweens
             return s;
         }
 
-        private static Double UtilsCatmullRom(Double p0, Double p1, Double p2, Double p3, Double t)
+        private static double UtilsCatmullRom(double p0, double p1, double p2, double p3, double t)
         {
-            Double v0 = (p2 - p0) * 0.5;
-            Double v1 = (p3 - p1) * 0.5;
-            Double t2 = t * t;
-            Double t3 = t * t2;
+            double v0 = (p2 - p0) * 0.5;
+            double v1 = (p3 - p1) * 0.5;
+            double t2 = t * t;
+            double t3 = t * t2;
 
             return (2 * p1 - 2 * p2 + v0 + v1) * t3 + (-3 * p1 + 3 * p2 - 2 * v0 - v1) * t2 + v0 * t + p1;
         }

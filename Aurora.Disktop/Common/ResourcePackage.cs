@@ -37,9 +37,11 @@ namespace Aurora.Disktop.Common
             {
                 using (var ms = new MemoryStream(node.Data))
                 {
-                    var texture = SimpleTexture.FromStream(device, ms);
+                    Action<byte[]> processor = null;
+                    processor = DefaultColorProcessors.PremultiplyAlpha;
+                    var texture = SimpleTexture.FromStream(device, ms, processor);
                     texture.Offset = new Microsoft.Xna.Framework.Vector2(node.OffsetX, node.OffsetY);
-                    texture.BlendState = node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal? null : BlendState.Additive;
+                    texture.BlendState = null;// node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal ? null : BlendState.Additive;
                     return texture;
                 }
             }
@@ -57,9 +59,13 @@ namespace Aurora.Disktop.Common
                 {
                     using (var ms = new MemoryStream(node.Data))
                     {
-                        result[i] = SimpleTexture.FromStream(device, ms);
+                        Action<byte[]> processor = null;
+
+                        if (node.lpType == Resource.Package.Assets.Common.ImageTypes.PNG) processor = DefaultColorProcessors.PremultiplyAlpha;
+
+                        result[i] = SimpleTexture.FromStream(device, ms, processor);
                         result[i].Offset = new Microsoft.Xna.Framework.Vector2(node.OffsetX, node.OffsetY);
-                        result[i].BlendState = node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal ? null : BlendState.Additive;
+                        result[i].BlendState = null;//  node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal ? null : BlendState.Additive;
                     }
                 }
             }

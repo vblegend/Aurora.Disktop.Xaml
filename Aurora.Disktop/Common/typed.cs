@@ -58,7 +58,7 @@ namespace Aurora.Disktop.Common
     }
 
 
-    public enum XamlProgressBarStyle
+    public enum XamlDirection
     {
         /// <summary>
         /// 从左到右

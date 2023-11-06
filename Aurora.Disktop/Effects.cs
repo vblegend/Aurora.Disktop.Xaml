@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,9 @@ namespace Aurora.Disktop
 
         internal static Effect LoadEffectFromShaders(GraphicsDevice graphicsDevice,String filename)
         {
+            var Content = AuroraState.Services.GetService<ContentManager>();
+
+
             //var ss = CurrentAssembly.GetManifestResourceNames();
             var streamSmall = CurrentAssembly.GetManifestResourceStream($"Aurora.Disktop.Shaders.{filename}_gl.mgfx");
             if (streamSmall == null) return null;

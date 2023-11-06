@@ -250,10 +250,10 @@ namespace Aurora.Disktop.Graphics
             var tex = sprite.Texture.Tex();
             if (tex != null)
             {
-                var state = this.SetState(sprite.Texture.BlendState);
+                //var state = this.SetState(sprite.Texture.BlendState);
                 var sourceRectangle = sprite.GetFrameRectangle(index);
                 this.SpriteBatch.Draw(tex, position + sprite.Texture.Offset, sourceRectangle, color);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -262,10 +262,10 @@ namespace Aurora.Disktop.Graphics
             var tex = sprite.Texture.Tex();
             if (tex != null)
             {
-                var state = this.SetState(sprite.Texture.BlendState);
+                //var state = this.SetState(sprite.Texture.BlendState);
                 var sourceRectangle = sprite.GetFrameRectangle(index);
                 this.SpriteBatch.Draw(tex, destinationRectangle.Add(sprite.Texture.Offset), sourceRectangle, color);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -275,9 +275,9 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
-                var state = this.SetState(context.BlendState);
+                //var state = this.SetState(context.BlendState);
                 this.SpriteBatch.Draw(tex, position + context.Offset, color);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -286,9 +286,9 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
-                var state = this.SetState(context.BlendState);
+                //var state = this.SetState(context.BlendState);
                 this.SpriteBatch.Draw(tex, position + context.Offset, sourceRectangle, color);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Color color)
@@ -296,10 +296,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
-                var state = this.SetState(context.BlendState);
+                //var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, color);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color)
@@ -307,10 +307,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
-                var state = this.SetState(context.BlendState);
+                //var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, sourceRectangle, color);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Color color, float rotation, Vector2 origin)
@@ -318,10 +318,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
-                var state = this.SetState(context.BlendState);
+                //var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, tex.Bounds, color, rotation, origin, SpriteEffects.None, 0);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
         public void Draw(ITexture context, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin)
@@ -329,10 +329,10 @@ namespace Aurora.Disktop.Graphics
             var tex = context.Tex();
             if (tex != null)
             {
-                var state = this.SetState(context.BlendState);
+                //var state = this.SetState(context.BlendState);
                 var rectangle = new Rectangle(destinationRectangle.X + (int)context.Offset.X, destinationRectangle.Y + (int)context.Offset.Y, destinationRectangle.Width, destinationRectangle.Height);
                 this.SpriteBatch.Draw(tex, rectangle, sourceRectangle, color, rotation, origin, SpriteEffects.None, 0);
-                if (state != null) this.RestoreState(state.Value);
+                //if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -348,7 +348,7 @@ namespace Aurora.Disktop.Graphics
         public void DrawTitle(ITexture texure, Rectangle Destination, Color color)
         {
             var tex = texure.Tex();
-            var state = this.SetState(texure.BlendState);
+            //var state = this.SetState(texure.BlendState);
             Point Local = new Point(Destination.Left, Destination.Top);
             while (true)
             {
@@ -372,7 +372,7 @@ namespace Aurora.Disktop.Graphics
                 Local.X = Destination.Left;
                 if (Local.Y >= Destination.Bottom) break;
             }
-            if (state != null) this.RestoreState(state.Value);
+            //if (state != null) this.RestoreState(state.Value);
         }
 
 
@@ -386,7 +386,7 @@ namespace Aurora.Disktop.Graphics
         public void DrawTitle(ITexture texure, Rectangle Destination, Rectangle srcRect, Color color)
         {
             var tex = texure.Tex();
-            var state = this.SetState(texure.BlendState);
+            //var state = this.SetState(texure.BlendState);
             Point Local = new Point(Destination.Left, Destination.Top);
             while (true)
             {
@@ -410,7 +410,7 @@ namespace Aurora.Disktop.Graphics
                 Local.X = Destination.Left;
                 if (Local.Y >= Destination.Bottom) break;
             }
-            if (state != null) this.RestoreState(state.Value);
+            //if (state != null) this.RestoreState(state.Value);
         }
 
 
@@ -423,7 +423,7 @@ namespace Aurora.Disktop.Graphics
             // 计算边框的大小
             Point borderSize = new Point(texure.Width / 3, texure.Height / 3);
             var tex = texure.Tex();
-            var state = this.SetState(texure.BlendState);
+            //var state = this.SetState(texure.BlendState);
             // 绘制九宫格的四个角
             this.SpriteBatch.Draw(tex, new Rectangle(dest.X, dest.Y, borderSize.X, borderSize.Y), new Rectangle(0, 0, borderSize.X, borderSize.Y), Color.White);
             this.SpriteBatch.Draw(tex, new Rectangle(dest.X + dest.Width - borderSize.X, dest.Y, borderSize.X, borderSize.Y), new Rectangle(tex.Width - borderSize.X, 0, borderSize.X, borderSize.Y), Color.White);
@@ -455,7 +455,7 @@ namespace Aurora.Disktop.Graphics
                     this.SpriteBatch.Draw(tex, new Rectangle(x, y, width, height), new Rectangle(borderSize.X, borderSize.Y, width, height), Color.White);
                 }
             }
-            if (state != null) this.RestoreState(state.Value);
+            //if (state != null) this.RestoreState(state.Value);
         }
 
 

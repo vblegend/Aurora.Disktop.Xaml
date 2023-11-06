@@ -141,15 +141,21 @@ namespace Aurora.Example
         {
             var hp = this.Query<ProgressBar>("Status/HP");
             var mp = this.Query<ProgressBar>("Status/MP");
-            hp.Value += Math.Min(hp.MaxValue - hp.Value, Random.Shared.Next(0, 40));
-            mp.Value += Math.Min(mp.MaxValue - mp.Value, Random.Shared.Next(0, 40));
+            var exp = this.Query<ProgressBar>("Status/EXP");
+            
+
+            hp.Value += Math.Min(hp.MaxValue - hp.Value, 40);
+            mp.Value += Math.Min(mp.MaxValue - mp.Value, 40);
+            exp.Value += Math.Min(exp.MaxValue - exp.Value, 40);
         }
         public void PBDec_Click(Button sender)
         {
             var hp = this.Query<ProgressBar>("Status/HP");
             var mp = this.Query<ProgressBar>("Status/MP");
-            hp.Value -= Math.Min(hp.Value, Random.Shared.Next(0, 40));
-            mp.Value -= Math.Min(mp.Value, Random.Shared.Next(0, 40));
+            var exp = this.Query<ProgressBar>("Status/EXP");
+            hp.Value -= Math.Min(hp.Value, 40);
+            mp.Value -= Math.Min(mp.Value, 40);
+            exp.Value -= Math.Min(exp.Value, 40);
         }
 
 

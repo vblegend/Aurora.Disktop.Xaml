@@ -79,28 +79,28 @@ namespace Aurora.Disktop.Graphics
         }
 
 
-        private void FromStrean(Stream stream)
+        private void FromStrean(Stream stream, Action<byte[]> colorProcessor)
         {
-            this.tex = Texture2D.FromStream(this.device, stream, null);
+            this.tex = Texture2D.FromStream(this.device, stream, colorProcessor);
         }
 
 
 
 
-        public static SimpleTexture FromStream(GraphicsDevice graphicsDevice, Stream stream)
+        public static SimpleTexture FromStream(GraphicsDevice graphicsDevice, Stream stream, Action<byte[]> colorProcessor = null)
         {
             var context = new SimpleTexture(graphicsDevice);
-            context.FromStrean(stream);
+            context.FromStrean(stream, colorProcessor);
             return context;
         }
 
 
-        public static SimpleTexture FromFile(GraphicsDevice graphicsDevice, String filename)
+        public static SimpleTexture FromFile(GraphicsDevice graphicsDevice, String filename, Action<byte[]> colorProcessor = null)
         {
             var context = new SimpleTexture(graphicsDevice);
             using (var fs = File.Open(filename, FileMode.Open, FileAccess.Read))
             {
-                context.FromStrean(fs);
+                context.FromStrean(fs, colorProcessor);
             }
             return context;
         }
