@@ -23,7 +23,7 @@ namespace Aurora.Disktop
         public PlayWindow()
         {
             this.Graphics = new GraphicsDeviceManager(this);
-            this.ImeHandler = new SdlIMEHandler(this, false);
+     
             this.FpsCounter = new SimpleFpsCounter();
             // 
             this.IsFixedTimeStep = false;
@@ -40,6 +40,8 @@ namespace Aurora.Disktop
             AuroraState.Services.AddService(this);
             AuroraState.Services.AddService(this.Window);
             AuroraState.Services.AddService(this.Graphics);
+
+
             var cursor = new CursorComponent();
             this.Components.Add(cursor);
  
@@ -82,6 +84,8 @@ namespace Aurora.Disktop
 
         protected sealed override void Initialize()
         {
+            this.ImeHandler = new SdlIMEHandler(this, false);
+            AuroraState.Services.AddService(this.ImeHandler);
             this.GraphicContext = new GraphicContext(this.GraphicsDevice);
             AuroraState.Services.AddService(this.GraphicsDevice);
             AuroraState.Services.AddService(this.GraphicContext);

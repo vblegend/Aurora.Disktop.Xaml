@@ -35,15 +35,10 @@ namespace Aurora.Disktop.Common
             var node = this.assetFileStream.Read((UInt32)index);
             if (node != null)
             {
-                using (var ms = new MemoryStream(node.Data))
-                {
-                    Action<byte[]> processor = null;
-                    processor = DefaultColorProcessors.PremultiplyAlpha;
-                    var texture = SimpleTexture.FromStream(device, ms, processor);
-                    texture.Offset = new Microsoft.Xna.Framework.Vector2(node.OffsetX, node.OffsetY);
-                    texture.BlendState = null;// node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal ? null : BlendState.Additive;
-                    return texture;
-                }
+                Action<byte[]> processor = null;
+                //processor = DefaultColorProcessors.PremultiplyAlpha;
+                var texture = SimpleTexture.FromAssetPackageNode(device, node, processor);
+                return texture;
             }
             return null;
         }
@@ -57,16 +52,9 @@ namespace Aurora.Disktop.Common
                 var node = this.assetFileStream.Read((UInt32)indexs[i]);
                 if (node != null)
                 {
-                    using (var ms = new MemoryStream(node.Data))
-                    {
-                        Action<byte[]> processor = null;
-
-                        if (node.lpType == Resource.Package.Assets.Common.ImageTypes.PNG) processor = DefaultColorProcessors.PremultiplyAlpha;
-
-                        result[i] = SimpleTexture.FromStream(device, ms, processor);
-                        result[i].Offset = new Microsoft.Xna.Framework.Vector2(node.OffsetX, node.OffsetY);
-                        result[i].BlendState = null;//  node.lpRenderType == Resource.Package.Assets.Common.RenderTypes.Normal ? null : BlendState.Additive;
-                    }
+                    Action<byte[]> processor = null;
+                    // processor = DefaultColorProcessors.PremultiplyAlpha;
+                    result[i] = SimpleTexture.FromAssetPackageNode(device, node, processor);
                 }
             }
             return result;

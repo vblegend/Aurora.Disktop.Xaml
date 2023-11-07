@@ -4,7 +4,7 @@
 	  xmlns:sys="http://schemas.l2030.com/xaml/ui/system"
 	  xmlns:ext="http://schemas.l2030.com/xaml/ui/extends">
 
-	<Dialog Name="Panel01" HorizontalAlignment="Right" Margin="0,400,10,0" Size="128,128" AutoTop="False" Background="package://grid,ui,28,Stretch">
+	<Dialog Name="Panel01" HorizontalAlignment="Right" Margin="0,400,10,0" Size="178,188" AutoTop="False" Background="package://grid,ui,28,Stretch">
 		<Icon Location="10,10" Size="6,6"  BackColor="#F0880F" ext:Target="Panel01" xxxx="brush://texture,package,1000"> </Icon>
 		<Icon Location="20,10" Size="6,6"  BackColor="#F0880F" ext:xxxx="brush://grid,package,1000"> </Icon>
 		<Icon Location="30,10" Size="6,6"  BackColor="#F0880F" xxxx="brush://color,#FFFFFFFF"> </Icon>

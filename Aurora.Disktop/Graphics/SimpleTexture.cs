@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Resource.Package.Assets.Common;
+using System.Diagnostics;
 
 namespace Aurora.Disktop.Graphics
 {
@@ -15,7 +17,7 @@ namespace Aurora.Disktop.Graphics
 
         public  Vector2 Offset;
 
-        public BlendState BlendState;
+        //public BlendState BlendState;
 
         public abstract Texture2D Tex();
 
@@ -85,9 +87,27 @@ namespace Aurora.Disktop.Graphics
         }
 
 
+        public static SimpleTexture FromAssetPackageNode(GraphicsDevice graphicsDevice, IReadOnlyDataBlock block, Action<byte[]> colorProcessor = null)
+        {
+            var context = new SimpleTexture(graphicsDevice);
+            Texture2D texture2D;
+            if (block.Data.Length > 0)
+            {
+                texture2D = new Texture2D(graphicsDevice, block.Width, block.Height);
+                texture2D.SetData(block.Data);
+            }
+            else
+            {
+                texture2D = new Texture2D(graphicsDevice, 1, 1);
+            }
+
+            context.Offset = new Vector2(block.OffsetX, block.OffsetY);
+            context.tex = texture2D;
+            return context;
+        }
 
 
-        public static SimpleTexture FromStream(GraphicsDevice graphicsDevice, Stream stream, Action<byte[]> colorProcessor = null)
+        public static SimpleTexture FromFileStream(GraphicsDevice graphicsDevice, Stream stream, Action<byte[]> colorProcessor = null)
         {
             var context = new SimpleTexture(graphicsDevice);
             context.FromStrean(stream, colorProcessor);
@@ -100,6 +120,10 @@ namespace Aurora.Disktop.Graphics
             var context = new SimpleTexture(graphicsDevice);
             using (var fs = File.Open(filename, FileMode.Open, FileAccess.Read))
             {
+                if (colorProcessor == null && filename.ToLower().EndsWith(".png"))
+                {
+                    colorProcessor = DefaultColorProcessors.PremultiplyAlpha;
+                }
                 context.FromStrean(fs, colorProcessor);
             }
             return context;

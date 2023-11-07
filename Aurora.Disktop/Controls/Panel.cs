@@ -21,6 +21,10 @@ namespace Aurora.Disktop.Controls
     }
 
 
+    public interface IRadioActived
+    {
+        void RadioActived(Radio radio);
+    }
 
 
 
@@ -30,8 +34,7 @@ namespace Aurora.Disktop.Controls
 
 
 
-
-    public class Panel : Control, IPanelControl, ILayoutUpdatable, IRenderable, IQuery
+    public class Panel : Control, IPanelControl, ILayoutUpdatable, IRenderable, IQuery, IRadioActived
     {
         public Panel()
         {
@@ -121,6 +124,19 @@ namespace Aurora.Disktop.Controls
         protected override void CalcAutoSize()
         {
 
+
+
+        }
+
+        public void RadioActived(Radio radio)
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (Children[i] is Radio radioControl && radioControl != radio && radioControl.GroupName == radio.GroupName)
+                {
+                    radioControl.Value = false;
+                }
+            }
         }
 
         #region IQuery

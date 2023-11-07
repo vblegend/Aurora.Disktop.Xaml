@@ -17,8 +17,8 @@ namespace Aurora.Disktop.Controls
             this.DelayTime = 500;
             this.FillMode = FillMode.None;
             this.Direction = XamlDirection.TopToBottom;
-            this._percent.ChangeTo(0, new TimeSpan(0));
-            this._percent.Easing =  Easing.Quintic.InOut;
+            this._percent.ChangeTo(0);
+            this._percent.Easing =  Easing.Circular.InOut;
         }
 
 
@@ -131,7 +131,7 @@ namespace Aurora.Disktop.Controls
             {
                 value = ((Double)(this._value - this._minValue) / (Double)(this._maxValue - this._minValue)) * 100.0f;
             }
-            if (value != this._percent.Value)
+            if (value != this._percent.ToValue)
             {
                var duration = (Int32)(Math.Abs(this._percent.Value - value) / 100.0f * DelayTime);
                this._percent.ChangeTo(value, new TimeSpan(0,0,0,0, animation ? duration : 0));

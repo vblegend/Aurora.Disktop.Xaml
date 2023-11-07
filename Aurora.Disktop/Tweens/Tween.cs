@@ -26,6 +26,29 @@ namespace Aurora.Disktop.Tweens
         private DataType value;
         private TimeSpan? _startTime;
 
+
+
+
+
+        /// <summary>
+        /// 立即改变值
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="duration"></param>
+        public void ChangeTo(DataType to)
+        {
+            this.value = to;
+            this.from = value;
+            this.to = to;
+            Duration = new TimeSpan(0);
+            IsCompleted = true;
+            _startTime = null;
+            return;
+        }
+
+
+
+
         /// <summary>
         /// 改变值
         /// </summary>
@@ -95,6 +118,13 @@ namespace Aurora.Disktop.Tweens
         }
 
 
+        public DataType ToValue
+        {
+            get
+            {
+                return to;
+            }
+        }
 
 
 

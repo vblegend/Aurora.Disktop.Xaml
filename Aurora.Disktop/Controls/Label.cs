@@ -13,10 +13,6 @@ namespace Aurora.Disktop.Controls
             this.VerticalContentAlignment = XamlVerticalAlignment.Top;
         }
 
-
-
-
-
         /// <summary>
         /// 计算自动大小
         /// </summary>
