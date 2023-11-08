@@ -10,13 +10,13 @@ namespace Aurora.Example
         {
 
             this.Window.Title = "Aurora UI";
-            this.IsMouseVisible = true;
+            //this.IsMouseVisible = true;
 
-            var pack = ResourcePackage.Open(@"./ui.asset");
+            //var pack = ResourcePackage.Open(@"./ui.asset");
 
-            AuroraState.PackageManager.Register("ui", pack);
+            //AuroraState.PackageManager.Register("ui", pack);
 
-            this.Font = TTFFont.FromFile("./Fonts/default.ttf", 24);
+            this.Font = TTFFont.FromFile("./Fonts/Microsoft YaHei.ttf", 24);
 
             AuroraState.Services.AddService(this.Font);  
 

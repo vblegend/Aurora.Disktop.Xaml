@@ -148,7 +148,7 @@ namespace Aurora.Disktop.Graphics
     /// <summary>
     /// 渲染目标纹理
     /// </summary>
-    public class TargetTexture : ITexture
+    public class TargetTexture : ITexture,IDisposable
     {
 
         private TargetTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
@@ -164,6 +164,14 @@ namespace Aurora.Disktop.Graphics
             return context;
         }
 
+        public void Dispose()
+        {
+            if (this.tex != null)
+            {
+                this.tex.Dispose();
+                this.tex = null;
+            }
+        }
 
         public void Resize(Int32 width, Int32 height)
         {

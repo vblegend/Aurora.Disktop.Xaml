@@ -1,11 +1,11 @@
-﻿using Aurora.Disktop.Controls;
-using Aurora.Disktop.Graphics;
+﻿using Aurora.Disktop.Components;
+using Aurora.Disktop.Controls;
+
 using Aurora.Disktop.Xaml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using SpriteFontPlus;
-using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace Aurora.Disktop
 {
@@ -37,6 +37,7 @@ namespace Aurora.Disktop
             this.Root = this;
             this.Name = "ROOT";
             this.Window = Window;
+            this.Cursor = new CursorComponent(Window);
             this.eventManager = new EventProcManager(this);
             this.Window.Window.ClientSizeChanged += Window_ClientSizeChanged;
             this.Size = new Point(this.Window.Graphics.PreferredBackBufferWidth, this.Window.Graphics.PreferredBackBufferHeight);
@@ -68,12 +69,14 @@ namespace Aurora.Disktop
         internal void Draw(GameTime gameTime)
         {
             (this as IRenderable).ProcessRender(gameTime);
+            this.Cursor.Draw(gameTime);
         }
 
 
         internal void Update(GameTime gameTime)
         {
             this.OnUpdate(gameTime);
+            this.Cursor.Update(gameTime);
             var currentMouseState = Mouse.GetState(this.Window.Window);
 
             if (currentMouseState.X > 0 && currentMouseState.Y > 0)
@@ -114,5 +117,7 @@ namespace Aurora.Disktop
 
         public Boolean Debuging;
         public DynamicSpriteFont DefaultFont { get; set; }
+
+        public CursorComponent Cursor { get; private set; }
     }
 }

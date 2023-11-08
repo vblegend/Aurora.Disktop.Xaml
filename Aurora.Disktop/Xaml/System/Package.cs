@@ -6,7 +6,7 @@ namespace Aurora.Disktop.Xaml.System
 {
     public class Package : IXamlHandler
     {
-        void IXamlHandler.Process(Control root, object bindContext, Control xamlControl, XmlNode node)
+        void IXamlHandler.Process(Control root, object bindContext, IXamlComponent component, XmlNode node)
         {
             if (node is XmlElement element)
             {

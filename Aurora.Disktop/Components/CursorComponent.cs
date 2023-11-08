@@ -1,9 +1,11 @@
-﻿using Aurora.Disktop.Graphics;
+﻿using Aurora.Disktop.Common;
+using Aurora.Disktop.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Aurora.Disktop.Services
-{
+
+
+namespace Aurora.Disktop.Components {
 
     public enum Cursors
     {
@@ -12,140 +14,101 @@ namespace Aurora.Disktop.Services
         /// </summary>
         Pointer = 0,
         /// <summary>
-        /// 手（超链接）
+        /// 文本
         /// </summary>
-        Hand = 1,
-        /// <summary>
-        /// 十字
-        /// </summary>
-        Corss = 2,
+        Text = 1,
         /// <summary>
         /// 帮助
         /// </summary>
-        Help = 3,
+        Help = 2,
         /// <summary>
-        /// 文本
+        /// 十字
         /// </summary>
-        Text = 4,
+        Corss = 3,
+        /// <summary>
+        /// 手（超链接）
+        /// </summary>
+        Hand = 4,
     }
 
-    public enum CursorSource
+    public enum CursorState
     {
         System = 0,
         Custom = 1,
     }
 
 
-    public interface ICursorService
+    public class CursorComponent : IXamlComponent
     {
-        void SetTextures(SimpleTexture[] textures);
-        TimeSpan Interval { get; set; }
-
-        CursorSource Source { get; set; }
-
-    }
-
-
-
-    public class CursorComponent : IGameComponent, IUpdateable, IDisposable, IDrawable, ICursorService
-    {
-        public CursorComponent()
-        {
-            this.currentIndex = 0;
-            this.textures = new SimpleTexture[0];
-            this.position = new Vector2(0, 0);
-            this.Interval = new TimeSpan(0, 0, 0, 0, 50);
-
-            this.window = AuroraState.Services.GetService<PlayWindow>();
-
-        }
-        public bool Enabled => window != null && !window.IsMouseVisible;
-        public int UpdateOrder { get; set; }
-        public int DrawOrder { get; set; }
-        public bool Visible => window != null && !window.IsMouseVisible;
-
-
-        private PlayWindow window { get; set; }
-        private SimpleTexture[] textures { get; set; }
-        private Int32 currentIndex { get; set; }
-
+        private CursorState state;
         private Vector2 position;
-        private TimeSpan lastTicks { get; set; }
-        public TimeSpan Interval { get; set; }
+        private PlayWindow window { get; set; }
+        private Int32 Index;
 
+        public SpriteObject Skin;
 
+        public Cursors Cursor;
 
-        public CursorSource Source {
-
+        /// <summary>
+        /// 光标类型
+        /// </summary>
+        public CursorState State
+        {
             get
             {
-                return window.IsMouseVisible ? CursorSource.System : CursorSource.Custom;
+                return this.state;
             }
             set
             {
-                if (value == CursorSource.System)
-                {
-                    window.IsMouseVisible = true;
-                }
-                else
-                {
-                    window.IsMouseVisible = false;
-                }
-                EnabledChanged?.Invoke(this, EventArgs.Empty);
-                VisibleChanged?.Invoke(this, EventArgs.Empty);
+                this.state = value;
+                window.IsMouseVisible = value == CursorState.System;
             }
         }
 
+        private Stack<Cursors> stack = new Stack<Cursors>();
 
-        public event EventHandler<EventArgs> EnabledChanged;
-        public event EventHandler<EventArgs> UpdateOrderChanged;
-        public event EventHandler<EventArgs> DrawOrderChanged;
-        public event EventHandler<EventArgs> VisibleChanged;
-
-        public void Initialize()
+        public CursorComponent(PlayWindow window)
         {
-
+            this.window = window;
+            this.State = CursorState.System;
         }
 
-        public void SetTextures(SimpleTexture[] textures)
+
+        public void Push(Cursors cursor)
         {
-            this.textures = textures;
-            this.currentIndex = 0;
+            this.stack.Push(this.Cursor);
+            this.Cursor = cursor;
         }
 
+        public void Pop()
+        {
+            if (this.stack.Count > 0)
+            {
+                var cursor = this.stack.Pop();
+                this.Cursor = cursor;
+            }
+        }
 
 
         public void Update(GameTime gameTime)
         {
-            if (window.IsMouseVisible || this.textures.Length == 0) return;
-            MouseState mouseState = Mouse.GetState(window.Window);
-            this.position.X = (float)mouseState.X;
-            this.position.Y = (float)mouseState.Y;
-            if (gameTime.TotalGameTime.Subtract(lastTicks) > this.Interval)
+            if (this.State == CursorState.Custom)
             {
-                this.currentIndex = ++this.currentIndex % this.textures.Length;
-                lastTicks = gameTime.TotalGameTime;
+                MouseState mouseState = Mouse.GetState(window.Window);
+                this.position.X = (float)mouseState.X;
+                this.position.Y = (float)mouseState.Y;
+                this.Index = this.Skin.Columns * (Int32)this.Cursor;
             }
         }
 
         public void Draw(GameTime gameTime)
         {
-            if (window.IsMouseVisible || this.textures.Length == 0) return;
-            if (currentIndex >= 0 && currentIndex < this.textures.Length)
+            if (this.State == CursorState.Custom)
             {
-                var texture = this.textures[currentIndex];
-                this.window.GraphicContext.Draw(texture, this.position, Color.White);
+                var sourceRect = this.Skin.GetFrameRectangle(this.Index);
+                this.window.GraphicContext.Draw(this.Skin.Texture, this.position, sourceRect, Color.White);
             }
         }
-
-
-        public void Dispose()
-        {
-            this.window = null;
-            this.textures = null;
-        }
-
-
 
     }
 }

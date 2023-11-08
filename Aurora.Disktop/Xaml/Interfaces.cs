@@ -9,7 +9,7 @@ namespace Aurora.Disktop.Xaml
 
     public interface IXamlHandler : IXamlComponent
     {
-        public void Process(Control root, Object bindContext, Control xamlControl, XmlNode node);
+        public void Process(Control root, Object bindContext, IXamlComponent xamlControl, XmlNode node);
     }
 
 

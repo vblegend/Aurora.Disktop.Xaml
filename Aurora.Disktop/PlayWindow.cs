@@ -1,5 +1,4 @@
 ﻿using Aurora.Disktop.Graphics;
-using Aurora.Disktop.Services;
 using Aurora.Disktop.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +19,8 @@ namespace Aurora.Disktop
         public DynamicSpriteFont Font { get; set; }
 
 
+
+
         public PlayWindow()
         {
             this.Graphics = new GraphicsDeviceManager(this);
@@ -37,15 +38,10 @@ namespace Aurora.Disktop
             //this.IsFixedTimeStep = false;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d); //60);
             //AuroraState.Services = this.Services;
+
             AuroraState.Services.AddService(this);
             AuroraState.Services.AddService(this.Window);
             AuroraState.Services.AddService(this.Graphics);
-
-
-            var cursor = new CursorComponent();
-            this.Components.Add(cursor);
- 
-            AuroraState.Services.AddService<ICursorService>(cursor);
             Window.KeyDown += Window_KeyDown;
             Window.KeyUp += Window_KeyUp;
             Window.TextInput += Window_TextInput;

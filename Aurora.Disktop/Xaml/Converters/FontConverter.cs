@@ -14,7 +14,6 @@ namespace Aurora.Disktop.Xaml.Converters
                 // font://微软雅黑,32
                 var tokens = value.Substring(7).Split(',');
                 //var pack = AuroraState.PackageManager[tokens[0]];
-
                 return null;
             }
             else if (value.StartsWith("ttf://"))
@@ -24,7 +23,15 @@ namespace Aurora.Disktop.Xaml.Converters
                 var font = TTFFont.FromFile(tokens[0], Int32.Parse(tokens[1]));
                 return font;
             }
-            throw new Exception();
+            else
+            {
+                var font = AuroraState.FontManager[value];
+                if (font != null)
+                {
+                    return font;
+                }
+            }
+            throw new Exception("Invalid font resource: " + value);
 
         }
     }

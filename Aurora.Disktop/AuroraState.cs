@@ -8,7 +8,15 @@ namespace Aurora.Disktop
     {
         public static GameServiceContainer Services {  get; internal set; } = new GameServiceContainer();
 
-        public static PackageManager PackageManager { get; internal set; } = new PackageManager();
+        public static PackageManager PackageManager { get; internal set; } = new PackageManager(); 
+        
+        
+        public static FontManager FontManager { get; internal set; } = new FontManager();
+
+        
+
 
     }
+
+
 }

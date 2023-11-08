@@ -8,6 +8,8 @@ using Aurora.Disktop.Graphics;
 using System.Reflection;
 using System.Xml.Linq;
 using System.Resources;
+using System.ComponentModel;
+using System;
 
 namespace Aurora.Disktop.Xaml
 {
@@ -15,12 +17,12 @@ namespace Aurora.Disktop.Xaml
     {
         private Object bindContext;
         private Type bindContextType;
-        private Control Host;
+        private IXamlComponent Host;
         private XmlDocument doc = new XmlDocument();
         private readonly XamlTypedResolver typedResolver;
 
 
-        public XamlUIParser(Control form, Object bindContext)
+        public XamlUIParser(IXamlComponent form, Object bindContext)
         {
             this.typedResolver = new XamlTypedResolver();
             this.Host = form;
@@ -42,6 +44,7 @@ namespace Aurora.Disktop.Xaml
             {
                 throw new Exception("");
             }
+            this.TryParseNodeResource(this.Host, doc.DocumentElement);
             foreach (XmlElement element in doc.DocumentElement.ChildNodes)
             {
                 this.internalParse(this.Host, element);
@@ -49,8 +52,44 @@ namespace Aurora.Disktop.Xaml
         }
 
 
+        private void TryParseNodeResource(IXamlComponent component, XmlElement element)
+        {
+            var resources = element.GetElementsByTagName($"{element.LocalName}.Resource");
+            if (resources.Count == 1)
+            {
+                this.ParsePropertys(this.Host, resources.Item(0) as XmlElement);
+                if (resources.Item(0) is XmlElement resElement)
+                {
+                    foreach (XmlElement ele in resElement.ChildNodes)
+                    {
+                        this.internalParse(this.Host, ele);
+                    }
+                }
+            }
+        }
 
-        private void internalParse(Control parent, XmlElement element)
+
+        private IXamlComponent GetProperty(IXamlComponent component, String proName)
+        {
+            var type = component.GetType();
+            // 字段绑定
+            var fieldInfo = type.GetField(proName, BindingFlags.Instance | BindingFlags.Public);
+            if (fieldInfo != null)
+            {
+                return fieldInfo.GetValue(component) as IXamlComponent;
+            }
+
+            // 属性赋值
+            var propertyInfo = type.GetProperty(proName, BindingFlags.Instance | BindingFlags.Public);
+            if (propertyInfo != null)
+            {
+                return propertyInfo.GetValue(component) as IXamlComponent;
+            }
+            return null;
+        }
+
+
+        private void internalParse(IXamlComponent parent, XmlElement element)
         {
             if (element.LocalName.Contains("."))
             {
@@ -59,15 +98,20 @@ namespace Aurora.Disktop.Xaml
                 {
                     throw new Exception("");
                 }
-                this.ParsePropertys(parent, element);
+                var @object = this.GetProperty(parent, tokens[1]);
+                if (@object != null)
+                {
+                    this.ParsePropertys(@object, element);
+                }
                 return;
             }
+
             var typedName = element.Name;
             // Control 抽象接口， 这里返回接口处理组件或其他模块
             IXamlComponent component = GenerateComponent(element.LocalName, element.NamespaceURI);
             if (component is IXamlHandler pipeline)
             {
-                pipeline.Process(this.Host, this.bindContext, parent, element);
+                pipeline.Process(this.Host as Control, this.bindContext, parent, element);
             }
             else if (component is Control control)
             {
@@ -103,24 +147,24 @@ namespace Aurora.Disktop.Xaml
         }
 
 
-        private void ParsePropertys(Control control, XmlElement element)
+        private void ParsePropertys(IXamlComponent component, XmlElement element)
         {
             foreach (XmlAttribute attribute in element.Attributes)
             {
                 var namespaceUrl = attribute.NamespaceURI;
                 if (String.IsNullOrEmpty(namespaceUrl))
                 {
-                    this.ParseCommonAttribute(control, attribute);
+                    this.ParseCommonAttribute(component, attribute);
                 }
                 else
                 {
                     var typed = this.typedResolver.ResolveXamlComponent(namespaceUrl, attribute.LocalName);
                     if (typed != null)
                     {
-                        var component = (IXamlComponent)Activator.CreateInstance(typed);
-                        if (component is IXamlHandler handler)
+                        var comp = (IXamlComponent)Activator.CreateInstance(typed);
+                        if (comp is IXamlHandler handler)
                         {
-                            handler.Process(this.Host, this.bindContext, control, attribute);
+                            handler.Process(this.Host as Control, this.bindContext, comp, attribute);
                         }
                         else
                         {
@@ -132,9 +176,9 @@ namespace Aurora.Disktop.Xaml
         }
 
 
-        private void ParseCommonAttribute(Control control, XmlAttribute attribute)
+        private void ParseCommonAttribute(IXamlComponent component, XmlAttribute attribute)
         {
-            var type = control.GetType();
+            var type = component.GetType();
             // 事件绑定
             var eventInfo = type.GetEvent(attribute.LocalName, BindingFlags.Instance | BindingFlags.Public);
             if (eventInfo != null)
@@ -144,7 +188,7 @@ namespace Aurora.Disktop.Xaml
                 {
                     // 创建委托并绑定事件处理程序
                     Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, this.bindContext, methodInfo);
-                    eventInfo.AddEventHandler(control, handler);
+                    eventInfo.AddEventHandler(component, handler);
                 }
                 return;
             }
@@ -159,7 +203,7 @@ namespace Aurora.Disktop.Xaml
                     if (converter != null)
                     {
                         var value = converter.Convert(fieldInfo.FieldType, attribute.Value);
-                        fieldInfo.SetValue(control, value);
+                        fieldInfo.SetValue(component, value);
                     }
                 }
                 return;
@@ -177,7 +221,7 @@ namespace Aurora.Disktop.Xaml
                     if (converter != null)
                     {
                         var value = converter.Convert(propertyInfo.PropertyType, attribute.Value);
-                        propertyInfo.SetValue(control, value, null);
+                        propertyInfo.SetValue(component, value, null);
                     }
                 }
                 return;
