@@ -25,7 +25,7 @@
 	  <None Update="Fonts\Microsoft YaHei.ttf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
-	  <None Update="Fonts\汉仪北魏写经.ttf">
+	  <None Update="Fonts\HanYi XieJing.ttf">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Images\button.png">

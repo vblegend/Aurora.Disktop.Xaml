@@ -93,7 +93,7 @@ namespace Aurora.Example
             //this.Renderer.Draw(this.target, new Vector2(590, 500), Color.White);
             //this.Renderer.SetBlendState(BlendState.Additive);
             //this.Renderer.Draw(this.effectTexture, new Vector2(1450, 350), Color.White);
-            this.Renderer.DrawString(this.Window.Font, $"Fps：{this.Window.FpsCounter.Fps}", new Vector2(5, 10), Color.White);
+
         }
 
 

@@ -29,6 +29,7 @@ namespace Aurora.Disktop.Graphics
             public readonly Boolean BeginCalled;
         }
 
+        public Int32 CalledNumber { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
         private SpriteBatch SpriteBatch { get; set; }
 
@@ -165,7 +166,7 @@ namespace Aurora.Disktop.Graphics
         }
 
 
- 
+
 
 
 
@@ -187,6 +188,7 @@ namespace Aurora.Disktop.Graphics
         {
             if (this._beginCalled)
             {
+                this.CalledNumber++;
                 this.SpriteBatch.End();
                 this._beginCalled = false;
             }
@@ -196,7 +198,10 @@ namespace Aurora.Disktop.Graphics
 
 
 
-
+        public void ResetPerformance()
+        {
+            this.CalledNumber = 0;
+        }
 
 
 
@@ -460,31 +465,43 @@ namespace Aurora.Disktop.Graphics
 
 
 
-        public float DrawString(DynamicSpriteFont font, string _string_, Vector2 pos, Color color)
+        public float DrawString(String font, Single fontSize, string _string_, Vector2 pos, Color color)
         {
             var state = this.SetState(blendState: null);
-            var val = font.DrawString(this.SpriteBatch, _string_, pos, color);
+            var fontID = AuroraState.FontManager.GetFontID(font);
+            AuroraState.FontManager.Font.Size = fontSize;
+            AuroraState.FontManager.Font.FontId = fontID;
+            var val = AuroraState.FontManager.Font.DrawString(this.SpriteBatch, _string_, pos, color);
             if (state != null) this.RestoreState(state.Value);
             return val;
         }
 
 
-        public float DrawString(DynamicSpriteFont font, string _string_, Vector2 pos, Color color, Vector2 scale)
+        public float DrawString(String font, Single fontSize, string _string_, Vector2 pos, Color color, Vector2 scale)
         {
             var state = this.SetState(blendState: null);
-            var val = font.DrawString(this.SpriteBatch, _string_, pos, color, scale);
+            var fontID = AuroraState.FontManager.GetFontID(font);
+            AuroraState.FontManager.Font.Size = fontSize;
+            AuroraState.FontManager.Font.FontId = fontID;
+            var val = AuroraState.FontManager.Font.DrawString(this.SpriteBatch, _string_, pos, color, scale);
             if (state != null) this.RestoreState(state.Value);
             return val;
         }
 
-        public Vector2 MeasureString(DynamicSpriteFont font, string text)
+        public Vector2 MeasureString(String font,Single fontSize, string text)
         {
-            return font.MeasureString(text);
+            var fontID = AuroraState.FontManager.GetFontID(font);
+            AuroraState.FontManager.Font.Size = fontSize;
+            AuroraState.FontManager.Font.FontId = fontID;
+            return AuroraState.FontManager.Font.MeasureString(text);
         }
 
-        public Rectangle GetTextBounds(DynamicSpriteFont font, Vector2 position, string text)
+        public Rectangle GetTextBounds(String font, Single fontSize, Vector2 position, string text)
         {
-            return font.GetTextBounds(position, text);
+            var fontID = AuroraState.FontManager.GetFontID(font);
+            AuroraState.FontManager.Font.Size = fontSize;
+            AuroraState.FontManager.Font.FontId = fontID;
+            return AuroraState.FontManager.Font.GetTextBounds(position, text);
         }
 
 

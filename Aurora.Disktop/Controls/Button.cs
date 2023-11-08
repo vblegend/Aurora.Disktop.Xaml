@@ -97,11 +97,11 @@ namespace Aurora.Disktop.Controls
         protected override void DrawContentString()
         {
             var content = this.content.ToString();
-            var size = this.Renderer.MeasureString(this.Font, content);
+            var size = this.Renderer.MeasureString(this.Font, this.FontSize, content);
             var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
             var local = this.GlobalLocation.ToVector2() + offset;
             if (this.Enabled && this.IsPressed) local += new Vector2(1, 1);
-            this.Renderer.DrawString(this.Font, content, local, this.Enabled ? this.TextColor : Color.Gray);
+            this.Renderer.DrawString(this.Font, this.FontSize, content, local, this.Enabled ? this.TextColor : Color.Gray);
         }
 
 

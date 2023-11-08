@@ -31,17 +31,22 @@ namespace Aurora.Disktop.Controls
 
         protected override void DrawContentString()
         {
+            //var content = this.content.ToString();
+            //var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.FontSize;
+            //var size = this.Renderer.MeasureString(this.Font, this.FontSize, content) * fontSize;
+            //var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
+            //offset.X = this.Padding.Left + this.Height + 0;
+            //var local = this.GlobalLocation.ToVector2() + offset;
+            //if (fontSize < 1) local.Y++;
+            //if (this.Enabled && this.IsPressed) local += new Vector2(1, 1);
+            //this.Renderer.DrawString(this.Font, this.FontSize, content, local, this.Enabled ? this.TextColor : Color.Gray, new Vector2(fontSize));
             var content = this.content.ToString();
-            var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.Font.Size;
-
-            var size = this.Renderer.MeasureString(this.Font, content) * fontSize;
+            var size = new Vector2(0, this.FontSize);
             var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
-            offset.X = this.Padding.Left + this.Height + 0;
+            offset.X = this.Padding.Left + this.Height + (Int32)(this.FontSize * 0.2);
             var local = this.GlobalLocation.ToVector2() + offset;
-            if (fontSize < 1) local.Y++;
-
             if (this.Enabled && this.IsPressed) local += new Vector2(1, 1);
-            this.Renderer.DrawString(this.Font, content, local, this.Enabled ? this.TextColor : Color.Gray, new Vector2(fontSize));
+            this.Renderer.DrawString(this.Font, this.FontSize, content, local, this.Enabled ? this.TextColor : Color.Gray);
         }
 
 
@@ -61,9 +66,9 @@ namespace Aurora.Disktop.Controls
             if (this.NeedCalcAutoWidth && this.Font != null)
             {
                 var content = this.content.ToString();
-                var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.Font.Size;
-                var size = this.Renderer.MeasureString(this.Font, content) * fontSize;
-                var px = size + new Vector2(this.Padding.Left + this.Padding.Right + this.Height, 0);
+                //var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.FontSize;
+                var size = this.Renderer.MeasureString(this.Font, this.FontSize, content);
+                var px = size + new Vector2(this.Padding.Left + this.Padding.Right + this.Height + (Int32)(this.FontSize * 0.2), 0);
                 this.globalBounds.Width = (Int32)px.X;
             }
         }

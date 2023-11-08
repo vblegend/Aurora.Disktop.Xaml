@@ -5,10 +5,8 @@ namespace Aurora.Disktop.Common
 
     public class FontManager
     {
-        private DynamicSpriteFont fonts;
+        public DynamicSpriteFont Font { get; private set; }
         private Dictionary<String, Int32> fontsmap = new Dictionary<String, Int32>();
-
-
 
         private Dictionary<String, DynamicSpriteFont> keyValuePairs = new Dictionary<String, DynamicSpriteFont>();
 
@@ -25,20 +23,29 @@ namespace Aurora.Disktop.Common
             }
         }
 
-        public void Register(String packageName, DynamicSpriteFont package)
+        public void Register(String packageName, Byte[] ttfBinary)
         {
-
-
-
-
-
-            keyValuePairs.Add(packageName, package);
+            if (fontsmap.ContainsKey(packageName)) return;
+            var fontID = 0;
+            if (this.Font == null)
+            {
+                Font = DynamicSpriteFont.FromTtf(ttfBinary, 5);
+            }
+            else
+            {
+                fontID = Font.AddTtf(packageName, ttfBinary);
+            }
+            fontsmap.Add(packageName, fontID);
         }
 
 
         public Int32 GetFontID(String fontname)
         {
-            if (this.fontsmap.TryGetValue(fontname, out var id)) return id;
+            if (String.IsNullOrEmpty(fontname)) return 0;
+            if (this.fontsmap.TryGetValue(fontname, out var id))
+            {
+                return id;
+            }
             return 0;
         }
 

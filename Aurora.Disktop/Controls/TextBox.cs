@@ -26,9 +26,9 @@ namespace Aurora.Disktop.Controls
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (this.CurrsorArea.Height != this.Font.Size)
+            if (this.CurrsorArea.Height != this.FontSize)
             {
-                this.CurrsorArea.Height = (Int32)this.Font.Size;
+                this.CurrsorArea.Height = (Int32)this.FontSize;
                 this.CurrsorArea.Width = 3;
             }
 
@@ -114,9 +114,9 @@ namespace Aurora.Disktop.Controls
                 using (this.Renderer.TargetRender(this.finalTexture))
                 {
                     var s =  this.Text.AsSpan().Slice(textArea.Left, textArea.Width);
-                    this.Renderer.DrawString(this.Font, s.ToString(), new Vector2(0, 0), this.TextColor);
+                    this.Renderer.DrawString(this.Font, this.FontSize, s.ToString(), new Vector2(0, 0), this.TextColor);
 
-                    this.Font.MeasureString("")
+                    //this.Font.MeasureString("")
                 }
             }
 

@@ -320,7 +320,7 @@ namespace Aurora.Disktop.Controls
 
         #endregion
 
-        public DynamicSpriteFont Font
+        public String Font
         {
             get
             {
@@ -332,8 +332,10 @@ namespace Aurora.Disktop.Controls
             }
         }
 
-        private DynamicSpriteFont _font;
+        private String _font;
 
+
+        public Single FontSize = 16;
 
 
         /// <summary>

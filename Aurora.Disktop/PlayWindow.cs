@@ -16,7 +16,7 @@ namespace Aurora.Disktop
         public PlayScene Scene { get; private set; }
         public SimpleFpsCounter FpsCounter { get; private set; }
         // resources
-        public DynamicSpriteFont Font { get; set; }
+        public String Font { get; set; }
 
 
 
@@ -127,14 +127,17 @@ namespace Aurora.Disktop
                 Exit();
             this.Scene?.Update(gameTime);
             this.FpsCounter?.Update(gameTime);
+
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            this.GraphicContext.ResetPerformance();
             GraphicsDevice.Clear(Color.Transparent);
             this.GraphicContext.Begin();
             this.Scene?.Draw(gameTime);
             base.Draw(gameTime);
+            this.GraphicContext.DrawString("", 36, $"Fps：{this.FpsCounter.Fps} Called: {this.GraphicContext.CalledNumber}", new Vector2(5, 10), Color.White);
             this.GraphicContext.End();
         }
 

@@ -26,8 +26,8 @@ namespace Aurora.Disktop.Controls
             if (this.NeedCalcAutoWidth && this.Font != null)
             {
                 var content = this.content.ToString();
-                var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.Font.Size;
-                var size = this.Renderer.MeasureString(this.Font, content) * fontSize;
+                var fontSize = (this.Height - this.Padding.Top - this.Padding.Bottom) / this.FontSize;
+                var size = this.Renderer.MeasureString(this.Font, this.FontSize, content) * fontSize;
                 var px = size + new Vector2(this.Padding.Left + this.Padding.Right + this.Height, 0);
                 this.globalBounds.Width = (Int32)px.X;
             }

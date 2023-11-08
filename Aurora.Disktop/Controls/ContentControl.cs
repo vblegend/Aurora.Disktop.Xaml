@@ -65,7 +65,7 @@ namespace Aurora.Disktop.Controls
         protected virtual void DrawContentString()
         {
             var content = this.content.ToString();
-            var size = this.Renderer.MeasureString(this.Font, content);
+            var size = this.Renderer.MeasureString(this.Font, this.FontSize, content);
             var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
             var local = this.GlobalLocation.ToVector2() + offset;
 
@@ -88,7 +88,7 @@ namespace Aurora.Disktop.Controls
             }
 
 
-            this.Renderer.DrawString(this.Font, content, local, this.TextColor);
+            this.Renderer.DrawString(this.Font, this.FontSize, content, local, this.TextColor);
         }
 
 

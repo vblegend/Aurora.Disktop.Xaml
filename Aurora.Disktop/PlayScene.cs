@@ -116,7 +116,7 @@ namespace Aurora.Disktop
 
 
         public Boolean Debuging;
-        public DynamicSpriteFont DefaultFont { get; set; }
+        public String DefaultFont { get; set; }
 
         public CursorComponent Cursor { get; private set; }
     }
