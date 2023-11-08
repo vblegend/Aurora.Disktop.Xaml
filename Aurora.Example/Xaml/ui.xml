@@ -4,7 +4,7 @@
 	  xmlns:sys="http://schemas.l2030.com/xaml/ui/system">
 	
 	<Template.Resource DefaultFont="Microsoft YaHei" Debuging="False">
-		<sys:Package Name="ui" Path="./ui.asset" ></sys:Package>
+		<sys:Package Name="ui" Path="./ui.asset" Password="" ></sys:Package>
 		<sys:Font Name="Microsoft YaHei" Path="./Fonts/Microsoft YaHei.ttf" ></sys:Font>
 		<sys:Font Name="HanYi XieJing" Path="./Fonts/HanYi XieJing.ttf" ></sys:Font>
 	</Template.Resource>

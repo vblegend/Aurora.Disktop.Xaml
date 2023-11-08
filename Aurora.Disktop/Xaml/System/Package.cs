@@ -12,7 +12,8 @@ namespace Aurora.Disktop.Xaml.System
             {
                 var name = element.GetAttribute("Name");
                 var path = element.GetAttribute("Path");
-                var pack = ResourcePackage.Open(path);
+                var password = element.GetAttribute("Password");
+                var pack = ResourcePackage.Open(path, password);
                 AuroraState.PackageManager.Register(name, pack);
             }
         }
