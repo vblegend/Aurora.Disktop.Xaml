@@ -7,6 +7,7 @@ using Aurora.Disktop.Xaml.Converters;
 using Aurora.Disktop.Graphics;
 using System.Reflection;
 using System.Xml.Linq;
+using System.Resources;
 
 namespace Aurora.Disktop.Xaml
 {
@@ -41,9 +42,6 @@ namespace Aurora.Disktop.Xaml
             {
                 throw new Exception("");
             }
-
-            this.parseNodeResource(this.Host, doc.DocumentElement);
-
             foreach (XmlElement element in doc.DocumentElement.ChildNodes)
             {
                 this.internalParse(this.Host, element);
@@ -51,19 +49,19 @@ namespace Aurora.Disktop.Xaml
         }
 
 
-        private void parseNodeResource(Control control, XmlElement element)
-        {
-            var resources = element.GetElementsByTagName($"{element.LocalName}.Resource");
-            if (resources.Count == 1)
-            {
-                this.ParsePropertys(this.Host, resources.Item(0) as XmlElement);
-            }
-        }
-
 
         private void internalParse(Control parent, XmlElement element)
         {
-            if (element.LocalName.Contains(".")) return;
+            if (element.LocalName.Contains("."))
+            {
+                var tokens = element.LocalName.Split(".", StringSplitOptions.RemoveEmptyEntries);
+                if (tokens[0] != element.ParentNode.LocalName)
+                {
+                    throw new Exception("");
+                }
+                this.ParsePropertys(parent, element);
+                return;
+            }
             var typedName = element.Name;
             // Control 抽象接口， 这里返回接口处理组件或其他模块
             IXamlComponent component = GenerateComponent(element.LocalName, element.NamespaceURI);

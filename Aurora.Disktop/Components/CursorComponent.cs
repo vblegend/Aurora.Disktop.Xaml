@@ -5,10 +5,34 @@ using Microsoft.Xna.Framework.Input;
 namespace Aurora.Disktop.Services
 {
 
+    public enum Cursors
+    {
+        /// <summary>
+        /// 指针
+        /// </summary>
+        Pointer = 0,
+        /// <summary>
+        /// 手（超链接）
+        /// </summary>
+        Hand = 1,
+        /// <summary>
+        /// 十字
+        /// </summary>
+        Corss = 2,
+        /// <summary>
+        /// 帮助
+        /// </summary>
+        Help = 3,
+        /// <summary>
+        /// 文本
+        /// </summary>
+        Text = 4,
+    }
+
     public enum CursorSource
     {
-        SystemCursor = 0,
-        CustomCursor = 1,
+        System = 0,
+        Custom = 1,
     }
 
 
@@ -55,11 +79,11 @@ namespace Aurora.Disktop.Services
 
             get
             {
-                return window.IsMouseVisible ? CursorSource.SystemCursor : CursorSource.CustomCursor;
+                return window.IsMouseVisible ? CursorSource.System : CursorSource.Custom;
             }
             set
             {
-                if (value == CursorSource.SystemCursor)
+                if (value == CursorSource.System)
                 {
                     window.IsMouseVisible = true;
                 }

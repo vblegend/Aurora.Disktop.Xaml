@@ -5,7 +5,7 @@
 
 
 	<Template.Resource DefaultFont="ttf://./Fonts/汉仪北魏写经.ttf,24"  Debuging="False">
-
+		<sys:Package Name="ui" Path="./ui.asset" ></sys:Package>
 		<Cursor Name="drak"  Skin="package://ui,16,1,5" />
 		<Cursor Name="light" Skin="package://ui,17,1,5" />
 
