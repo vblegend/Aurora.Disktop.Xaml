@@ -8,21 +8,6 @@ namespace Aurora.Disktop.Common
         public DynamicSpriteFont Font { get; private set; }
         private Dictionary<String, Int32> fontsmap = new Dictionary<String, Int32>();
 
-        private Dictionary<String, DynamicSpriteFont> keyValuePairs = new Dictionary<String, DynamicSpriteFont>();
-
-
-        public DynamicSpriteFont this[String fontName]
-        {
-            get
-            {
-                if (keyValuePairs.ContainsKey(fontName))
-                {
-                    return keyValuePairs[fontName];
-                }
-                return null;
-            }
-        }
-
         public void Register(String packageName, Byte[] ttfBinary)
         {
             if (fontsmap.ContainsKey(packageName)) return;
@@ -48,11 +33,6 @@ namespace Aurora.Disktop.Common
             }
             return 0;
         }
-
-
-
-
-
     }
 
 
