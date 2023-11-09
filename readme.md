@@ -6,6 +6,7 @@ It is a 2D UI engine based on MonoGame that is currently under development.
 
 You can build your UI in XML, and it uses its own resource pack format
 
+In theory, it's cross-platform
 
 ## Snapshot
 [![snapshot](./snapshot.png)](./snapshot.png)
@@ -28,22 +29,22 @@ You can build your UI in XML, and it uses its own resource pack format
 
 	<Dialog Name="Window01" Background="package://grid,ui,30" AutoTop="True"  Pinned="False" Click="xxxxx_ssss" Margin="100,400,0,0" Size="400,150"  >
 		<Button Name="Close" Image="package://ui,84,3,1"  Margin="0,0,0,0" HorizontalAlignment="Right"  Click="Button_Click" />
-		<Button Name="Btn01" Font="HanYi XieJing" FontSize="32" Image="package://ui,66,3,1" TextColor="#e7dbb5" Content="¿É ÓÃ" Margin="48,48,0,0" Size="126,44"   Click="Button_Click" />
-		<Button Name="Btn02" Image="package://ui,66,3,1" TextColor="#e7dbb5" Content="½û ÓÃ" Margin="200,48,0,0" Size="126,44" Enabled="False" Click="Button_Click" />
-		<CheckBox Name="CheckBox01"  Image="package://ui,32,3,1" Icon="package://ui,34" Content="¼Ç×¡ÃÜÂëAA"  Margin="50,0,0,20" VerticalAlignment="Bottom"  Size="auto,20"   />
-		<CheckBox Name="CheckBox01"  Image="package://ui,32,3,1" Icon="package://ui,34" Content="×Ô¶¯±£´æ(Auto Save)"  Margin="200,0,0,20" Value="True" Enabled="False" VerticalAlignment="Bottom"  />
+		<Button Name="Btn01" Font="HanYi XieJing" FontSize="32" Image="package://ui,66,3,1" TextColor="#e7dbb5" Content="å¯ ç”¨" Margin="48,48,0,0" Size="126,44"   Click="Button_Click" />
+		<Button Name="Btn02" Image="package://ui,66,3,1" TextColor="#e7dbb5" Content="ç¦ ç”¨" Margin="200,48,0,0" Size="126,44" Enabled="False" Click="Button_Click" />
+		<CheckBox Name="CheckBox01"  Image="package://ui,32,3,1" Icon="package://ui,34" Content="è®°ä½å¯†ç AA"  Margin="50,0,0,20" VerticalAlignment="Bottom"  Size="auto,20"   />
+		<CheckBox Name="CheckBox01"  Image="package://ui,32,3,1" Icon="package://ui,34" Content="è‡ªåŠ¨ä¿å­˜(Auto Save)"  Margin="200,0,0,20" Value="True" Enabled="False" VerticalAlignment="Bottom"  />
 	</Dialog>
 
 
 	<Dialog Name="Window02" Background="package://texture,ui,48" AutoTop="True"  Pinned="False" Click="xxxxx_ssss"  Size="309,439" HorizontalAlignment="Center" VerticalAlignment="Center">
-		<Label Name="Label01" Content="ÕâÊÇÒ»¶Î×Ö·û´®" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+		<Label Name="Label01" Content="è¿™æ˜¯ä¸€æ®µå­—ç¬¦ä¸²" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
 			   TextColor="#d6c79c" Margin="48,80,0,0" Size="200,75" />
 		<Label Name="Label02" TextColor="#e7dbb5" Margin="0,190,0,0" Size="200,160" HorizontalAlignment="Center" Padding="20,15">
-			<Button Name="LabBtn" Image="package://ui,66,3,1"  TextColor="#e7dbb5" Content="ÎÒÔÚLabelÀï" Margin="0,0,0,0" HorizontalAlignment="Stretch"  VerticalAlignment="Top"   Click="Button_Click" />
+			<Button Name="LabBtn" Image="package://ui,66,3,1"  TextColor="#e7dbb5" Content="æˆ‘åœ¨Labelé‡Œ" Margin="0,0,0,0" HorizontalAlignment="Stretch"  VerticalAlignment="Top"   Click="Button_Click" />
 		</Label>
 		<Button Name="Btn02" Image="package://ui,66,3,1" VerticalAlignment="Bottom" HorizontalAlignment="Center"
 				Size="auto,auto"	Content="DENG LU"	Margin="0,0,0,50" Click="Button_Click" />
-		<ScrollBar Name="¹ö¶¯Ìõ" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,30,25,20"   Size="24,auto" >
+		<ScrollBar Name="æ»šåŠ¨æ¡" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,30,25,20"   Size="24,auto" >
 			<ScrollBar.Slots>
 				<Button x:Name="#BUTTON_DEC"  />
 				<Button x:Name="#BUTTON_SLIDE"  />
