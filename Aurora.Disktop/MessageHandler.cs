@@ -51,8 +51,7 @@ namespace Aurora.Disktop
 
         internal Control HandleKeyboardMessage(Control control, IKeyboardMessage msg)
         {
-            if (this.FocusPath.Count > 0 && this.FocusPath[0] == control) return null;
-            var focus = this.FocusPath[0];
+            var focus = this.Activeed;
             (focus as IXamlEventHandler)?.MessageHandler(msg);
             return focus;
         }
