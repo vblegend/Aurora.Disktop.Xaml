@@ -10,7 +10,7 @@ namespace Aurora.Disktop.Controls
 
     public interface IXamlEventHandler
     {
-        void MessageHandler(EventMessage msg);
+        void MessageHandler(IInputMessage msg);
     }
 
     public interface IRenderable
@@ -31,7 +31,7 @@ namespace Aurora.Disktop.Controls
         /// 
         /// </summary>
         /// <param name="parentPosition">父对象的绝对坐标</param>
-        void LayoutUpdate(Boolean updateChildren,Boolean force = false);
+        void LayoutUpdate(Boolean updateChildren, Boolean force = false);
     }
 
 
@@ -136,7 +136,7 @@ namespace Aurora.Disktop.Controls
                 this.extendBounds = this.globalBounds;
                 return true;
             }
-            return false;   
+            return false;
         }
 
 
@@ -179,7 +179,7 @@ namespace Aurora.Disktop.Controls
 
 
 
-        void IXamlEventHandler.MessageHandler(EventMessage msg)
+        void IXamlEventHandler.MessageHandler(IInputMessage msg)
         {
             if (msg.Message == WM_MESSAGE.MOUSE_ENTER)
             {
@@ -193,27 +193,44 @@ namespace Aurora.Disktop.Controls
                 this.OnMouseLeave();
             }
 
-            if (msg.Message == WM_MESSAGE.MOUSE_MOVE)
+
+            if (msg is IMouseMessage mouse)
             {
-                this.OnMouseMove(msg.Location);
+                if (msg.Message == WM_MESSAGE.MOUSE_MOVE)
+                {
+                    this.OnMouseMove(mouse);
+                }
+
+                if (msg.Message == WM_MESSAGE.MOUSE_DOWN)
+                {
+                    if (mouse.Button == MouseButtons.Left) this.IsPressed = true;
+                    this.OnMouseDown(mouse);
+                }
+
+                if (msg.Message == WM_MESSAGE.MOUSE_UP)
+                {
+                    if (mouse.Button == MouseButtons.Left) this.IsPressed = false;
+                    this.OnMouseUp(mouse);
+                }
+
+                if (msg.Message == WM_MESSAGE.MOUSE_WHEEL)
+                {
+                    this.OnMouseWheel(mouse);
+                }
+            }
+            if (msg is IKeyboardMessage keyboard)
+            {
+                if (keyboard.Message == WM_MESSAGE.KEY_DOWN)
+                {
+                    this.OnKeyDown(keyboard);
+                }
+                else if (keyboard.Message == WM_MESSAGE.KEY_UP)
+                {
+                    this.OnKeyUp(keyboard);
+                }
             }
 
-            if (msg.Message == WM_MESSAGE.MOUSE_DOWN)
-            {
-                if (msg.Button == MouseButtons.Left) this.IsPressed = true;
-                this.OnMouseDown(msg.Button, msg.Location);
-            }
 
-            if (msg.Message == WM_MESSAGE.MOUSE_UP)
-            {
-                if (msg.Button == MouseButtons.Left) this.IsPressed = false;
-                this.OnMouseUp(msg.Button, msg.Location);
-            }
-
-            if (msg.Message == WM_MESSAGE.MOUSE_WHEEL)
-            {
-                this.OnMouseWheel(msg.Location, msg.Wheel);
-            }
 
 
             if (msg.Message == WM_MESSAGE.GOTFOCUS)
@@ -252,22 +269,33 @@ namespace Aurora.Disktop.Controls
         {
             // 已实现
         }
-        protected virtual void OnMouseDown(MouseButtons button, Point point)
+
+
+        protected virtual void OnKeyDown(IKeyboardMessage args)
         {
             // 已实现
         }
-        protected virtual void OnMouseUp(MouseButtons button, Point point)
+        protected virtual void OnKeyUp(IKeyboardMessage args)
         {
             // 已实现
         }
-        protected virtual void OnMouseMove(Point point)
+
+        protected virtual void OnMouseDown(IMouseMessage args)
         {
             // 已实现
         }
-        protected virtual void OnMouseWheel(Point point, Int32 wheel)
+        protected virtual void OnMouseUp(IMouseMessage args)
         {
             // 已实现
-            Trace.WriteLine($"Wheel {this.Name} {wheel}");
+        }
+        protected virtual void OnMouseMove(IMouseMessage args)
+        {
+            // 已实现
+        }
+        protected virtual void OnMouseWheel(IMouseMessage args)
+        {
+            // 已实现
+            Trace.WriteLine($"Wheel {this.Name} {args.Wheel}");
         }
 
         protected virtual void OnRender(GameTime gameTime)
@@ -353,7 +381,7 @@ namespace Aurora.Disktop.Controls
         /// <summary>
         /// 控件名字
         /// </summary>
-        public String Name  = String.Empty;
+        public String Name = String.Empty;
         public Boolean Visible = true;
         public Boolean Enabled = true;
         /// <summary>
@@ -541,7 +569,7 @@ namespace Aurora.Disktop.Controls
         /// <summary>
         /// 获取鼠标是否在控件按下
         /// </summary>
-        public Boolean IsPressed { get; private set; }
+        public Boolean IsPressed { get; protected set; }
 
         #endregion
 

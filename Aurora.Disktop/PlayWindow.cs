@@ -18,14 +18,16 @@ namespace Aurora.Disktop
         // resources
         public String Font { get; set; }
 
+        private MessageManager MessageManager;
 
 
 
         public PlayWindow()
         {
             this.Graphics = new GraphicsDeviceManager(this);
-     
             this.FpsCounter = new SimpleFpsCounter();
+            this.MessageManager = new MessageManager(this);
+
             // 
             this.IsFixedTimeStep = false;
             this.IsMouseVisible = false;
@@ -42,34 +44,8 @@ namespace Aurora.Disktop
             AuroraState.Services.AddService(this);
             AuroraState.Services.AddService(this.Window);
             AuroraState.Services.AddService(this.Graphics);
-            Window.KeyDown += Window_KeyDown;
-            Window.KeyUp += Window_KeyUp;
-            Window.TextInput += Window_TextInput;
         }
 
-        private void Window_TextInput(object sender, Microsoft.Xna.Framework.TextInputEventArgs e)
-        {
-            if (this.Scene is KeyboardEvent @event)
-            {
-                @event.OnTextInput(e);
-            }
-        }
-
-        private void Window_KeyUp(object sender, InputKeyEventArgs e)
-        {
-            if (this.Scene is KeyboardEvent @event)
-            {
-                @event.OnKeyDown(e);
-            }
-        }
-
-        private void Window_KeyDown(object sender, InputKeyEventArgs e)
-        {
-            if (this.Scene is KeyboardEvent @event)
-            {
-                @event.OnKeyUp(e);
-            }
-        }
 
 
 
@@ -103,6 +79,7 @@ namespace Aurora.Disktop
             {
                 await scene.Initialize();
                 this.Scene = scene;
+                this.MessageManager.SetHandler(this.Scene);
                 return (T)scene;
             }
             return null;
@@ -125,9 +102,9 @@ namespace Aurora.Disktop
             base.Update(gameTime);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            this.MessageManager.Update(gameTime);
             this.Scene?.Update(gameTime);
             this.FpsCounter?.Update(gameTime);
-
         }
 
         protected override void Draw(GameTime gameTime)

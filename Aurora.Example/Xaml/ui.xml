@@ -74,7 +74,7 @@
 		<Radio Name="Enabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Enabled"  Margin="825,70,0,0" Value="False"  />
 		<Radio Name="Disabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Disabled"  Margin="925,70,0,0" Value="True"  />
 
-		<TextBox Name="InputBox" Background="package://grid,ui,37" Font="textbox-font" Text="1123" Margin="610,40,0,0"  Size="150,34"/>
+		<TextBox Name="InputBox" Background="package://grid,ui,37" Font="textbox-font" FontSize="18" Text="1234567890" Margin="610,40,0,0"  Size="150,34"/>
 		
 
 	</Dialog>

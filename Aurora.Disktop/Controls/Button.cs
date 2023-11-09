@@ -24,20 +24,20 @@ namespace Aurora.Disktop.Controls
 
 
 
-        protected override void OnMouseDown(MouseButtons button, Point point)
+        protected override void OnMouseDown(IMouseMessage args)
         {
-            if (button == MouseButtons.Left)
+            if (args.Button == MouseButtons.Left)
             {
                 this.spriteIndex = BUTTON_SPRITE_PRESSED_INDEX;
             }
         }
 
-        protected override void OnMouseUp(MouseButtons button, Point point)
+        protected override void OnMouseUp(IMouseMessage args)
         {
-            if (button == MouseButtons.Left)
+            if (args.Button == MouseButtons.Left)
             {
                 this.spriteIndex = this.IsHover ? BUTTON_SPRITE_HOVER_INDEX : BUTTON_SPRITE_DEFAULT_INDEX;
-                if (this.GlobalBounds.Contains(point) && this.Enabled)
+                if (this.GlobalBounds.Contains(args.Location) && this.Enabled)
                 {
                     this.Click?.Invoke(this);
                 }

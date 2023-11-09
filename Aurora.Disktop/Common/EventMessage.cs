@@ -24,6 +24,15 @@ namespace Aurora.Disktop.Common
         MOUSE_DRAGMOVE = 107,
         MOUSE_DRAGOVER = 108,
 
+
+
+
+        KEY_DOWN = 200,
+        KEY_UP = 201,
+        TEXT_INPUT = 202,
+
+
+
     }
 
 
@@ -38,60 +47,71 @@ namespace Aurora.Disktop.Common
     }
 
 
-
-
-    public class EventMessage
+    public interface IInputMessage
     {
-
-        public EventMessage()
-        {
-                
-        }
-
-        public EventMessage(WM_MESSAGE msg)
-        {
-            this.Message = msg;
-        }
-
-
-
-        public static EventMessage MouseMessage(WM_MESSAGE msg, Point local, MouseButtons button)
-        {
-            var ret = new EventMessage();
-            ret.Message = msg;
-            ret.Location = local;
-            ret.Button = button;
-            return ret;
-        }
-
-
-
-        public static EventMessage MouseMessage(WM_MESSAGE msg, Point local)
-        {
-            var ret = new EventMessage();
-            ret.Message = msg;
-            ret.Location = local;
-            return ret;
-        }
-
-
-        public static EventMessage WheelMessage(WM_MESSAGE msg, Point local,Int32 wheel)
-        {
-            var ret = new EventMessage();
-            ret.Message = msg;
-            ret.Location = local;
-            ret.Wheel = wheel;
-            return ret;
-        }
-
-        public WM_MESSAGE Message { get; private set; }
-        public Point Location;
-        public MouseButtons Button;
-        public Int32 Wheel;
+        public WM_MESSAGE Message { get; }
+        public Boolean Shift { get; }
+        public Boolean Ctrl { get; }
     }
 
 
+    public interface IMouseMessage : IInputMessage
+    {
+        public Point Location { get; }
+        public MouseButtons Button { get; }
+        public Int32 Wheel { get; }
+
+    }
+
+    public interface IKeyboardMessage : IInputMessage
+    {
+        public Keys Key { get; }
+
+    }
+
+    public class IntenelMouseMessage : IMouseMessage
+    {
+
+        public IntenelMouseMessage()
+        {
+
+        }
+        public IntenelMouseMessage(WM_MESSAGE Message)
+        {
+            this.Message = Message;
+        }
+
+        public Boolean Shift { get; set; }
+        public Boolean Ctrl { get; set; }
+        public WM_MESSAGE Message { get; set; }
+        public Point Location { get; set; }
+        public MouseButtons Button { get; set; }
+        public Int32 Wheel { get; set; }
+
+    }
+
+    public class IntenelKeyBoardMessage : IKeyboardMessage
+    {
+
+        public IntenelKeyBoardMessage()
+        {
+
+        }
+        public IntenelKeyBoardMessage(WM_MESSAGE Message)
+        {
+            this.Message = Message;
+        }
+
+        public WM_MESSAGE Message { get; set; }
+        public Keys Key { get; set; }
+        public Boolean Shift { get; set; }
+        public Boolean Ctrl { get; set; }
+    }
 
 
+    public interface IMessageHandler
+    {
+        void ProcessMessage(IInputMessage msg);
+    }
 
 }

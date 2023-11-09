@@ -89,11 +89,11 @@ namespace Aurora.Disktop.Controls
         }
 
 
-        protected override void OnMouseUp(MouseButtons button, Point point)
+        protected override void OnMouseUp(IMouseMessage args)
         {
-            if (button == MouseButtons.Left)
+            if (args.Button == MouseButtons.Left)
             {
-                if (this.GlobalBounds.Contains(point) && this.Enabled)
+                if (this.GlobalBounds.Contains(args.Location) && this.Enabled)
                 {
                     this.Click?.Invoke(this);
                 }

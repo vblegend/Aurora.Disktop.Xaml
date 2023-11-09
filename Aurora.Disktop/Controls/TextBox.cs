@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.IMEHelper;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Aurora.Disktop.Controls
 {
@@ -29,7 +30,7 @@ namespace Aurora.Disktop.Controls
             if (this.CurrsorArea.Height != this.FontSize)
             {
                 this.CurrsorArea.Height = (Int32)this.FontSize;
-                this.CurrsorArea.Width = 3;
+                this.CurrsorArea.Width = 2;
             }
 
             if (gameTime.TotalGameTime - lastCurrsorTime > OneSecond)
@@ -58,16 +59,18 @@ namespace Aurora.Disktop.Controls
             //var local = this.GlobalBounds.Location;
             //this.Renderer.DrawString(this.Font, this.Text, new Vector2(local.X, local.Y), this.TextColor);
 
-
-
-
             if (this.finalTexture != null)
             {
                 this.Renderer.Draw(this.finalTexture, this.GlobalBounds, Color.White);
             }
 
             // 显示光标
-            if (this.currsorVisable) this.Renderer.FillRectangle(this.CurrsorArea.Add(this.GlobalBounds.Location), this.CursorColor);
+            if (this.currsorVisable)
+            {
+                var text = this._text.Substring(textArea.Left, this.cursorPosition - textArea.Left);
+                var lr =  this.MeasureStringWidth(text);
+                this.Renderer.FillRectangle(this.CurrsorArea.Add(this.GlobalBounds.Location).Add(new Point(lr, 0)), this.CursorColor);
+            }
             // 焦点突出显示边框
             if (this.IsFocus) this.Renderer.DrawRectangle(this.GlobalBounds, this.ActivedBorder);
         }
@@ -84,8 +87,12 @@ namespace Aurora.Disktop.Controls
             {
                 case 8:
                     // 退格
-                    if (this.Text.Length > 0)
-                        this.Text = this.Text.Remove(this.Text.Length - 1, 1);
+
+                    this.RemoveString();
+
+                    this.InvalidateDrawing();
+                    //if (this.Text.Length > 0)
+                    //    this.Text = this.Text.Remove(this.Text.Length - 1, 1);
                     break;
                 case 27:
                 case 13:
@@ -93,27 +100,95 @@ namespace Aurora.Disktop.Controls
                     break;
                 default:
                     // 输入
+                    var inputChar = "";
                     if (e.Character > UnicodeSimplifiedChineseMax)
                     {
-                        this.Text += "?";
+                        inputChar += "?";
                     }
                     else
                     {
-                        this.Text += e.Character;
+                        inputChar += e.Character;
                     }
-                    this.TextChanged();
+
+
+                    AppendString(inputChar);
+
+
+
+
+
+                    this.InvalidateDrawing();
                     break;
             }
         }
 
 
-        private void TextChanged()
+        private void RemoveString()
         {
+            if (this.cursorPosition > 0)
+            {
+                this.cursorPosition = Math.Max(this.cursorPosition - 1, 0);
+                this._text = this._text.Remove(this.cursorPosition, 1);
+                if (this.cursorPosition <= this.textArea.X && this.textArea.X > 0)
+                {
+                    this.textArea.X--;
+                }
+            }
+        }
+
+
+
+        private void AppendString(String text)
+        {
+
+            if (cursorPosition > this._text.Length) cursorPosition = this._text.Length;
+            if (cursorPosition == this._text.Length)
+            {
+                this._text += text;
+                cursorPosition+= text.Length;
+               
+            }
+            else
+            {
+
+
+
+
+            }
+
+          //  this.textArea.Width += this._text.Length;
+
+            var dis = this._text.Substring(this.textArea.Left, this.cursorPosition - this.textArea.Left);
+            if (this.MeasureStringWidth(dis) > this.globalBounds.Width)
+            {
+                this.textArea.X += text.Length;
+            }
+
+        }
+
+
+        private void InsertString(String text)
+        {
+
+
+
+        }
+
+        private Int32 MeasureStringWidth(String text)
+        {
+            var lr = this.Renderer.MeasureString(this.Font, this.FontSize, text);
+            return (Int32)lr.X;
+        }
+
+
+        private void InvalidateDrawing()
+        {
+     
             if (this.finalTexture != null)
             {
                 using (this.Renderer.TargetRender(this.finalTexture))
                 {
-                    var s =  this.Text.AsSpan().Slice(textArea.Left, textArea.Width);
+                    var s =  this.Text.AsSpan().Slice(textArea.Left, this.Length - textArea.Left);
                     this.Renderer.DrawString(this.Font, this.FontSize, s.ToString(), new Vector2(0, 0), this.TextColor);
 
                     //this.Font.MeasureString("")
@@ -130,6 +205,20 @@ namespace Aurora.Disktop.Controls
         #region 不会动的属性
 
 
+        public int CursorPosition
+        {
+            get { return cursorPosition; }
+            set
+            {
+                if (cursorPosition != value)
+                {
+                    cursorPosition = value;
+                    InvalidateDrawing();
+                }
+            }
+        }
+        private int cursorPosition;
+
         private void ActiveCurrsor()
         {
             this.currsorVisable = false;
@@ -141,7 +230,7 @@ namespace Aurora.Disktop.Controls
         {
             var oldTex = this.finalTexture;
             this.finalTexture = this.Renderer.CreateRenderTarget(this.GlobalBounds.Width, this.GlobalBounds.Height);
-            this.TextChanged();
+            this.InvalidateDrawing();
             if (oldTex != null)
             {
                 oldTex.Dispose();
@@ -228,7 +317,9 @@ namespace Aurora.Disktop.Controls
                 if (this._text != value)
                 {
                     this._text = value;
-                    this.TextChanged();
+                    //this.textArea.Width = this.Text.Length;
+                    this.cursorPosition = value.Length;
+                    this.InvalidateDrawing();
                 }
             }
         }

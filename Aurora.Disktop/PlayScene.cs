@@ -1,36 +1,27 @@
-﻿using Aurora.Disktop.Components;
+﻿using Aurora.Disktop.Common;
+using Aurora.Disktop.Components;
 using Aurora.Disktop.Controls;
 
 using Aurora.Disktop.Xaml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using SpriteFontPlus;
+using System;
 
 
 namespace Aurora.Disktop
 {
 
-    public interface KeyboardEvent
+
+
+
+
+
+
+    public abstract class PlayScene : Panel,IMessageHandler
     {
 
-        void OnKeyUp(InputKeyEventArgs e);
-
-        void OnTextInput(TextInputEventArgs e);
-
-        void OnKeyDown(InputKeyEventArgs e);
-
-    }
-
-
-
-
-
-
-
-    public abstract class PlayScene : Panel, KeyboardEvent
-    {
-
-        private EventProcManager eventManager;
+        private MessageHandler eventManager;
 
         public PlayScene(PlayWindow Window)
         {
@@ -38,7 +29,7 @@ namespace Aurora.Disktop
             this.Name = "ROOT";
             this.Window = Window;
             this.Cursor = new CursorComponent(Window);
-            this.eventManager = new EventProcManager(this);
+            this.eventManager = new MessageHandler(this);
             this.Window.Window.ClientSizeChanged += Window_ClientSizeChanged;
             this.Size = new Point(this.Window.Graphics.PreferredBackBufferWidth, this.Window.Graphics.PreferredBackBufferHeight);
         }
@@ -77,19 +68,8 @@ namespace Aurora.Disktop
         {
             this.OnUpdate(gameTime);
             this.Cursor.Update(gameTime);
-            var currentMouseState = Mouse.GetState(this.Window.Window);
-
-            if (currentMouseState.X > 0 && currentMouseState.Y > 0)
-            {
-                if (this.Window.IsActive) this.eventManager.Update(gameTime, currentMouseState);
-            }
-
             (this as IRenderable).ProcessUpdate(gameTime);
         }
-
-
-
-
 
         public void LoadXamlFromFile(String fileName)
         {
@@ -98,22 +78,10 @@ namespace Aurora.Disktop
             parser.Parse(xml);
         }
 
-
-        void KeyboardEvent.OnKeyUp(InputKeyEventArgs e)
+        void IMessageHandler.ProcessMessage(IInputMessage msg)
         {
-
+            this.eventManager.ProcessMessage(this, msg);
         }
-
-        void KeyboardEvent.OnKeyDown(InputKeyEventArgs e)
-        {
-
-        }
-
-        void KeyboardEvent.OnTextInput(TextInputEventArgs e)
-        {
-
-        }
-
 
         public Boolean Debuging;
         public String DefaultFont { get; set; }

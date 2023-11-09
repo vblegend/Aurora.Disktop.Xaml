@@ -23,21 +23,21 @@ namespace Aurora.Disktop.Controls
             base.OnRender(gameTime);
         }
 
-        protected override void OnMouseDown(MouseButtons button, Point point)
+        protected override void OnMouseDown(IMouseMessage args)
         {
-            if (button == MouseButtons.Left && !this.Pinned && 
+            if (args.Button == MouseButtons.Left && !this.Pinned && 
                 (this.VerticalAlignment == XamlVerticalAlignment.Top || this.VerticalAlignment == XamlVerticalAlignment.Bottom) &&
                 (this.HorizontalAlignment == XamlHorizontalAlignment.Left || this.HorizontalAlignment == XamlHorizontalAlignment.Right))
             {
-                dropPosition = point;
+                dropPosition = args.Location;
             }
         }
 
-        protected override void OnMouseMove(Point point)
+        protected override void OnMouseMove(IMouseMessage args)
         {
             if (dropPosition.HasValue)
             {
-                var offset = point.Sub(dropPosition.Value);
+                var offset = args.Location.Sub(dropPosition.Value);
                 var l = this.Margin.Left;
                 var r = this.Margin.Right;
                 var t = this.Margin.Top;
@@ -60,13 +60,13 @@ namespace Aurora.Disktop.Controls
                 {
                     updatable.LayoutUpdate(true);
                 }
-                dropPosition = point;
+                dropPosition = args.Location;
             }
         }
 
-        protected override void OnMouseUp(MouseButtons button, Point point)
+        protected override void OnMouseUp(IMouseMessage args)
         {
-            if (button == MouseButtons.Left)
+            if (args.Button == MouseButtons.Left)
             {
                 dropPosition = null;
             }

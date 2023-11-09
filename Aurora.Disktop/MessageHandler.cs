@@ -1,14 +1,10 @@
 ﻿using Aurora.Disktop.Common;
 using Aurora.Disktop.Controls;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
-using System.Xml.Linq;
 
 
 namespace Aurora.Disktop
 {
-    internal class EventProcManager
+    internal class MessageHandler
     {
         private readonly Control Root;
 
@@ -31,14 +27,38 @@ namespace Aurora.Disktop
 
         internal List<Control> FocusPath { get; private set; }
 
-        public EventProcManager(Control control)
+        public MessageHandler(Control control)
         {
             this.Root = control;
             this.FocusPath = new List<Control>();
         }
 
 
-        private Control ProcessMessage(Control control, EventMessage msg)
+
+        internal Control ProcessMessage(Control control, IInputMessage msg)
+        {
+            if (msg is IMouseMessage mouseMessage)
+            {
+                return this.HandleMouseMessage(control, mouseMessage);
+            }
+            else if (msg is IKeyboardMessage keyboardMessage)
+            {
+                return this.HandleKeyboardMessage(control, keyboardMessage);
+            }
+            return null;
+        }
+
+
+        internal Control HandleKeyboardMessage(Control control, IKeyboardMessage msg)
+        {
+            if (this.FocusPath.Count > 0 && this.FocusPath[0] == control) return null;
+            var focus = this.FocusPath[0];
+            (focus as IXamlEventHandler)?.MessageHandler(msg);
+            return focus;
+        }
+
+
+        internal Control HandleMouseMessage(Control control, IMouseMessage msg)
         {
             if (control == null) return null;
             if (control.IgnoreMouseEvents) return null;
@@ -105,12 +125,12 @@ namespace Aurora.Disktop
                 {
                     if (this.Hovering != null)
                     {
-                        (Hovering as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.MOUSE_LEAVE));
+                        (Hovering as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.MOUSE_LEAVE));
                     }
                     this.Hovering = control;
                     if (this.Hovering != null)
                     {
-                        (Hovering as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.MOUSE_ENTER));
+                        (Hovering as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.MOUSE_ENTER));
                     }
                 }
                 controlHandler?.MessageHandler(msg);
@@ -146,87 +166,26 @@ namespace Aurora.Disktop
             foreach (var lostFocus in this.FocusPath.Except(currentPath))
             {
                 //Trace.WriteLine($"Focus Lost ({lostFocus.Name})");
-                (lostFocus as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.LOSTFOCUS));
+                (lostFocus as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.LOSTFOCUS));
             }
             foreach (var gotFocus in currentPath.Except(this.FocusPath).Reverse())
             {
                 //Trace.WriteLine($"Focus Got ({gotFocus.Name})");
-                (gotFocus as IXamlEventHandler)?.MessageHandler(new EventMessage(WM_MESSAGE.GOTFOCUS));
+                (gotFocus as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.GOTFOCUS));
             }
             this.FocusPath = currentPath;
+
+
+            if (this.FocusPath.Count > 0)
+            {
+                this.Activeed = this.FocusPath[0];
+            }
+            else
+            {
+                this.Activeed = null;
+            }
+          
         }
 
-
-
-
-
-
-
-
-
-
-
-
-        private Int32 ScrollWheelValue;
-        private ButtonState LeftButton;
-        private ButtonState MiddleButton;
-        private ButtonState RightButton;
-        private Point MousePosition;
-
-        internal void Update(GameTime gameTime, MouseState state)
-        {
-            if (state.ScrollWheelValue > ScrollWheelValue)
-            {
-                this.ProcessMessage(this.Root, EventMessage.WheelMessage(WM_MESSAGE.MOUSE_WHEEL, state.Position, state.ScrollWheelValue - ScrollWheelValue));
-            }
-            else if (state.ScrollWheelValue < ScrollWheelValue)
-            {
-                this.ProcessMessage(this.Root, EventMessage.WheelMessage(WM_MESSAGE.MOUSE_WHEEL, state.Position, state.ScrollWheelValue - ScrollWheelValue));
-            }
-            this.ScrollWheelValue = state.ScrollWheelValue;
-
-            if (state.LeftButton != this.LeftButton)
-            {
-                if (state.LeftButton == ButtonState.Pressed)
-                {
-                    this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_DOWN, state.Position, MouseButtons.Left));
-                }
-                else
-                {
-                    this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_UP, state.Position, MouseButtons.Left));
-                }
-                this.LeftButton = state.LeftButton;
-            }
-            if (state.RightButton != this.RightButton)
-            {
-                if (state.RightButton == ButtonState.Pressed)
-                {
-                    this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_DOWN, state.Position, MouseButtons.Right));
-                }
-                else
-                {
-                    this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_UP, state.Position, MouseButtons.Right));
-                }
-                this.RightButton = state.RightButton;
-            }
-            if (state.MiddleButton != this.MiddleButton)
-            {
-                if (state.MiddleButton == ButtonState.Pressed)
-                {
-                    this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_DOWN, state.Position, MouseButtons.Middle));
-                }
-                else
-                {
-                    this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_UP, state.Position, MouseButtons.Middle));
-                }
-                this.MiddleButton = state.MiddleButton;
-            }
-            if (!state.Position.Equals(this.MousePosition))
-            {
-                MousePosition = state.Position;
-                this.ProcessMessage(this.Root, EventMessage.MouseMessage(WM_MESSAGE.MOUSE_MOVE, state.Position));
-            }
-
-        }
     }
 }
