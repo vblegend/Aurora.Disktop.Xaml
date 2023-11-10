@@ -17,14 +17,6 @@ namespace Aurora.UI.Controls
             this.VerticalContentAlignment = XamlVerticalAlignment.Center;
         }
 
-        protected override void OnRender(GameTime gameTime)
-        {
-            if (this.Background != null)
-            {
-                this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
-            }
-        }
-
 
         void IRenderable.ProcessUpdate(GameTime gameTime)
         {
@@ -48,6 +40,22 @@ namespace Aurora.UI.Controls
             GraphicContext.ContextState? state = this.Renderer.SetState(effect);
             this.OnRender(gameTime);
             if (state.HasValue) this.Renderer.RestoreState(state.Value);
+            this.DrawDebugBounds();
+        }
+
+
+        protected override void OnRender(GameTime gameTime)
+        {
+            if (this.Background != null)
+            {
+                this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
+            }
+            this.OnDrawContent(gameTime, Vector2.Zero);
+        }
+
+
+        protected virtual void OnDrawContent(GameTime gameTime, Vector2 offset)
+        {
             if (this.content is Control control && control.Visible)
             {
                 if (this.content is IRenderable renderable)
@@ -57,15 +65,16 @@ namespace Aurora.UI.Controls
             }
             else if (this.content != null)
             {
-                DrawContentString();
+                DrawContentString(offset);
             }
-            this.DrawDebugBounds();
         }
 
-        protected virtual void DrawContentString()
+
+        protected virtual void DrawContentString(Vector2 localOffset)
         {
             var content = this.content.ToString();
             var size = this.Renderer.MeasureString(this.Font, this.FontSize, content);
+            size.Y = this.FontSize;
             var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
             var local = this.GlobalLocation.ToVector2() + offset;
 
@@ -86,13 +95,13 @@ namespace Aurora.UI.Controls
             {
                 local.Y = this.GlobalBounds.Bottom - size.Y;
             }
-
+            local += localOffset;
 
             this.Renderer.DrawString(this.Font, this.FontSize, content, local, this.TextColor);
         }
 
 
- 
+
 
 
         void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)

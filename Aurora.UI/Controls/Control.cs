@@ -1,7 +1,6 @@
 ﻿using Aurora.UI.Common;
 using Aurora.UI.Graphics;
 using Microsoft.Xna.Framework;
-using SpriteFontPlus;
 using System.Diagnostics;
 
 
@@ -302,7 +301,6 @@ namespace Aurora.UI.Controls
         {
             if (this.Background != null)
             {
-
                 this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
             }
         }

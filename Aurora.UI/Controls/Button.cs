@@ -5,20 +5,24 @@ using System.Diagnostics;
 
 namespace Aurora.UI.Controls
 {
+
+
+
+
     public class Button : ContentControl
     {
 
-        private const Int32 BUTTON_SPRITE_DEFAULT_INDEX = 0;
+        protected const Int32 BUTTON_SPRITE_DEFAULT_INDEX = 0;
 
-        private const Int32 BUTTON_SPRITE_HOVER_INDEX = 1;
+        protected const Int32 BUTTON_SPRITE_HOVER_INDEX = 1;
 
-        private const Int32 BUTTON_SPRITE_PRESSED_INDEX = 2;
+        protected const Int32 BUTTON_SPRITE_PRESSED_INDEX = 2;
 
-        private const Int32 BUTTON_SPRITE_DISABLED_INDEX = 0;
+        protected const Int32 BUTTON_SPRITE_DISABLED_INDEX = 0;
 
         public Button()
         {
-            this.spriteIndex = BUTTON_SPRITE_DEFAULT_INDEX;
+            this.SpriteIndex = ButtonIndexs.Default;
         }
 
 
@@ -28,7 +32,7 @@ namespace Aurora.UI.Controls
         {
             if (args.Button == MouseButtons.Left)
             {
-                this.spriteIndex = BUTTON_SPRITE_PRESSED_INDEX;
+                this.SpriteIndex = ButtonIndexs.Pressed;
             }
         }
 
@@ -36,7 +40,7 @@ namespace Aurora.UI.Controls
         {
             if (args.Button == MouseButtons.Left)
             {
-                this.spriteIndex = this.IsHover ? BUTTON_SPRITE_HOVER_INDEX : BUTTON_SPRITE_DEFAULT_INDEX;
+                this.SpriteIndex = this.IsHover ? ButtonIndexs.Hover : ButtonIndexs.Default;
                 if (this.GlobalBounds.Contains(args.Location) && this.Enabled)
                 {
                     this.Click?.Invoke(this);
@@ -47,17 +51,17 @@ namespace Aurora.UI.Controls
 
         protected override void OnMouseEnter()
         {
-            if (this.spriteIndex == BUTTON_SPRITE_DEFAULT_INDEX)
+            if (this.SpriteIndex == ButtonIndexs.Default)
             {
-                this.spriteIndex = BUTTON_SPRITE_HOVER_INDEX;
+                this.SpriteIndex = ButtonIndexs.Hover;
             }
         }
 
         protected override void OnMouseLeave()
         {
-            if (this.spriteIndex == BUTTON_SPRITE_HOVER_INDEX)
+            if (this.SpriteIndex == ButtonIndexs.Hover)
             {
-                this.spriteIndex = BUTTON_SPRITE_DEFAULT_INDEX;
+                this.SpriteIndex = ButtonIndexs.Default;
             }
         }
 
@@ -66,17 +70,15 @@ namespace Aurora.UI.Controls
         {
             var dest = new Rectangle(this.GlobalBounds.Left + this.Padding.Left, this.GlobalBounds.Top + this.Padding.Top, this.GlobalBounds.Width - this.Padding.Left - this.Padding.Right, this.GlobalBounds.Height - this.Padding.Top - this.Padding.Bottom);
             this.RenderButton(dest);
+            var offset = new Vector2((this.Enabled && this.IsPressed) ? 1 : 0);
+            this.OnDrawContent(gameTime, offset);
         }
 
 
         protected void RenderButton(Rectangle rectangle)
         {
-            //GraphicContext.ContextState? state = null;
-            if (!this.Enabled)
-            {
-                this.spriteIndex = BUTTON_SPRITE_DISABLED_INDEX;
-                //state = this.Renderer.SetState(effect: Effects.Disabled);
-            }
+            if (!this.Enabled) this.SpriteIndex = ButtonIndexs.Disabled;
+
             // 渲染背景，如果有
             if (this.Background != null)
             {
@@ -85,25 +87,35 @@ namespace Aurora.UI.Controls
             // 渲染按钮状态
             if (this.sprite != null)
             {
-                var sourceRect = sprite.GetFrameRectangle(this.spriteIndex);
+                var sourceRect = sprite.GetFrameRectangle((Int32)this.SpriteIndex);
                 this.Renderer.Draw(sprite.Texture, rectangle, sourceRect, Color.White);
             }
-            //if (state.HasValue) this.Renderer.RestoreState(state.Value);
         }
 
 
 
 
-        protected override void DrawContentString()
+        protected override void OnKeyDown(IKeyboardMessage args)
         {
-            var content = this.content.ToString();
-            var size = this.Renderer.MeasureString(this.Font, this.FontSize, content);
-            var offset = (this.GlobalBounds.Size.ToVector2() - size) / 2;
-            var local = this.GlobalLocation.ToVector2() + offset;
-            if (this.Enabled && this.IsPressed) local += new Vector2(1, 1);
-            this.Renderer.DrawString(this.Font, this.FontSize, content, local, this.Enabled ? this.TextColor : Color.Gray);
+            if (!this.Enabled) return;
+            if (args.Key == Microsoft.Xna.Framework.Input.Keys.Space)
+            {
+                this.IsPressed = true;
+                this.SpriteIndex = ButtonIndexs.Pressed;
+            }
         }
 
+
+        protected override void OnKeyUp(IKeyboardMessage args)
+        {
+            if (!this.Enabled) return;
+            if (args.Key == Microsoft.Xna.Framework.Input.Keys.Space)
+            {
+                this.Click?.Invoke(this);
+                this.IsPressed = false;
+                this.SpriteIndex = ButtonIndexs.Default;
+            }
+        }
 
 
         /// <summary>
@@ -147,7 +159,7 @@ namespace Aurora.UI.Controls
 
         // Declare the event.
         public virtual event XamlClickEventHandler<Button> Click;
-        private Int32 spriteIndex;
+        protected ButtonIndexs SpriteIndex;
         private SpriteObject sprite;
     }
 }

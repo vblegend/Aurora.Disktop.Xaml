@@ -1,6 +1,5 @@
 ﻿using Aurora.UI.Common;
 using Aurora.UI.Controls;
-using System.Drawing;
 using System.Xml;
 
 namespace Aurora.UI.Xaml.System
@@ -22,7 +21,9 @@ namespace Aurora.UI.Xaml.System
                     throw new Exception("font path cannot be empty");
                 }
                 var data = File.ReadAllBytes(path);
-                AuroraState.FontManager.Register(name, data);
+                //AuroraState.FontManager.Register(name, data);
+
+                AuroraState.FontSystem.AddFontMem(name, data);
             }
         }
     }

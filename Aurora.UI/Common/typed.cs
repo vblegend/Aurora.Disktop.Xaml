@@ -5,6 +5,25 @@ using Microsoft.Xna.Framework;
 
 namespace Aurora.UI.Common
 {
+    public enum ButtonIndexs
+    {
+        /// <summary>
+        /// 显示默认帧
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// 显示鼠标悬浮帧
+        /// </summary>
+        Hover = 1,
+        /// <summary>
+        /// 显示鼠标按下帧
+        /// </summary>
+        Pressed = 2,
+        /// <summary>
+        /// 显示禁用帧
+        /// </summary>
+        Disabled = 0
+    }
 
     public enum XamlHorizontalAlignment
     {

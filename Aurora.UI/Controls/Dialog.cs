@@ -69,6 +69,7 @@ namespace Aurora.UI.Controls
             if (args.Button == MouseButtons.Left)
             {
                 dropPosition = null;
+                this.Click?.Invoke(this);
             }
         }
 
@@ -88,7 +89,7 @@ namespace Aurora.UI.Controls
         public override bool HitTest(Point position)
         {
             if (!this.GlobalBounds.Contains(position)) return false;
-            if (this.Background is TextureBrush brush )
+            if (this.Background is TextureBrush brush && brush.FillMode == FillMode.None)
             {
                 var offset = position.Sub(this.GlobalLocation);
                 if (brush.Texture.GetPixel(offset, out var color))

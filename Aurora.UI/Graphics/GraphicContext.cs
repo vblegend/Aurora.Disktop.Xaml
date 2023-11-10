@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using SpriteFontPlus;
-using System.Diagnostics;
+
 
 namespace Aurora.UI.Graphics
 {
@@ -428,7 +427,6 @@ namespace Aurora.UI.Graphics
             // 计算边框的大小
             Point borderSize = new Point(texure.Width / 3, texure.Height / 3);
             var tex = texure.Tex();
-            //var state = this.SetState(texure.BlendState);
             // 绘制九宫格的四个角
             this.SpriteBatch.Draw(tex, new Rectangle(dest.X, dest.Y, borderSize.X, borderSize.Y), new Rectangle(0, 0, borderSize.X, borderSize.Y), Color.White);
             this.SpriteBatch.Draw(tex, new Rectangle(dest.X + dest.Width - borderSize.X, dest.Y, borderSize.X, borderSize.Y), new Rectangle(tex.Width - borderSize.X, 0, borderSize.X, borderSize.Y), Color.White);
@@ -460,7 +458,6 @@ namespace Aurora.UI.Graphics
                     this.SpriteBatch.Draw(tex, new Rectangle(x, y, width, height), new Rectangle(borderSize.X, borderSize.Y, width, height), Color.White);
                 }
             }
-            //if (state != null) this.RestoreState(state.Value);
         }
 
 
@@ -468,10 +465,7 @@ namespace Aurora.UI.Graphics
         public float DrawString(String font, Single fontSize, string _string_, Vector2 pos, Color color)
         {
             var state = this.SetState(blendState: null);
-            var fontID = AuroraState.FontManager.GetFontID(font);
-            AuroraState.FontManager.Font.Size = fontSize;
-            AuroraState.FontManager.Font.FontId = fontID;
-            var val = AuroraState.FontManager.Font.DrawString(this.SpriteBatch, _string_, pos, color);
+            var val = AuroraState.FontSystem.DrawString(this.SpriteBatch, font, fontSize, _string_, pos, color);
             if (state != null) this.RestoreState(state.Value);
             return val;
         }
@@ -480,28 +474,19 @@ namespace Aurora.UI.Graphics
         public float DrawString(String font, Single fontSize, string _string_, Vector2 pos, Color color, Vector2 scale)
         {
             var state = this.SetState(blendState: null);
-            var fontID = AuroraState.FontManager.GetFontID(font);
-            AuroraState.FontManager.Font.Size = fontSize;
-            AuroraState.FontManager.Font.FontId = fontID;
-            var val = AuroraState.FontManager.Font.DrawString(this.SpriteBatch, _string_, pos, color, scale);
+            var val = AuroraState.FontSystem.DrawString(this.SpriteBatch, font, fontSize, _string_, pos, color, scale);
             if (state != null) this.RestoreState(state.Value);
             return val;
         }
 
-        public Vector2 MeasureString(String font,Single fontSize, string text)
+        public Vector2 MeasureString(String font, Single fontSize, string text)
         {
-            var fontID = AuroraState.FontManager.GetFontID(font);
-            AuroraState.FontManager.Font.Size = fontSize;
-            AuroraState.FontManager.Font.FontId = fontID;
-            return AuroraState.FontManager.Font.MeasureString(text);
+            return AuroraState.FontSystem.MeasureString(font, fontSize, text);
         }
 
         public Rectangle GetTextBounds(String font, Single fontSize, Vector2 position, string text)
         {
-            var fontID = AuroraState.FontManager.GetFontID(font);
-            AuroraState.FontManager.Font.Size = fontSize;
-            AuroraState.FontManager.Font.FontId = fontID;
-            return AuroraState.FontManager.Font.GetTextBounds(position, text);
+            return AuroraState.FontSystem.GetTextBounds(font, fontSize, position, text);
         }
 
 

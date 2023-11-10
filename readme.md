@@ -97,3 +97,13 @@ In theory, it's cross-platform
 
 </Template>
 ```
+
+
+
+## Credits
+* [MonoGame](http://www.monogame.net/)
+* [SpriteFontPlus 7.0.22 Source Code](https://github.com/rds1983/SpriteFontPlus)
+
+
+
+ 

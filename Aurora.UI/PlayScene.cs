@@ -4,9 +4,6 @@ using Aurora.UI.Controls;
 
 using Aurora.UI.Xaml;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using SpriteFontPlus;
-using System;
 
 
 namespace Aurora.UI

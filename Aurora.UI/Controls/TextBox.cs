@@ -2,10 +2,8 @@
 using Aurora.UI.Components;
 using Aurora.UI.Graphics;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGame.IMEHelper;
-using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace Aurora.UI.Controls
 {
@@ -13,6 +11,7 @@ namespace Aurora.UI.Controls
     {
         public TextBox()
         {
+            this.maxLength = 100;
             this.Size = new Point(85, 22);
             this.TextColor = Color.White;
             this.ActivedBorder = ColorExtends.FromHtml("#00a2e8");
@@ -317,6 +316,10 @@ namespace Aurora.UI.Controls
                 if (this._text != value)
                 {
                     this._text = value;
+                    if (this._text.Length > this.maxLength)
+                    {
+                        this._text = this._text.Substring(0, this.maxLength);
+                    }
                     //this.textArea.Width = this.Text.Length;
                     this.cursorPosition = value.Length;
                     this.InvalidateDrawing();
@@ -329,7 +332,26 @@ namespace Aurora.UI.Controls
             get => this._text.Length;
         }
 
-
+        public Int32 MaxLength
+        {
+            get
+            {
+                return this.maxLength;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new InvalidDataException("");
+                }
+                this.maxLength = value;
+                if (this._text.Length > this.maxLength)
+                {
+                    this._text = this._text.Substring(0, this.maxLength);
+                }
+            }
+        }
+        private Int32 maxLength;
         private String _text;
         #endregion
 

@@ -58,6 +58,7 @@ namespace Aurora.UI.Controls
                     this.Renderer.DrawTitle(texture, this.GlobalBounds, Color.White);
                 }
             }
+            
         }
 
         protected override void CalcAutoSize()
