@@ -1,6 +1,6 @@
-﻿using Aurora.Disktop;
-using Aurora.Disktop.Controls;
-using Aurora.Disktop.Graphics;
+﻿using Aurora.UI;
+using Aurora.UI.Controls;
+using Aurora.UI.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
@@ -29,7 +29,7 @@ namespace Aurora.Example
 
 
 
-            //byte[] bytecode = File.ReadAllBytes(@"D:\SourceCode\Aurora\Aurora.Disktop\Shaders\disable_gl.mgfx");
+            //byte[] bytecode = File.ReadAllBytes(@"D:\SourceCode\Aurora\Aurora.UI\Shaders\disable_gl.mgfx");
             //this.disableEffect = new Effect(this.Renderer.GraphicsDevice, bytecode);
 
             //using (var render = this.Renderer.TargetRender(targetTmp))
