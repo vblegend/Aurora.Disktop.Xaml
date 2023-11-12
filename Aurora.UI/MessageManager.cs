@@ -102,11 +102,11 @@ namespace Aurora.UI
             }
             if (state.ScrollWheelValue > ScrollWheelValue)
             {
-                this.DispatchMouseEvent(WM_MESSAGE.MOUSE_DOWN, state.Position, wheel: state.ScrollWheelValue - ScrollWheelValue);
+                this.DispatchMouseEvent(WM_MESSAGE.MOUSE_WHEEL, state.Position, wheel: state.ScrollWheelValue - ScrollWheelValue);
             }
             else if (state.ScrollWheelValue < ScrollWheelValue)
             {
-                this.DispatchMouseEvent(WM_MESSAGE.MOUSE_DOWN, state.Position, wheel: state.ScrollWheelValue - ScrollWheelValue);
+                this.DispatchMouseEvent(WM_MESSAGE.MOUSE_WHEEL, state.Position, wheel: state.ScrollWheelValue - ScrollWheelValue);
             }
             this.ScrollWheelValue = state.ScrollWheelValue;
 

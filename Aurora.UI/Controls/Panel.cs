@@ -56,6 +56,13 @@ namespace Aurora.UI.Controls
             return control;
         }
 
+        public void Clear()
+        {
+            this.Children.Clear();
+        }
+
+
+
         public int IndexOf(Control control)
         {
             return this.Children.IndexOf(control);

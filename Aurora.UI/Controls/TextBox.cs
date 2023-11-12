@@ -243,6 +243,7 @@ namespace Aurora.UI.Controls
             imeHandler.TextInput += ImeHandler_TextInput;
             imeHandler.StartTextComposition();
             this.ActiveCurrsor();
+            base.OnGotFocus();
         }
 
         protected override void OnLostFocus()
@@ -251,16 +252,19 @@ namespace Aurora.UI.Controls
             imeHandler.StopTextComposition();
             imeHandler.TextInput -= ImeHandler_TextInput;
             this.currsorVisable = false;
+            base.OnLostFocus();
         }
 
         protected override void OnMouseEnter()
         {
             this.Root.Cursor.Push(Cursors.Text);
+            base.OnMouseEnter();
         }
 
         protected override void OnMouseLeave()
         {
             this.Root.Cursor.Pop();
+            base.OnMouseLeave();
         }
 
 
@@ -313,15 +317,16 @@ namespace Aurora.UI.Controls
             get => this._text;
             set
             {
-                if (this._text != value)
+                var neatValue = value.Replace("\n", "");
+                if (this._text != neatValue)
                 {
-                    this._text = value;
+                    this._text = neatValue;
                     if (this._text.Length > this.maxLength)
                     {
                         this._text = this._text.Substring(0, this.maxLength);
                     }
                     //this.textArea.Width = this.Text.Length;
-                    this.cursorPosition = value.Length;
+                    this.cursorPosition = this._text.Length;
                     this.InvalidateDrawing();
                 }
             }

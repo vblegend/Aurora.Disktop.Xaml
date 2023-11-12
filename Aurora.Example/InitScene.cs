@@ -1,4 +1,5 @@
 ﻿using Aurora.UI;
+using Aurora.UI.Common;
 using Aurora.UI.Controls;
 using Aurora.UI.Graphics;
 using Microsoft.Xna.Framework;
@@ -9,6 +10,11 @@ namespace Aurora.Example
 {
     internal class InitScene : PlayScene
     {
+        private SimpleTexture[] itemEffect = new SimpleTexture[0];
+        private SimpleTexture[] items = new SimpleTexture[0];
+
+
+
         public InitScene(PlayWindow Window) : base(Window)
         {
 
@@ -26,31 +32,8 @@ namespace Aurora.Example
             }
 
 
-
-
-
-            //byte[] bytecode = File.ReadAllBytes(@"D:\SourceCode\Aurora\Aurora.UI\Shaders\disable_gl.mgfx");
-            //this.disableEffect = new Effect(this.Renderer.GraphicsDevice, bytecode);
-
-            //using (var render = this.Renderer.TargetRender(targetTmp))
-            //{
-            //    this.Renderer.SetState(effect: this.disableEffect);
-            //    this.Renderer.Clear(Color.Yellow);
-            //    this.Renderer.Draw(this.texture, new Vector2(0, 0), Color.White);
-            //}
-
-
-
-            //using (this.Renderer.TargetRender(this.target))
-            //{
-
-            //    this.Renderer.Clear(Color.Sienna);
-            //    this.Renderer.Draw(this.texture, new Vector2(0, 0), Color.White);
-
-
-            //    //this.Renderer.SetBlendState(null, null);
-            //    this.Renderer.Draw(targetTmp, new Vector2(64, 0), Color.White);
-            //}
+            this.items = AuroraState.PackageManager["ui"].ReadTextures(112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127);
+            this.itemEffect = AuroraState.PackageManager["ui"].ReadTextures(96,97,98,99,100,101,102,103,104,105);
         }
 
 
@@ -96,17 +79,60 @@ namespace Aurora.Example
 
         }
 
-
-
-        protected override void OnUpdate(GameTime gameTime)
-        {
-
-        }
-
         protected override async Task OnUnInitialize()
         {
 
         }
+
+
+        protected override void OnUpdate(GameTime gameTime)
+        {
+            if (gameTime.TotalGameTime - lastEffect > effectInterval)
+            {
+                effectIndex = ++effectIndex % itemEffect.Length;
+                lastEffect = gameTime.TotalGameTime;
+            }
+
+
+        }
+        private TimeSpan effectInterval = new TimeSpan(0, 0, 0, 0, 200);
+        private TimeSpan lastEffect;
+        private Int32 effectIndex = 0;
+        public void ImageMatrix_ItemDrawing(ItemMatrix sender, ImageMatrixDrawEventArgs<IconMaterixItem> args)
+        {
+
+            args.Renderer.Draw(this.items[args.Index % 16], args.Rectangle.Location.ToVector2(), Color.White);
+
+
+            if (args.Index % (args.Item.Row +1) == 0)
+            {
+                args.Renderer.Draw(this.itemEffect[effectIndex], args.Rectangle.Center.ToVector2(), Color.White);
+            }
+
+
+        }
+
+
+        public void ImageMatrix_ItemMenu(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        {
+            Trace.WriteLine($"POP Menu: {args.Index} {args.Item}");
+        }
+
+        public void ImageMatrix_ItemClick(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        {
+            Trace.WriteLine($"Click: {args.Index} {args.Item}");
+        }
+
+        public void ImageMatrix_ItemMouseLeave(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        {
+            Trace.WriteLine($"Mouse Leave: {args.Index} {args.Item}");
+        }
+
+        public void ImageMatrix_ItemMouseEnter(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        {
+            Trace.WriteLine($"Mouse Enter: {args.Index} {args.Item}");
+        }
+
 
 
 

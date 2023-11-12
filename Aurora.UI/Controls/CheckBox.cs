@@ -21,13 +21,13 @@ namespace Aurora.UI.Controls
             if (this.Value && this.Icon != null)
             {
                 var iconDest = new Rectangle(this.GlobalBounds.Location, new Point(this.GlobalBounds.Height));
-                if (this.Enabled && this.IsPressed)
+                if (this.Enabled && this.SpriteIndex == ButtonIndexs.Pressed)
                 {
                     iconDest.Location += new Point(1, 1);
                 }
                 this.Renderer.Draw(this.Icon, iconDest, Color.White);
             }
-            var offset = new Vector2((this.Enabled && this.IsPressed) ? 1 : 0);
+            var offset = new Vector2((this.Enabled && this.SpriteIndex == ButtonIndexs.Pressed) ? 1 : 0);
             offset.X += this.Padding.Left + this.Height + (Int32)(this.FontSize * 0.2);
             this.OnDrawContent(gameTime, offset);
         }
@@ -71,7 +71,6 @@ namespace Aurora.UI.Controls
             if (!this.Enabled) return;
             if (args.Key == Microsoft.Xna.Framework.Input.Keys.Space)
             {
-                this.IsPressed = true;
                 this.SpriteIndex = ButtonIndexs.Pressed;
             }
         }
@@ -84,7 +83,6 @@ namespace Aurora.UI.Controls
             {
                 this.Value = !this.Value;
                 this.Click?.Invoke(this);
-                this.IsPressed = false;
                 this.SpriteIndex = ButtonIndexs.Default;
             }
         }

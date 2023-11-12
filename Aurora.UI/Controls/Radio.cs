@@ -56,15 +56,16 @@ namespace Aurora.UI.Controls
         {
             if (args.Button == MouseButtons.Left)
             {
+                this.SpriteIndex = this.IsHover ? ButtonIndexs.Hover : ButtonIndexs.Default;
                 if (this.GlobalBounds.Contains(args.Location) && this.Enabled)
                 {
                     if (this.Value) return;
                     if (this.Parent is IRadioActived actived) actived.RadioActived(this);
-                    this.Value = !this.Value;
+                    this.Value = true;
                     this.Click?.Invoke(this);
                 }
             }
-            this.SpriteIndex = this.IsHover ? ButtonIndexs.Hover : ButtonIndexs.Default;
+
         }
 
 

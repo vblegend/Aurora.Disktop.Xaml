@@ -11,22 +11,10 @@ namespace Aurora.UI.Controls
 
     public class Button : ContentControl
     {
-
-        protected const Int32 BUTTON_SPRITE_DEFAULT_INDEX = 0;
-
-        protected const Int32 BUTTON_SPRITE_HOVER_INDEX = 1;
-
-        protected const Int32 BUTTON_SPRITE_PRESSED_INDEX = 2;
-
-        protected const Int32 BUTTON_SPRITE_DISABLED_INDEX = 0;
-
         public Button()
         {
             this.SpriteIndex = ButtonIndexs.Default;
         }
-
-
-
 
         protected override void OnMouseDown(IMouseMessage args)
         {
@@ -55,6 +43,7 @@ namespace Aurora.UI.Controls
             {
                 this.SpriteIndex = ButtonIndexs.Hover;
             }
+            base.OnMouseEnter();
         }
 
         protected override void OnMouseLeave()
@@ -63,6 +52,7 @@ namespace Aurora.UI.Controls
             {
                 this.SpriteIndex = ButtonIndexs.Default;
             }
+            base.OnMouseLeave();
         }
 
 
@@ -70,7 +60,7 @@ namespace Aurora.UI.Controls
         {
             var dest = new Rectangle(this.GlobalBounds.Left + this.Padding.Left, this.GlobalBounds.Top + this.Padding.Top, this.GlobalBounds.Width - this.Padding.Left - this.Padding.Right, this.GlobalBounds.Height - this.Padding.Top - this.Padding.Bottom);
             this.RenderButton(dest);
-            var offset = new Vector2((this.Enabled && this.IsPressed) ? 1 : 0);
+            var offset = new Vector2((this.Enabled && this.SpriteIndex == ButtonIndexs.Pressed) ? 1 : 0);
             this.OnDrawContent(gameTime, offset);
         }
 
@@ -100,7 +90,6 @@ namespace Aurora.UI.Controls
             if (!this.Enabled) return;
             if (args.Key == Microsoft.Xna.Framework.Input.Keys.Space)
             {
-                this.IsPressed = true;
                 this.SpriteIndex = ButtonIndexs.Pressed;
             }
         }
@@ -112,7 +101,6 @@ namespace Aurora.UI.Controls
             if (args.Key == Microsoft.Xna.Framework.Input.Keys.Space)
             {
                 this.Click?.Invoke(this);
-                this.IsPressed = false;
                 this.SpriteIndex = ButtonIndexs.Default;
             }
         }

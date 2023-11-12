@@ -64,6 +64,23 @@ namespace Aurora.UI.Controls
             }
         }
 
+
+        protected override void CalcAutoSize()
+        {
+            if (this.Background is TextureBrush brush)
+            {
+                if (this.NeedCalcAutoHeight)
+                {
+                    this.globalBounds.Height = brush.Texture.Height;
+                }
+                if (this.NeedCalcAutoWidth)
+                {
+                    this.globalBounds.Width = brush.Texture.Width;
+                }
+            }
+        }
+
+
         protected override void OnMouseUp(IMouseMessage args)
         {
             if (args.Button == MouseButtons.Left)

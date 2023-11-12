@@ -3,7 +3,7 @@
 	  xmlns:x="http://schemas.l2030.com/xaml/ui/default"
 	  xmlns:sys="http://schemas.l2030.com/xaml/ui/system">
 	
-	<Template.Resource DefaultFont="Microsoft YaHei" Debuging="False">
+	<Template.Resource DefaultFont="Microsoft YaHei" Debuging="True">
 		<sys:Package Name="ui" Path="./ui.asset" Password="" ></sys:Package>
 		<sys:Font Name="Microsoft YaHei" Path="./Fonts/Microsoft YaHei.ttf" ></sys:Font>
 		<sys:Font Name="HanYi XieJing" Path="./Fonts/HanYi XieJing.ttf" ></sys:Font>
@@ -74,9 +74,17 @@
 		<Radio Name="Enabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Enabled"  Margin="825,70,0,0" Value="False"  />
 		<Radio Name="Disabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Disabled"  Margin="925,70,0,0" Value="True"  />
 
-		<TextBox Name="InputBox" Background="package://grid,ui,37" Font="textbox-font" FontSize="18" Text="1234567890" Margin="610,40,0,0"  Size="150,34"/>
-		
-
+		<TextBox Name="InputBox" Background="package://grid,ui,37" Font="textbox-font" FontSize="18" Text="12345&#x000A;67890" Margin="610,40,0,0"  Size="150,34"/>
 	</Dialog>
 
+
+	<Dialog Name="Package" Background="package://texture,ui,55" AutoTop="True" Pinned="False"  Margin="100,100,0,0" Size="auto,auto">
+
+		<ItemMatrix Margin="30,72,0,0" Padding="9,9,9,9" Columns="10" Rows ="10" ItemSize="38,38" Space="1,1" Size="auto,auto" 
+					 ItemMouseEnter = "ImageMatrix_ItemMouseEnter" 
+					 ItemMouseLeave = "ImageMatrix_ItemMouseLeave"  
+					 ItemClick = "ImageMatrix_ItemClick" 
+					 ItemMenu = "ImageMatrix_ItemMenu"
+					 ItemDrawing = "ImageMatrix_ItemDrawing"> </ItemMatrix>
+	</Dialog>	
 </Template>

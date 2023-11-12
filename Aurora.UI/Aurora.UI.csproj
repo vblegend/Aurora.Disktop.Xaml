@@ -36,7 +36,7 @@
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.IMEHelper.DesktopGL" Version="0.10.0" />
-		<PackageReference Include="Resource.Package.Assets" Version="1.0.2" />
+		<PackageReference Include="Resource.Package.Assets" Version="1.0.4" />
 	</ItemGroup>
 	  <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />

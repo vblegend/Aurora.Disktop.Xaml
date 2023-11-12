@@ -56,6 +56,7 @@ namespace Aurora.UI.Controls
             this.Renderer = AuroraState.Services.GetService<GraphicContext>();
             this.Enabled = true;
             this.Visible = true;
+            this.UserData = new PrivateUserData();
             this.HorizontalAlignment = XamlHorizontalAlignment.Left;
             this.VerticalAlignment = XamlVerticalAlignment.Top;
 
@@ -252,21 +253,25 @@ namespace Aurora.UI.Controls
         protected virtual void OnGotFocus()
         {
             // 已实现
+            this.GotFocus?.Invoke(this);
         }
 
         protected virtual void OnLostFocus()
         {
             // 已实现
+            this.LostFocus?.Invoke(this);
         }
 
         protected virtual void OnMouseEnter()
         {
             // 已实现
+            this.MouseEnter?.Invoke(this);
         }
 
         protected virtual void OnMouseLeave()
         {
             // 已实现
+            this.MouseLeave?.Invoke(this);
         }
 
 
@@ -282,14 +287,17 @@ namespace Aurora.UI.Controls
         protected virtual void OnMouseDown(IMouseMessage args)
         {
             // 已实现
+            this.MouseDown?.Invoke(this, args);
         }
         protected virtual void OnMouseUp(IMouseMessage args)
         {
             // 已实现
+            this.MouseUp?.Invoke(this, args);
         }
         protected virtual void OnMouseMove(IMouseMessage args)
         {
             // 已实现
+            this.MouseMove?.Invoke(this, args);
         }
         protected virtual void OnMouseWheel(IMouseMessage args)
         {
@@ -346,6 +354,21 @@ namespace Aurora.UI.Controls
 
         #endregion
 
+
+        #region Drag  Drop
+
+
+
+
+
+
+
+        #endregion
+
+
+
+
+
         public String Font
         {
             get
@@ -389,8 +412,57 @@ namespace Aurora.UI.Controls
         public Boolean IgnoreMouseEvents = false;
         public Boolean IgnoreKeyboardEvents = false;
 
+        /// <summary>
+        /// 允许拖放数据
+        /// </summary>
+        public Boolean AllowDrop = false;
+
+        #region Events
 
 
+        ///// <summary>
+        ///// 开始拖拽
+        ///// </summary>
+        //public virtual event XamlEventHandler<Control> DragBegin;
+
+        /// <summary>
+        /// 本控件收到拖拽事件进入
+        /// </summary>
+        public virtual event XamlEventHandler<Control> DragEnter;
+
+        /// <summary>
+        /// 本控件收到拖拽事件离开
+        /// </summary>
+        public virtual event XamlEventHandler<Control> DragLeave;
+
+        /// <summary>
+        /// 本控件收到拖拽事件更新移动
+        /// </summary>
+        public virtual event XamlEventHandler<Control> DragOver;
+
+        /// <summary>
+        /// 处理拖放完成
+        /// </summary>
+        public virtual event XamlEventHandler<Control> Drop;
+
+
+
+
+        public virtual event XamlEventHandler<Control> MouseEnter;
+        public virtual event XamlEventHandler<Control> MouseLeave;
+        public virtual event XamlEventHandler<Control> GotFocus;
+        public virtual event XamlEventHandler<Control> LostFocus;
+
+
+
+
+        public virtual event XamlEventHandler<Control, IMouseMessage> MouseDown;
+        public virtual event XamlEventHandler<Control, IMouseMessage> MouseMove;
+        public virtual event XamlEventHandler<Control, IMouseMessage> MouseUp;
+
+
+
+        #endregion
 
 
 
@@ -416,6 +488,10 @@ namespace Aurora.UI.Controls
 
         private Thickness margin;
 
+        /// <summary>
+        /// 用户数据
+        /// </summary>
+        public readonly IUserData UserData;
 
 
         /// <summary>

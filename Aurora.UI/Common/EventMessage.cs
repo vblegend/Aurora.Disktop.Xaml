@@ -1,7 +1,6 @@
 ﻿using Aurora.UI.Controls;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System.Security.Cryptography;
 
 namespace Aurora.UI.Common
 {
@@ -61,6 +60,7 @@ namespace Aurora.UI.Common
         public MouseButtons Button { get; }
         public Int32 Wheel { get; }
 
+        public Point GetLocation(Control control);
     }
 
     public interface IKeyboardMessage : IInputMessage
@@ -81,6 +81,19 @@ namespace Aurora.UI.Common
             this.Message = Message;
         }
 
+
+        public void DoDrag(Control dataSource, Object data, Int32 dragEffect)
+        {
+
+            if (this.Message == WM_MESSAGE.MOUSE_MOVE && this.Button == MouseButtons.Left)
+            {
+
+
+            }
+        }
+
+
+
         public Boolean Shift { get; set; }
         public Boolean Ctrl { get; set; }
         public WM_MESSAGE Message { get; set; }
@@ -88,6 +101,12 @@ namespace Aurora.UI.Common
         public MouseButtons Button { get; set; }
         public Int32 Wheel { get; set; }
 
+        public Point GetLocation(Control control)
+        {
+            var p1 = this.Location;
+            var p2 = control.GlobalBounds.Location;
+            return new Point(p1.X - p2.X, p1.Y - p2.Y);
+        }
     }
 
     public class IntenelKeyBoardMessage : IKeyboardMessage

@@ -25,6 +25,26 @@ namespace Aurora.UI.Common
         Disabled = 0
     }
 
+    public enum XamlDragDrop
+    {
+        /// <summary>
+        /// 不允许拖出和放入
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// 只允许拖出
+        /// </summary>
+        OnlyDrag = 2,
+        /// <summary>
+        /// 只允许放下
+        /// </summary>
+        OnlyDrop = 4,
+        /// <summary>
+        /// 允许拖出和放入
+        /// </summary>
+        DragAndDrop = OnlyDrag | OnlyDrop,
+    }
+
     public enum XamlHorizontalAlignment
     {
         Left = 0,
@@ -68,7 +88,35 @@ namespace Aurora.UI.Common
         }
 
 
+        public static bool operator ==(Thickness a, Thickness b)
+        {
+            return a.Equals(b);
+        }
 
+        public static bool operator !=(Thickness a, Thickness b)
+        {
+            return !a.Equals(b);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Thickness)
+            {
+                return Equals((Thickness)obj);
+            }
+
+            return false;
+        }
+
+        public bool Equals(Thickness other)
+        {
+            if (this.Left == other.Left && this.Right == other.Right)
+            {
+                return this.Top == other.Top && this.Bottom == other.Bottom;
+            }
+
+            return false;
+        }
 
         public Int32 Left;
         public Int32 Top;
@@ -98,7 +146,8 @@ namespace Aurora.UI.Common
     }
 
 
-    public enum XamlOrientation {
+    public enum XamlOrientation
+    {
         /// <summary>
         /// 横向的
         /// </summary>
