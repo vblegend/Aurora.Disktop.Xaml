@@ -52,20 +52,22 @@ namespace Aurora.UI.Common
 
 
 
-    public class ItemEventArgs<TItem>
+    public class MatrixEventArgs<TItem>
     {
-        internal ItemEventArgs(Int32 index, TItem item, Point position)
+        internal MatrixEventArgs(Int32 index, TItem item, object _object, Point position)
         {
             this.Index = index;
             this.Item = item;
             this.GlobalPosition = position;
+            Object = _object;
         }
         public readonly Int32 Index;
         public readonly TItem Item;
         public readonly Point GlobalPosition;
+        public readonly Object Object;
     }
 
-    public delegate void XamlItemEventHandler<T, TItem>(T sender, ItemEventArgs<TItem> args) where T : Control;
+    public delegate void XamlItemEventHandler<T, TItem>(T sender, MatrixEventArgs<TItem> args) where T : Control;
 
 
 
@@ -74,21 +76,17 @@ namespace Aurora.UI.Common
 
 
 
-    public class ImageMatrixDrawEventArgs<TItem>
+    public class MatrixDrawEventArgs<TItem> : MatrixEventArgs<TItem>
     {
-        internal ImageMatrixDrawEventArgs(Int32 index, TItem item, Rectangle rectangle, GraphicContext renderer, GameTime gameTime)
+        internal MatrixDrawEventArgs(Int32 index, TItem item, Rectangle rectangle, object _object, GraphicContext renderer, GameTime gameTime) : base(index, item, _object, rectangle.Location)
         {
-            this.Index = index;
-            this.Item = item;
             this.Rectangle = rectangle;
             this.Renderer = renderer;
             this.GameTime = gameTime;
         }
-        public readonly Int32 Index;
-        public readonly TItem Item;
         public readonly Rectangle Rectangle;
         public readonly GraphicContext Renderer;
         public readonly GameTime GameTime;
     }
-    public delegate void ImageMatrixDrawEventHandler<T, TItem>(T sender, ImageMatrixDrawEventArgs<TItem> args) where T : Control;
+    public delegate void ImageMatrixDrawEventHandler<T, TItem>(T sender, MatrixDrawEventArgs<TItem> args) where T : Control;
 }

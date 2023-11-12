@@ -1,18 +1,26 @@
 ﻿using Aurora.UI.Common;
 using Microsoft.Xna.Framework;
+using System;
 
 
 namespace Aurora.UI.Controls
 {
 
 
-
-    public class IconMaterixItem
+    public interface IMatrixItem
     {
-        public Int32 Index;
-        public Rectangle Location;
-        public Int32 Row;
-        public Int32 Column;
+        public Int32 Index { get; }
+        public Rectangle Location { get; }
+        public Int32 Row { get; }
+        public Int32 Column { get; }
+    }
+
+    internal class PrivateMatrixItem: IMatrixItem
+    {
+        public Int32 Index{ get; set; } 
+        public Rectangle Location { get; set; }
+        public Int32 Row { get; set; }
+        public Int32 Column { get; set; }
     }
 
 
@@ -21,11 +29,13 @@ namespace Aurora.UI.Controls
 
     public class ItemMatrix : Control
     {
-        private IconMaterixItem[] Items { get; set; } = new IconMaterixItem[0];
+        private PrivateMatrixItem[] MatrixItems { get; set; } = new PrivateMatrixItem[0];
 
+        public Object[] Items { get; set; }
 
         public ItemMatrix()
         {
+            this.Items = new Object[100];
             this.rows = 2;
             this.columns = 2;
             this.itemSize = new Point(32, 32);
@@ -43,11 +53,12 @@ namespace Aurora.UI.Controls
             {
                 this.Background.Draw(Renderer, this.GlobalBounds, Color.White);
             }
-            for (int i = 0; i < Items.Length; i++)
+            var len = Math.Min(MatrixItems.Length, this.Items.Length);
+            for (int i = 0; i < len; i++)
             {
-                var dest = Items[i].Location.Add(this.GlobalBounds.Location);
+                var dest = MatrixItems[i].Location.Add(this.GlobalBounds.Location);
                 //this.Renderer.DrawRectangle(dest, Color.Orange, 1);
-                this.ItemDrawing?.Invoke(this, new ImageMatrixDrawEventArgs<IconMaterixItem>(i, Items[i], dest, this.Renderer, gameTime));
+                this.ItemDrawing?.Invoke(this, new MatrixDrawEventArgs<IMatrixItem>(i, MatrixItems[i], dest, Items[i], this.Renderer, gameTime));
             }
         }
 
@@ -62,12 +73,14 @@ namespace Aurora.UI.Controls
             {
                 if (this.HoverIndex.HasValue)
                 {
-                    this.ItemMouseLeave?.Invoke(this, new ItemEventArgs<IconMaterixItem>(this.HoverIndex.Value, this.Items[this.HoverIndex.Value], Point.Zero));
+                    var obj = this.HoverIndex.Value < this.Items.Length ? Items[this.HoverIndex.Value] : null;
+                    this.ItemMouseLeave?.Invoke(this, new MatrixEventArgs<IMatrixItem>(this.HoverIndex.Value, this.MatrixItems[this.HoverIndex.Value], obj, Point.Zero));
                 }
                 this.HoverIndex = index;
                 if (this.HoverIndex.HasValue)
                 {
-                    this.ItemMouseEnter?.Invoke(this, new ItemEventArgs<IconMaterixItem>(this.HoverIndex.Value, this.Items[this.HoverIndex.Value], Point.Zero));
+                    var obj = this.HoverIndex.Value < this.Items.Length ? Items[this.HoverIndex.Value] : null;
+                    this.ItemMouseEnter?.Invoke(this, new MatrixEventArgs<IMatrixItem>(this.HoverIndex.Value, this.MatrixItems[this.HoverIndex.Value], obj, Point.Zero));
                 }
             }
         }
@@ -79,7 +92,8 @@ namespace Aurora.UI.Controls
         {
             if (this.HoverIndex.HasValue)
             {
-                this.ItemMouseLeave?.Invoke(this, new ItemEventArgs<IconMaterixItem>(this.HoverIndex.Value, this.Items[this.HoverIndex.Value], Point.Zero));
+                var obj = this.HoverIndex.Value < this.Items.Length ? Items[this.HoverIndex.Value] : null;
+                this.ItemMouseLeave?.Invoke(this, new MatrixEventArgs<IMatrixItem>(this.HoverIndex.Value, this.MatrixItems[this.HoverIndex.Value], obj, Point.Zero));
                 this.HoverIndex = null;
             }
         }
@@ -107,7 +121,8 @@ namespace Aurora.UI.Controls
             {
                 if (index == this.LParssedIndex)
                 {
-                    this.ItemClick?.Invoke(this, new ItemEventArgs<IconMaterixItem>(index.Value, this.Items[index.Value], args.Location));
+                    var obj = index.Value < this.Items.Length ? Items[index.Value] : null;
+                    this.ItemClick?.Invoke(this, new MatrixEventArgs<IMatrixItem>(index.Value, this.MatrixItems[index.Value], obj, args.Location));
                 }
                 this.LParssedIndex = null;
             }
@@ -115,7 +130,8 @@ namespace Aurora.UI.Controls
             {
                 if (index == this.RParssedIndex)
                 {
-                    this.ItemMenu?.Invoke(this, new ItemEventArgs<IconMaterixItem>(index.Value, this.Items[index.Value], args.Location));
+                    var obj = index.Value < this.Items.Length ? Items[index.Value] : null;
+                    this.ItemMenu?.Invoke(this, new MatrixEventArgs<IMatrixItem>(index.Value, this.MatrixItems[index.Value], obj, args.Location));
                 }
                 this.RParssedIndex = null;
             }
@@ -129,9 +145,9 @@ namespace Aurora.UI.Controls
         private void UpdateLayout()
         {
             var num = this.rows * this.columns;
-            if (this.Items.Length != num)
+            if (this.MatrixItems.Length != num)
             {
-                this.Items = new IconMaterixItem[num];
+                this.MatrixItems = new PrivateMatrixItem[num];
             }
             var itemSpace = new Point(this.itemSize.X + this.space.X, this.itemSize.Y + this.space.Y);
             for (int i = 0; i < num; i++)
@@ -140,11 +156,11 @@ namespace Aurora.UI.Controls
                 var column = (Int32)(i % this.columns);
                 var left = this.padding.Left + column * itemSpace.X + column;
                 var top = this.padding.Top + row * itemSpace.Y + row;
-                this.Items[i] = new IconMaterixItem();
-                this.Items[i].Index = i;
-                this.Items[i].Row = row;
-                this.Items[i].Column = column;
-                this.Items[i].Location = new Rectangle(left, top, this.itemSize.X, this.itemSize.Y);
+                this.MatrixItems[i] = new PrivateMatrixItem();
+                this.MatrixItems[i].Index = i;
+                this.MatrixItems[i].Row = row;
+                this.MatrixItems[i].Column = column;
+                this.MatrixItems[i].Location = new Rectangle(left, top, this.itemSize.X, this.itemSize.Y);
             }
 
         }
@@ -201,13 +217,13 @@ namespace Aurora.UI.Controls
         }
 
         #region Events
-        public virtual event XamlItemEventHandler<ItemMatrix, IconMaterixItem> ItemMouseEnter;
-        public virtual event XamlItemEventHandler<ItemMatrix, IconMaterixItem> ItemMouseLeave;
+        public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMouseEnter;
+        public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMouseLeave;
 
-        public virtual event XamlItemEventHandler<ItemMatrix, IconMaterixItem> ItemClick;
-        public virtual event XamlItemEventHandler<ItemMatrix, IconMaterixItem> ItemMenu;
+        public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemClick;
+        public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMenu;
 
-        public virtual event ImageMatrixDrawEventHandler<ItemMatrix, IconMaterixItem> ItemDrawing;
+        public virtual event ImageMatrixDrawEventHandler<ItemMatrix, IMatrixItem> ItemDrawing;
 
         #endregion
 

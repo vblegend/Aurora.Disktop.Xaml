@@ -249,15 +249,19 @@ namespace Aurora.UI.Graphics
         }
 
 
+        public void DrawSprite(SpriteObject sprite, Point position, Int32 index, Color color)
+        {
+            this.DrawSprite(sprite, position.ToVector2(), index, color);
+        }
+
+
         public void DrawSprite(SpriteObject sprite, Vector2 position, Int32 index, Color color)
         {
             var tex = sprite.Texture.Tex();
             if (tex != null)
             {
-                //var state = this.SetState(sprite.Texture.BlendState);
                 var sourceRectangle = sprite.GetFrameRectangle(index);
                 this.SpriteBatch.Draw(tex, position + sprite.Texture.Offset, sourceRectangle, color);
-                //if (state != null) this.RestoreState(state.Value);
             }
         }
 
@@ -266,14 +270,15 @@ namespace Aurora.UI.Graphics
             var tex = sprite.Texture.Tex();
             if (tex != null)
             {
-                //var state = this.SetState(sprite.Texture.BlendState);
                 var sourceRectangle = sprite.GetFrameRectangle(index);
                 this.SpriteBatch.Draw(tex, destinationRectangle.Add(sprite.Texture.Offset), sourceRectangle, color);
-                //if (state != null) this.RestoreState(state.Value);
             }
         }
 
-
+        public void Draw(ITexture context, Point position, Color color)
+        {
+            this.Draw(context, position.ToVector2(), color);
+        }
         public void Draw(ITexture context, Vector2 position, Color color)
         {
             var tex = context.Tex();
@@ -283,6 +288,11 @@ namespace Aurora.UI.Graphics
                 this.SpriteBatch.Draw(tex, position + context.Offset, color);
                 //if (state != null) this.RestoreState(state.Value);
             }
+        }
+
+        public void Draw(ITexture context, Point position, Rectangle? sourceRectangle, Color color)
+        {
+            this.Draw(context, position.ToVector2(), sourceRectangle, color);
         }
 
         public void Draw(ITexture context, Vector2 position, Rectangle? sourceRectangle, Color color)
@@ -460,7 +470,10 @@ namespace Aurora.UI.Graphics
             }
         }
 
-
+        public float DrawString(String font, Single fontSize, string _string_, Point pos, Color color)
+        {
+            return this.DrawString(font, fontSize, _string_, pos.ToVector2(), color);
+        }
 
         public float DrawString(String font, Single fontSize, string _string_, Vector2 pos, Color color)
         {
@@ -468,6 +481,11 @@ namespace Aurora.UI.Graphics
             var val = AuroraState.FontSystem.DrawString(this.SpriteBatch, font, fontSize, _string_, pos, color);
             if (state != null) this.RestoreState(state.Value);
             return val;
+        }
+
+        public float DrawString(String font, Single fontSize, string _string_, Point pos, Color color, Vector2 scale)
+        {
+            return this.DrawString(font, fontSize, _string_, pos.ToVector2(), color, scale);
         }
 
 
@@ -479,9 +497,16 @@ namespace Aurora.UI.Graphics
             return val;
         }
 
+
         public Vector2 MeasureString(String font, Single fontSize, string text)
         {
             return AuroraState.FontSystem.MeasureString(font, fontSize, text);
+        }
+
+
+        public Rectangle DrawString(String font, Single fontSize, Point pos, string _string_)
+        {
+            return AuroraState.FontSystem.GetTextBounds(font, fontSize, pos.ToVector2(), _string_);
         }
 
         public Rectangle GetTextBounds(String font, Single fontSize, Vector2 position, string text)

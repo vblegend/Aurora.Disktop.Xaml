@@ -92,16 +92,14 @@ namespace Aurora.Example
                 effectIndex = ++effectIndex % itemEffect.Length;
                 lastEffect = gameTime.TotalGameTime;
             }
-
-
         }
         private TimeSpan effectInterval = new TimeSpan(0, 0, 0, 0, 200);
         private TimeSpan lastEffect;
         private Int32 effectIndex = 0;
-        public void ImageMatrix_ItemDrawing(ItemMatrix sender, ImageMatrixDrawEventArgs<IconMaterixItem> args)
+        public void ImageMatrix_ItemDrawing(ItemMatrix sender, MatrixDrawEventArgs<IMatrixItem> args)
         {
 
-            args.Renderer.Draw(this.items[args.Index % 16], args.Rectangle.Location.ToVector2(), Color.White);
+            args.Renderer.Draw(this.items[args.Index % 16], args.GlobalPosition, Color.White);
 
 
             if (args.Index % (args.Item.Row +1) == 0)
@@ -113,22 +111,22 @@ namespace Aurora.Example
         }
 
 
-        public void ImageMatrix_ItemMenu(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        public void ImageMatrix_ItemMenu(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
             Trace.WriteLine($"POP Menu: {args.Index} {args.Item}");
         }
 
-        public void ImageMatrix_ItemClick(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        public void ImageMatrix_ItemClick(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
             Trace.WriteLine($"Click: {args.Index} {args.Item}");
         }
 
-        public void ImageMatrix_ItemMouseLeave(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        public void ImageMatrix_ItemMouseLeave(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
             Trace.WriteLine($"Mouse Leave: {args.Index} {args.Item}");
         }
 
-        public void ImageMatrix_ItemMouseEnter(ItemMatrix sender, ItemEventArgs<IconMaterixItem> args)
+        public void ImageMatrix_ItemMouseEnter(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
             Trace.WriteLine($"Mouse Enter: {args.Index} {args.Item}");
         }
