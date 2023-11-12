@@ -62,7 +62,7 @@ namespace Aurora.UI
             if (control == null) return null;
             if (control.IgnoreMouseEvents) return null;
             var mouseInControl = control.HitTest(msg.Location);
-            if (!mouseInControl)
+            if (!mouseInControl && this.Pressed == null)
             {
                 if (!control.ExtendBounds.Contains(msg.Location)) return null;
             }

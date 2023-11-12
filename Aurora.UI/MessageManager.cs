@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
-
+using System.Diagnostics;
 
 namespace Aurora.UI
 {
@@ -114,37 +114,44 @@ namespace Aurora.UI
             {
                 if (state.LeftButton == ButtonState.Pressed)
                 {
+                    this.LeftButton = state.LeftButton;
+                    Trace.WriteLine("L Button Down");
                     this.DispatchMouseEvent(WM_MESSAGE.MOUSE_DOWN, state.Position, MouseButtons.Left);
                 }
                 else
                 {
+                    this.LeftButton = state.LeftButton;
                     this.DispatchMouseEvent(WM_MESSAGE.MOUSE_UP, state.Position, MouseButtons.Left);
                 }
-                this.LeftButton = state.LeftButton;
+   
             }
             if (state.RightButton != this.RightButton)
             {
                 if (state.RightButton == ButtonState.Pressed)
                 {
+                    this.RightButton = state.RightButton;
                     this.DispatchMouseEvent(WM_MESSAGE.MOUSE_DOWN, state.Position, MouseButtons.Right);
                 }
                 else
                 {
+                    this.RightButton = state.RightButton;
                     this.DispatchMouseEvent(WM_MESSAGE.MOUSE_UP, state.Position, MouseButtons.Right);
                 }
-                this.RightButton = state.RightButton;
+ 
             }
             if (state.MiddleButton != this.MiddleButton)
             {
                 if (state.MiddleButton == ButtonState.Pressed)
                 {
+                    this.MiddleButton = state.MiddleButton;
                     this.DispatchMouseEvent(WM_MESSAGE.MOUSE_DOWN, state.Position, MouseButtons.Middle);
                 }
                 else
                 {
+                    this.MiddleButton = state.MiddleButton;
                     this.DispatchMouseEvent(WM_MESSAGE.MOUSE_UP, state.Position, MouseButtons.Middle);
                 }
-                this.MiddleButton = state.MiddleButton;
+
             }
         }
 

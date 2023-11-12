@@ -130,7 +130,16 @@ namespace Aurora.Example
         {
             Trace.WriteLine($"Mouse Enter: {args.Index} {args.Item}");
         }
+        public void ImageMatrix_ItemMouseDown(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
+        {
 
+
+            Trace.WriteLine($"Mouse Down: {args.Index} {args.Item}");
+        }
+        public void ImageMatrix_ItemMouseUp(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
+        {
+            Trace.WriteLine($"Mouse Up: {args.Index} {args.Item}");
+        }
 
 
 

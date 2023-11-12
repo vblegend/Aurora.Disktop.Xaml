@@ -15,9 +15,9 @@ namespace Aurora.UI.Controls
         public Int32 Column { get; }
     }
 
-    internal class PrivateMatrixItem: IMatrixItem
+    internal class PrivateMatrixItem : IMatrixItem
     {
-        public Int32 Index{ get; set; } 
+        public Int32 Index { get; set; }
         public Rectangle Location { get; set; }
         public Int32 Row { get; set; }
         public Int32 Column { get; set; }
@@ -35,7 +35,11 @@ namespace Aurora.UI.Controls
 
         public ItemMatrix()
         {
-            this.Items = new Object[100];
+            this.Items = new Object[65];
+            for (int i = 0; i < Items.Length; i++)
+            {
+                this.Items[i] = new object();
+            }
             this.rows = 2;
             this.columns = 2;
             this.itemSize = new Point(32, 32);
@@ -103,6 +107,7 @@ namespace Aurora.UI.Controls
         {
             var pos = args.GetLocation(this);
             var index = this.GetGridIndex(pos);
+
             if (args.Button == MouseButtons.Left)
             {
                 this.LParssedIndex = index;
@@ -111,12 +116,24 @@ namespace Aurora.UI.Controls
             {
                 this.RParssedIndex = index;
             }
+            if (index.HasValue)
+            {
+                var obj = index.Value < this.Items.Length ? Items[index.Value] : null;
+                this.ItemMouseDown?.Invoke(this, new MatrixEventArgs<IMatrixItem>(index.Value, this.MatrixItems[index.Value], obj, args.Location));
+            }
         }
 
         protected override void OnMouseUp(IMouseMessage args)
         {
             var pos = args.GetLocation(this);
             var index = this.GetGridIndex(pos);
+
+            if (index.HasValue)
+            {
+                var obj = index.Value < this.Items.Length ? Items[index.Value] : null;
+                this.ItemMouseUp?.Invoke(this, new MatrixEventArgs<IMatrixItem>(index.Value, this.MatrixItems[index.Value], obj, args.Location));
+            }
+
             if (args.Button == MouseButtons.Left && this.LParssedIndex.HasValue)
             {
                 if (index == this.LParssedIndex)
@@ -180,6 +197,9 @@ namespace Aurora.UI.Controls
             // 考虑 Padding
             var x = point.X - this.padding.Left;
             var y = point.Y - this.padding.Top;
+
+            if (x < 0 || y < 0) return null;
+
             // 计算格子所在的列，考虑 spacex
             int column = x / spaceX;
             // 计算格子所在的行，考虑 spacey
@@ -219,6 +239,10 @@ namespace Aurora.UI.Controls
         #region Events
         public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMouseEnter;
         public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMouseLeave;
+
+
+        public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMouseDown;
+        public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMouseUp;
 
         public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemClick;
         public virtual event XamlItemEventHandler<ItemMatrix, IMatrixItem> ItemMenu;

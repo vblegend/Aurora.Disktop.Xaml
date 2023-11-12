@@ -92,6 +92,8 @@ In theory, it's cross-platform
 			 ItemMouseLeave = "ImageMatrix_ItemMouseLeave"
 			 ItemClick = "ImageMatrix_ItemClick"
 			 ItemMenu = "ImageMatrix_ItemMenu"
+			 ItemMouseDown = "ImageMatrix_ItemMouseDown"
+			 ItemMouseUp = "ImageMatrix_ItemMouseUp"
 			 ItemDrawing = "ImageMatrix_ItemDrawing"> </ItemMatrix>
 	</Dialog>
 
@@ -102,6 +104,8 @@ In theory, it's cross-platform
 					 ItemMouseEnter = "ImageMatrix_ItemMouseEnter" 
 					 ItemMouseLeave = "ImageMatrix_ItemMouseLeave"  
 					 ItemClick = "ImageMatrix_ItemClick" 
+					 ItemMouseDown = "ImageMatrix_ItemMouseDown"
+					 ItemMouseUp = "ImageMatrix_ItemMouseUp"
 					 ItemMenu = "ImageMatrix_ItemMenu"
 					 ItemDrawing = "ImageMatrix_ItemDrawing"> </ItemMatrix>
 	</Dialog>	

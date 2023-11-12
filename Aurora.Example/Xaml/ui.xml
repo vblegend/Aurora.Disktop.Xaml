@@ -83,6 +83,8 @@
 			 ItemMouseLeave = "ImageMatrix_ItemMouseLeave"
 			 ItemClick = "ImageMatrix_ItemClick"
 			 ItemMenu = "ImageMatrix_ItemMenu"
+			 ItemMouseDown = "ImageMatrix_ItemMouseDown"
+			 ItemMouseUp = "ImageMatrix_ItemMouseUp"
 			 ItemDrawing = "ImageMatrix_ItemDrawing"> </ItemMatrix>
 		
 		
@@ -97,6 +99,8 @@
 					 ItemMouseLeave = "ImageMatrix_ItemMouseLeave"  
 					 ItemClick = "ImageMatrix_ItemClick" 
 					 ItemMenu = "ImageMatrix_ItemMenu"
+					 ItemMouseDown = "ImageMatrix_ItemMouseDown"
+					 ItemMouseUp = "ImageMatrix_ItemMouseUp"
 					 ItemDrawing = "ImageMatrix_ItemDrawing"> </ItemMatrix>
 	</Dialog>	
 </Template>
