@@ -2,11 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using Resource.Package.Assets.Common;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Aurora.UI.Graphics
 {
 
-    public abstract class ITexture
+    public abstract class ITexture : IDisposable
     {
 
         internal ITexture(GraphicsDevice graphics)
@@ -15,7 +16,8 @@ namespace Aurora.UI.Graphics
         }
         protected Texture2D tex { get; set; }
 
-        public  Vector2 Offset;
+        public Vector2 Offset;
+        private bool disposedValue;
 
         //public BlendState BlendState;
 
@@ -29,10 +31,11 @@ namespace Aurora.UI.Graphics
         /// 获取纹理大小范围
         /// 这个值是可以改变的
         /// </summary>
-        public Rectangle SourceRect {
+        public Rectangle SourceRect
+        {
             get
             {
-                return this.tex.Bounds;
+                return this.sourceRect;
             }
         }
 
@@ -41,7 +44,11 @@ namespace Aurora.UI.Graphics
         {
             get
             {
-                return this.tex.Bounds.Width;
+                return this.sourceRect.Width;
+            }
+            protected set
+            {
+                this.sourceRect.Width = value;
             }
         }
 
@@ -49,12 +56,18 @@ namespace Aurora.UI.Graphics
         {
             get
             {
-                return this.tex.Bounds.Height;
+                return this.sourceRect.Height;
+            }
+            protected set
+            {
+                this.sourceRect.Height = value;
             }
         }
 
+        public Rectangle sourceRect;
 
-        public Boolean GetPixel(Point position, out Color color )
+
+        public Boolean GetPixel(Point position, out Color color)
         {
             Color[] colors = new Color[1];
             color = colors[0];
@@ -65,8 +78,38 @@ namespace Aurora.UI.Graphics
             return true;
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: 释放托管状态(托管对象)
+                }
+                if (this.tex != null)
+                {
+                    this.tex.Dispose();
+                    this.tex = null;
+                }
+                // TODO: 释放未托管的资源(未托管的对象)并重写终结器
+                // TODO: 将大型字段设置为 null
+                disposedValue = true;
+            }
+        }
 
+        // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
+        ~ITexture()
+        {
+            // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+            Dispose(disposing: false);
+        }
 
+        public void Dispose()
+        {
+            // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 
     /// <summary>
@@ -74,18 +117,82 @@ namespace Aurora.UI.Graphics
     /// </summary>
     public class SimpleTexture : ITexture
     {
+        public Boolean IsLazyLoading
+        {
+            get => this.isLazy;
+        }
+
+        private Boolean isLazy;
+        private Boolean lazyLoaded;
+        private Func<Byte[]> LazyReader;
+
+
+
+
 
         private SimpleTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
         {
 
         }
 
-
         private void FromStrean(Stream stream, Action<byte[]> colorProcessor)
         {
             this.tex = Texture2D.FromStream(this.device, stream, colorProcessor);
         }
 
+
+        /// <summary>
+        /// 资源懒加载，仅创建纹理对象，不加载数据
+        /// </summary>
+        /// <param name="graphicsDevice"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        public static SimpleTexture FromAssetPackageLazy(GraphicsDevice graphicsDevice, IReadOnlyLazyInfo info)
+        {
+            var context = new SimpleTexture(graphicsDevice);
+            if (info.Width > 0 && info.Height > 0)
+            {
+                context.LazyReader = info.GetReader();
+                context.Width = info.Width;
+                context.Height = info.Height;
+            }
+            context.isLazy = true;
+            context.Offset = new Vector2(info.OffsetX, info.OffsetY);
+            return context;
+        }
+
+
+
+        public static SimpleTexture FromTexture2D(Texture2D texture)
+        {
+            var context = new SimpleTexture(texture.GraphicsDevice);
+            context.tex = texture;
+            return context;
+        }
+
+
+
+        public override Texture2D Tex()
+        {
+            if (this.tex == null && this.isLazy && !this.lazyLoaded)
+            {
+                // lazy load
+                var data = this.LazyReader();
+                this.tex = new Texture2D(this.device, this.Width, this.Height);
+                this.tex.SetData(data);
+                this.lazyLoaded = true;
+            }
+            return this.tex;
+        }
+
+
+
+
+
+
+
+
+        #region MyRegion
 
         public static SimpleTexture FromAssetPackageNode(GraphicsDevice graphicsDevice, IReadOnlyDataBlock block, Action<byte[]> colorProcessor = null)
         {
@@ -128,18 +235,7 @@ namespace Aurora.UI.Graphics
             }
             return context;
         }
-
-        public static SimpleTexture FromTexture2D(Texture2D texture)
-        {
-            var context = new SimpleTexture(texture.GraphicsDevice);
-            context.tex = texture;
-            return context;
-        }
-
-        public override Texture2D Tex()
-        {
-            return this.tex;
-        }
+        #endregion
 
     }
 
@@ -148,7 +244,7 @@ namespace Aurora.UI.Graphics
     /// <summary>
     /// 渲染目标纹理
     /// </summary>
-    public class TargetTexture : ITexture,IDisposable
+    public class TargetTexture : ITexture, IDisposable
     {
 
         private TargetTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
@@ -160,7 +256,7 @@ namespace Aurora.UI.Graphics
         public static TargetTexture Create(GraphicsDevice graphicsDevice, Int32 width, Int32 height)
         {
             var context = new TargetTexture(graphicsDevice);
-            context.Resize(width,height);
+            context.Resize(width, height);
             return context;
         }
 

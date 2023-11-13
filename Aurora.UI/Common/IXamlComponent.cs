@@ -26,6 +26,9 @@ namespace Aurora.UI.Common
     }
 
 
+
+
+
     /// <summary>
     /// Xaml Component
     /// </summary>
@@ -41,6 +44,19 @@ namespace Aurora.UI.Common
     public interface IXamlControl : IXamlComponent
     {
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -6,6 +6,13 @@ using System;
 namespace Aurora.UI.Controls
 {
 
+    public interface IItemMatrixDecoration
+    {
+
+
+    }
+
+
 
     public interface IMatrixItem
     {

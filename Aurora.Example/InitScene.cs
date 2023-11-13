@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace Aurora.Example
 {
+    
     internal class InitScene : PlayScene
     {
         private SimpleTexture[] itemEffect = new SimpleTexture[0];
@@ -32,8 +33,8 @@ namespace Aurora.Example
             }
 
 
-            this.items = AuroraState.PackageManager["ui"].ReadTextures(112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127);
-            this.itemEffect = AuroraState.PackageManager["ui"].ReadTextures(96,97,98,99,100,101,102,103,104,105);
+            this.items = AuroraState.PackageManager.LoadTextures("ui",112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127);
+            this.itemEffect = AuroraState.PackageManager.LoadTextures("ui", 96,97,98,99,100,101,102,103,104,105);
         }
 
 
@@ -98,16 +99,11 @@ namespace Aurora.Example
         private Int32 effectIndex = 0;
         public void ImageMatrix_ItemDrawing(ItemMatrix sender, MatrixDrawEventArgs<IMatrixItem> args)
         {
-
             args.Renderer.Draw(this.items[args.Index % 16], args.GlobalPosition, Color.White);
-
-
             if (args.Index % (args.Item.Row +1) == 0)
             {
                 args.Renderer.Draw(this.itemEffect[effectIndex], args.Rectangle.Center.ToVector2(), Color.White);
             }
-
-
         }
 
 
@@ -123,22 +119,22 @@ namespace Aurora.Example
 
         public void ImageMatrix_ItemMouseLeave(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
-            Trace.WriteLine($"Mouse Leave: {args.Index} {args.Item}");
+            //Trace.WriteLine($"Mouse Leave: {args.Index} {args.Item}");
         }
 
         public void ImageMatrix_ItemMouseEnter(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
-            Trace.WriteLine($"Mouse Enter: {args.Index} {args.Item}");
+            //Trace.WriteLine($"Mouse Enter: {args.Index} {args.Item}");
         }
         public void ImageMatrix_ItemMouseDown(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
 
 
-            Trace.WriteLine($"Mouse Down: {args.Index} {args.Item}");
+            //Trace.WriteLine($"Mouse Down: {args.Index} {args.Item}");
         }
         public void ImageMatrix_ItemMouseUp(ItemMatrix sender, MatrixEventArgs<IMatrixItem> args)
         {
-            Trace.WriteLine($"Mouse Up: {args.Index} {args.Item}");
+            //Trace.WriteLine($"Mouse Up: {args.Index} {args.Item}");
         }
 
 

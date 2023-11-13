@@ -1,5 +1,6 @@
 ﻿using Aurora.UI.Graphics;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Aurora.UI.Xaml.Converters
 {
@@ -21,8 +22,7 @@ namespace Aurora.UI.Xaml.Converters
                 // package://texture,pkgName,1000
                 // package://grid,pkgName,1000
                 var tokens = value.Substring(10).Split(',');
-                var pack = AuroraState.PackageManager[tokens[1]];
-                var texture = pack.Read(Int32.Parse(tokens[2]));
+                var texture = AuroraState.PackageManager.LazyLoadTexture(tokens[1], Int32.Parse(tokens[2]));
                 if (tokens[0] == "texture")
                 {
                     Graphics.FillMode fill = Graphics.FillMode.None;

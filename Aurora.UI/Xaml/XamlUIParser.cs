@@ -111,7 +111,14 @@ namespace Aurora.UI.Xaml
             IXamlComponent component = GenerateComponent(element.LocalName, element.NamespaceURI);
             if (component is IXamlHandler pipeline)
             {
-                pipeline.Process(this.Host as Control, this.bindContext, parent, element);
+                try
+                {
+                    pipeline.Process(this.Host as Control, this.bindContext, parent, element);
+                }
+                catch  (Exception ex)
+                {
+                    Trace.WriteLine(ex.Message);
+                }
             }
             else if (component is Control control)
             {
@@ -164,7 +171,14 @@ namespace Aurora.UI.Xaml
                         var comp = (IXamlComponent)Activator.CreateInstance(typed);
                         if (comp is IXamlHandler handler)
                         {
-                            handler.Process(this.Host as Control, this.bindContext, comp, attribute);
+                            try
+                            {
+                                handler.Process(this.Host as Control, this.bindContext, comp, attribute);
+                            }
+                            catch (Exception ex)
+                            {
+                                Trace.WriteLine(ex);
+                            }
                         }
                         else
                         {
@@ -186,9 +200,16 @@ namespace Aurora.UI.Xaml
                 var methodInfo = this.bindContextType.GetMethod(attribute.Value);
                 if (eventInfo != null && eventInfo.EventHandlerType != null && methodInfo != null)
                 {
-                    // 创建委托并绑定事件处理程序
-                    Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, this.bindContext, methodInfo);
-                    eventInfo.AddEventHandler(component, handler);
+                    try
+                    {
+                        // 创建委托并绑定事件处理程序
+                        Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, this.bindContext, methodInfo);
+                        eventInfo.AddEventHandler(component, handler);
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine(ex);
+                    }
                 }
                 return;
             }
@@ -202,14 +223,19 @@ namespace Aurora.UI.Xaml
                     var converter = this.typedResolver.ResolveXamlConverter(fieldInfo.FieldType);
                     if (converter != null)
                     {
-                        var value = converter.Convert(fieldInfo.FieldType, attribute.Value);
-                        fieldInfo.SetValue(component, value);
+                        try
+                        {
+                            var value = converter.Convert(fieldInfo.FieldType, attribute.Value);
+                            fieldInfo.SetValue(component, value);
+                        }
+                        catch (Exception ex)
+                        {
+                            Trace.WriteLine(ex);
+                        }
                     }
                 }
                 return;
             }
-
-
 
             // 属性赋值
             var propertyInfo = type.GetProperty(attribute.LocalName, BindingFlags.Instance | BindingFlags.Public);
@@ -220,8 +246,15 @@ namespace Aurora.UI.Xaml
                     var converter = this.typedResolver.ResolveXamlConverter(propertyInfo.PropertyType);
                     if (converter != null)
                     {
-                        var value = converter.Convert(propertyInfo.PropertyType, attribute.Value);
-                        propertyInfo.SetValue(component, value, null);
+                        try
+                        {
+                            var value = converter.Convert(propertyInfo.PropertyType, attribute.Value);
+                            propertyInfo.SetValue(component, value, null);
+                        }
+                        catch (Exception ex)
+                        {
+                            Trace.WriteLine(ex);
+                        }
                     }
                 }
                 return;

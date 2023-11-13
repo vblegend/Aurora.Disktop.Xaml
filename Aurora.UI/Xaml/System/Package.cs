@@ -13,8 +13,7 @@ namespace Aurora.UI.Xaml.System
                 var name = element.GetAttribute("Name");
                 var path = element.GetAttribute("Path");
                 var password = element.GetAttribute("Password");
-                var pack = ResourcePackage.Open(path, password);
-                AuroraState.PackageManager.Register(name, pack);
+                AuroraState.PackageManager.Register(name, path, password);
             }
         }
     }

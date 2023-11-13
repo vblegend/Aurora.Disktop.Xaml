@@ -35,8 +35,7 @@ namespace Aurora.UI.Xaml.Converters
             if (value.StartsWith("package://"))
             {
                 var args = value.Substring(10).Split(",", StringSplitOptions.RemoveEmptyEntries);
-                var pack = AuroraState.PackageManager[args[0]];
-                var texture = pack.Read(Int32.Parse(args[1]));
+                var texture = AuroraState.PackageManager.LazyLoadTexture(args[0], Int32.Parse(args[1]));
                 return new SpriteObject(texture, Int32.Parse(args[2]), Int32.Parse(args[3]));
             }
             else if (value.StartsWith("file://"))

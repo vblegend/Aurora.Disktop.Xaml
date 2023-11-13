@@ -15,8 +15,8 @@ namespace Aurora.UI.Xaml.Converters
             {
                 // package://pkgName,1000
                 var tokens = value.Substring(10).Split(',');
-                var pack = AuroraState.PackageManager[tokens[0]];
-                return pack.Read(Int32.Parse(tokens[1]));
+                var texture = AuroraState.PackageManager.LazyLoadTexture(tokens[0], Int32.Parse(tokens[1]));
+                return texture;
             }
             else if (value.StartsWith("file://"))
             {
@@ -42,7 +42,6 @@ namespace Aurora.UI.Xaml.Converters
             {
                 // package://pkgName,1000
                 var tokens = value.Substring(10).Split(',', StringSplitOptions.RemoveEmptyEntries);
-                var pack = AuroraState.PackageManager[tokens[0]];
                 var indexs = new List<Int32>();
                 for (int i = 1; i < tokens.Length; i++)
                 {
@@ -59,7 +58,9 @@ namespace Aurora.UI.Xaml.Converters
                         indexs.Add(Int32.Parse(token));
                     }
                 }
-                return pack.ReadTextures(indexs.ToArray());
+
+                var textures = AuroraState.PackageManager.LoadTextures(tokens[0], indexs.ToArray());
+                return textures;
             }
             else if (value.StartsWith("file://"))
             {

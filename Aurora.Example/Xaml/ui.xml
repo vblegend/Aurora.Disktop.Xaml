@@ -85,7 +85,11 @@
 			 ItemMenu = "ImageMatrix_ItemMenu"
 			 ItemMouseDown = "ImageMatrix_ItemMouseDown"
 			 ItemMouseUp = "ImageMatrix_ItemMouseUp"
-			 ItemDrawing = "ImageMatrix_ItemDrawing"> </ItemMatrix>
+			 ItemDrawing = "ImageMatrix_ItemDrawing">
+			
+			<sys:NewClass Property="Parser" Class="Aurora.Example.InitScene" />
+			
+		</ItemMatrix>
 		
 		
 	</Dialog>
