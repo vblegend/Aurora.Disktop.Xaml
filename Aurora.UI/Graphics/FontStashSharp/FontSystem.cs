@@ -216,29 +216,21 @@ namespace Aurora.UI.Graphics.FontStashSharp
                 if (glyph != null)
                 {
                     GetQuad(font, prevGlyphIndex, glyph, scale, Spacing, ref x, ref y, &q);
-                    if (q.X0 < minx)
-                        minx = q.X0;
-                    if (x > maxx)
-                        maxx = x;
+                    if (q.X0 < minx) minx = q.X0;
+                    if (x > maxx) maxx = x;
                     if (_params_.IsAlignmentTopLeft)
                     {
-                        if (q.Y0 < miny)
-                            miny = q.Y0;
-                        if (q.Y1 > maxy)
-                            maxy = q.Y1;
+                        if (q.Y0 < miny) miny = q.Y0;
+                        if (q.Y1 > maxy) maxy = q.Y1;
                     }
                     else
                     {
-                        if (q.Y1 < miny)
-                            miny = q.Y1;
-                        if (q.Y0 > maxy)
-                            maxy = q.Y0;
+                        if (q.Y1 < miny) miny = q.Y1;
+                        if (q.Y0 > maxy) maxy = q.Y0;
                     }
                 }
-
                 prevGlyphIndex = glyph != null ? glyph.Index : -1;
             }
-
             var advance = x - startx;
             if ((Alignment & Alignment.Left) != 0)
             {

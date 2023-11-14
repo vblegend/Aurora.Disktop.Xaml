@@ -1,9 +1,10 @@
 ﻿using Aurora.UI.Common;
 using Aurora.UI.Components;
 using Aurora.UI.Graphics;
+using Aurora.UI.Platforms.Windows;
 using Microsoft.Xna.Framework;
 using MonoGame.IMEHelper;
-
+using System.Diagnostics;
 
 namespace Aurora.UI.Controls
 {
@@ -40,7 +41,7 @@ namespace Aurora.UI.Controls
 
 
 
-
+            base.OnUpdate(gameTime);
 
 
         }
@@ -54,29 +55,25 @@ namespace Aurora.UI.Controls
         protected override void OnRender(GameTime gameTime)
         {
             base.OnRender(gameTime);
-
-            //var local = this.GlobalBounds.Location;
-            //this.Renderer.DrawString(this.Font, this.Text, new Vector2(local.X, local.Y), this.TextColor);
+            var padding = new Point(this.padding.Left, this.padding.Top);
 
             if (this.finalTexture != null)
             {
-                this.Renderer.Draw(this.finalTexture, this.GlobalBounds, Color.White);
+
+                // 显示最终渲染结果
+                this.Renderer.Draw(this.finalTexture, this.GlobalBounds.Location.Add(padding), Color.White);
             }
 
             // 显示光标
             if (this.currsorVisable)
             {
                 var text = this._text.Substring(textArea.Left, this.cursorPosition - textArea.Left);
-                var lr =  this.MeasureStringWidth(text);
-                this.Renderer.FillRectangle(this.CurrsorArea.Add(this.GlobalBounds.Location).Add(new Point(lr, 0)), this.CursorColor);
+                var lr = this.MeasureStringWidth(text);
+                this.Renderer.FillRectangle(this.CurrsorArea.Add(this.GlobalBounds.Location).Add(new Point(lr, 0)).Add(padding), this.CursorColor);
             }
             // 焦点突出显示边框
             if (this.IsFocus) this.Renderer.DrawRectangle(this.GlobalBounds, this.ActivedBorder);
         }
-
-
-
-
 
 
 
@@ -86,45 +83,94 @@ namespace Aurora.UI.Controls
             {
                 case 8:
                     // 退格
-
-                    this.RemoveString();
-
+                    this.RemoveString(-1);
                     this.InvalidateDrawing();
-                    //if (this.Text.Length > 0)
-                    //    this.Text = this.Text.Remove(this.Text.Length - 1, 1);
                     break;
-                case 27:
-                case 13:
-                    // 回车
+                case 9:
+                    AppendString(this.TabChar);
+                    this.InvalidateDrawing();
+                    break;
+                case 127:
+                    // 退格
+                    this.RemoveString(1);
+                    this.InvalidateDrawing();
+                    break;
+                case 27: // Esc
+                case 13: // Enter
                     break;
                 default:
                     // 输入
-                    var inputChar = "";
-                    if (e.Character > UnicodeSimplifiedChineseMax)
-                    {
-                        inputChar += "?";
-                    }
-                    else
-                    {
-                        inputChar += e.Character;
-                    }
-
-
-                    AppendString(inputChar);
-
-
-
-
-
+                    var inputChar = e.Character;
+                    AppendString(inputChar.ToString());
                     this.InvalidateDrawing();
                     break;
             }
         }
 
 
-        private void RemoveString()
+        protected override void OnKeyDown(IKeyboardMessage args)
         {
-            if (this.cursorPosition > 0)
+            switch (args.Key)
+            {
+                case Microsoft.Xna.Framework.Input.Keys.Left:
+                    if (this.cursorPosition > 0) this.cursorPosition--;
+                    this.ActiveCurrsor();
+                    break;
+                case Microsoft.Xna.Framework.Input.Keys.Right:
+                    if (this.cursorPosition < this._text.Length) this.cursorPosition++;
+                    this.ActiveCurrsor();
+                    break;
+                case Microsoft.Xna.Framework.Input.Keys.Home:
+                    if (this.cursorPosition > 0) this.cursorPosition = 0;
+                    this.ActiveCurrsor();
+                    break;
+                case Microsoft.Xna.Framework.Input.Keys.End:
+                    this.cursorPosition = this._text.Length;
+                    this.ActiveCurrsor();
+                    break;
+                case Microsoft.Xna.Framework.Input.Keys.A:
+                    if (args.Ctrl)
+                    {
+                        Trace.WriteLine("全选");
+                    }
+                    break;
+
+                case Microsoft.Xna.Framework.Input.Keys.X:
+                    if (args.Ctrl)
+                    {
+                        Trace.WriteLine("剪切");
+                    }
+                    break;
+
+                case Microsoft.Xna.Framework.Input.Keys.C:
+                    if (args.Ctrl)
+                    {
+                        Trace.WriteLine("拷贝");
+                        Clipboard.WriteText("#Clipboard#");
+                    }
+                    break;
+
+                case Microsoft.Xna.Framework.Input.Keys.V:
+                    if (args.Ctrl)
+                    {
+                        var text = Clipboard.ReadText();
+                        if (!String.IsNullOrEmpty(text))
+                        {
+                            this.AppendString(text);
+                            this.InvalidateDrawing();
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+
+        private void RemoveString(Int32 dir)
+        {
+            if (dir == -1 && this.cursorPosition > 0)
             {
                 this.cursorPosition = Math.Max(this.cursorPosition - 1, 0);
                 this._text = this._text.Remove(this.cursorPosition, 1);
@@ -133,35 +179,42 @@ namespace Aurora.UI.Controls
                     this.textArea.X--;
                 }
             }
+            else if (dir == 1 && this.cursorPosition < this._text.Length)
+            {
+                this._text = this._text.Remove(this.cursorPosition, 1);
+            }
         }
 
 
 
         private void AppendString(String text)
         {
-
             if (cursorPosition > this._text.Length) cursorPosition = this._text.Length;
             if (cursorPosition == this._text.Length)
             {
                 this._text += text;
-                cursorPosition+= text.Length;
-               
+            }
+            else if (cursorPosition == 0)
+            {
+                this._text = text + this._text;
             }
             else
             {
-
-
-
-
+                var left = this._text.Substring(0, cursorPosition);
+                var right = this._text.Substring(cursorPosition);
+                this._text = left + text + right;
             }
+            cursorPosition += text.Length;
 
-          //  this.textArea.Width += this._text.Length;
 
-            var dis = this._text.Substring(this.textArea.Left, this.cursorPosition - this.textArea.Left);
-            if (this.MeasureStringWidth(dis) > this.globalBounds.Width)
-            {
-                this.textArea.X += text.Length;
-            }
+
+            //  this.textArea.Width += this._text.Length;
+
+            //var dis = this._text.Substring(this.textArea.Left, this.cursorPosition - this.textArea.Left);
+            //if (this.MeasureStringWidth(dis) > this.globalBounds.Width)
+            //{
+            //    this.textArea.X += text.Length;
+            //}
 
         }
 
@@ -182,13 +235,16 @@ namespace Aurora.UI.Controls
 
         private void InvalidateDrawing()
         {
-     
+
             if (this.finalTexture != null)
             {
                 using (this.Renderer.TargetRender(this.finalTexture))
                 {
-                    var s =  this.Text.AsSpan().Slice(textArea.Left, this.Length - textArea.Left);
-                    this.Renderer.DrawString(this.Font, this.FontSize, s.ToString(), new Vector2(0, 0), this.TextColor);
+                    var s = this.Text.AsSpan().Slice(textArea.Left, this.Length - textArea.Left);
+
+                    var y = (this.finalTexture.Height - this.FontSize) / 2;
+
+                    this.Renderer.DrawString(this.Font, this.FontSize, s.ToString(), new Vector2(0, y), this.TextColor);
 
                     //this.Font.MeasureString("")
                 }
@@ -228,7 +284,7 @@ namespace Aurora.UI.Controls
         protected override void CalcAutoSize()
         {
             var oldTex = this.finalTexture;
-            this.finalTexture = this.Renderer.CreateRenderTarget(this.GlobalBounds.Width, this.GlobalBounds.Height);
+            this.finalTexture = this.Renderer.CreateRenderTarget(this.GlobalBounds.Width - (this.padding.Left + this.padding.Right), this.GlobalBounds.Height - (this.padding.Top + this.padding.Bottom));
             this.InvalidateDrawing();
             if (oldTex != null)
             {
@@ -294,6 +350,29 @@ namespace Aurora.UI.Controls
         /// </summary>
         private Rectangle selectionArea;
 
+        /// <summary>
+        /// 制表符长度
+        /// </summary>
+        public Int32 TabSize
+        {
+            get
+            {
+                return this.TabChar.Length;
+            }
+            set
+            {
+                if (value <= 0 || value >= 8)
+                {
+                    throw new Exception("");
+                }
+                this.TabChar = "".PadLeft(value);
+            }
+
+        }
+
+        private String TabChar = "    ";
+
+
 
         public Thickness Padding
         {
@@ -317,7 +396,7 @@ namespace Aurora.UI.Controls
             get => this._text;
             set
             {
-                var neatValue = value.Replace("\n", "");
+                var neatValue = value.Replace("\n", "").Replace("\t", this.TabChar);
                 if (this._text != neatValue)
                 {
                     this._text = neatValue;

@@ -313,7 +313,10 @@ namespace Aurora.UI.Controls
             }
         }
 
-
+        /// <summary>
+        /// 函数在渲染之前触发
+        /// </summary>
+        /// <param name="gameTime"></param>
         protected virtual void OnUpdate(GameTime gameTime)
         {
         }

@@ -7,22 +7,52 @@ namespace Aurora.UI.Graphics
 
     public abstract class ITexture : IDisposable
     {
-        private bool disposedValue;
-        public GraphicsDevice device { get; private set; }
-        public Vector2 Offset;
         internal Rectangle sourceRect;
         protected Texture2D tex { get; set; }
+
+        /// <summary>
+        /// get graphics device
+        /// </summary>
+        public GraphicsDevice device { get; private set; }
+
+        /// <summary>
+        /// set/get texture render offset
+        /// </summary>
+        public Vector2 Offset;
+
 
         internal ITexture(GraphicsDevice graphics)
         {
             this.device = graphics;
         }
 
+        /// <summary>
+        /// get Texture2D Object
+        /// </summary>
+        /// <returns></returns>
         public abstract Texture2D Tex();
 
+
         /// <summary>
-        /// 获取纹理大小范围
-        /// 这个值是可以改变的
+        /// get color form texture point
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public Boolean GetPixel(Point position, out Color color)
+        {
+            Color[] colors = new Color[1];
+            color = colors[0];
+            if (this.tex == null) return false;
+            if (!this.SourceRect.Contains(position)) return false;
+            this.tex.GetData(0, 0, new Rectangle(position.X, position.Y, 1, 1), colors, 0, 1);
+            color = colors[0];
+            return true;
+        }
+
+        #region texture info
+        /// <summary>
+        /// get texture rect
         /// </summary>
         public Rectangle SourceRect
         {
@@ -32,7 +62,9 @@ namespace Aurora.UI.Graphics
             }
         }
 
-
+        /// <summary>
+        /// get texture width
+        /// </summary>
         public Int32 Width
         {
             get
@@ -45,6 +77,9 @@ namespace Aurora.UI.Graphics
             }
         }
 
+        /// <summary>
+        /// get texture height
+        /// </summary>
         public Int32 Height
         {
             get
@@ -56,48 +91,15 @@ namespace Aurora.UI.Graphics
                 this.sourceRect.Height = value;
             }
         }
+        #endregion
 
-        public Boolean GetPixel(Point position, out Color color)
+        public virtual void Dispose()
         {
-            Color[] colors = new Color[1];
-            color = colors[0];
-            if (this.tex == null) return false;
-            if (!this.SourceRect.Contains(position)) return false;
-            this.tex.GetData(0, 0, new Rectangle(position.X, position.Y, 1, 1), colors, 0, 1);
-            color = colors[0];
-            return true;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
+            if (this.tex != null)
             {
-                if (disposing)
-                {
-                    // TODO: 释放托管状态(托管对象)
-                }
-                if (this.tex != null)
-                {
-                    this.tex.Dispose();
-                    this.tex = null;
-                }
-                // TODO: 释放未托管的资源(未托管的对象)并重写终结器
-                // TODO: 将大型字段设置为 null
-                disposedValue = true;
+                this.tex.Dispose();
+                this.tex = null;
             }
-        }
-
-        ~ITexture()
-        {
-            // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
-            Dispose(disposing: false);
-        }
-
-        public void Dispose()
-        {
-            // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 
@@ -107,8 +109,17 @@ namespace Aurora.UI.Graphics
     /// </summary>
     public class LazyTexture : ITexture
     {
+        /// <summary>
+        /// resource state
+        /// </summary>
         private Boolean loaded;
-        private Func<Byte[]> LazyReader;
+
+        private DataReader LazyReader;
+
+        /// <summary>
+        /// resource index
+        /// </summary>
+        private Int32 ResIndex;
 
         public LazyTexture(GraphicsDevice graphics) : base(graphics)
         {
@@ -124,7 +135,8 @@ namespace Aurora.UI.Graphics
         public static LazyTexture FromAssetPackageNode(GraphicsDevice graphicsDevice, IReadOnlyLazyInfo info)
         {
             var context = new LazyTexture(graphicsDevice);
-            context.LazyReader = info.GetReader();
+            context.ResIndex = info.Index;
+            context.LazyReader = info.ReadData;
             context.Width = info.Width;
             context.Height = info.Height;
             context.Offset = new Vector2(info.OffsetX, info.OffsetY);
@@ -137,13 +149,24 @@ namespace Aurora.UI.Graphics
         {
             if (this.tex == null && !this.loaded)
             {
-                var data = this.LazyReader();
-                this.tex = new Texture2D(this.device, this.Width, this.Height);
-                this.tex.SetData(data);
+                var data = this.LazyReader(this.ResIndex);
+                if (data != null)
+                {
+                    this.tex = new Texture2D(this.device, this.Width, this.Height);
+                    this.tex.SetData(data);
+                }
                 this.loaded = true;
             }
             return this.tex;
         }
+
+
+        public override void Dispose()
+        {
+            this.loaded = false;
+            base.Dispose();
+        }
+
     }
 
 

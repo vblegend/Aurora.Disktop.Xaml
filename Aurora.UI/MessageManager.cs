@@ -115,7 +115,6 @@ namespace Aurora.UI
                 if (state.LeftButton == ButtonState.Pressed)
                 {
                     this.LeftButton = state.LeftButton;
-                    Trace.WriteLine("L Button Down");
                     this.DispatchMouseEvent(WM_MESSAGE.MOUSE_DOWN, state.Position, MouseButtons.Left);
                 }
                 else
