@@ -1,27 +1,21 @@
 ﻿
 
 using Aurora.UI.Graphics;
-using Aurora.UI.Xaml.System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Xna.Framework.Graphics;
 using Resource.Package.Assets;
-using System;
-using System.Diagnostics;
+
 
 
 namespace Aurora.UI.Common
 {
-
     public interface ITextureCache
     {
-        public void SetValue(String key, SimpleTexture texture);
+        public void SetValue(String key, ITexture texture);
 
-        public Boolean GetValue(String key, out SimpleTexture texture);
+        public Boolean GetValue(String key, out ITexture texture);
 
     }
-
-
-
     public class TextureMemoryCache : ITextureCache
     {
         private MemoryCache _cache;
@@ -39,19 +33,17 @@ namespace Aurora.UI.Common
             };
         }
 
-        public bool GetValue(string key, out SimpleTexture texture)
+        public bool GetValue(string key, out ITexture texture)
         {
             return _cache.TryGetValue(key, out texture);
         }
 
-        public void SetValue(string key, SimpleTexture texture)
+        public void SetValue(string key, ITexture texture)
         {
             _cache.Set(key, texture, this._cacheEntryOptions);
         }
 
     }
-
-
 
     public class PackageManager
     {
@@ -80,8 +72,13 @@ namespace Aurora.UI.Common
 
 
 
-
-        public SimpleTexture LazyLoadTexture(String packageName, Int32 index)
+        /// <summary>
+        /// 以懒加载模式加载纹理对象
+        /// </summary>
+        /// <param name="packageName"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public ITexture LoadLazyTexture(String packageName, Int32 index)
         {
             if (this.TextureCache.GetValue(packageName + index, out var texture))
             {
@@ -92,7 +89,7 @@ namespace Aurora.UI.Common
             var info = package.LazyRead((UInt32)index);
             if (info != null)
             {
-                texture = SimpleTexture.FromAssetPackageLazy(this.Device, info);
+                texture = LazyTexture.FromAssetPackageNode(this.Device, info);
                 this.TextureCache.SetValue(packageName + index, texture);
                 return texture;
             }
@@ -101,6 +98,36 @@ namespace Aurora.UI.Common
 
 
 
+        /// <summary>
+        /// 以懒加载模式加载纹理对象
+        /// </summary>
+        /// <param name="packageName"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public ITexture[] LoadLazyTextures(String packageName, params Int32[] indexs)
+        {
+            var result = new ITexture[indexs.Length];
+            if (!this.packages.TryGetValue(packageName, out var package)) return null;
+            for (int i = 0; i < indexs.Length; i++)
+            {
+                var index = (UInt32)indexs[i];
+                if (this.TextureCache.GetValue(packageName + index, out var texture))
+                {
+                    result[i] = texture;
+                }
+                else
+                {
+                    var block = package.LazyRead(index);
+                    if (block != null)
+                    {
+                        texture = LazyTexture.FromAssetPackageNode(this.Device, block);
+                        this.TextureCache.SetValue(packageName + index, texture);
+                        result[i] = texture;
+                    }
+                }
+            }
+            return result;
+        }
 
 
 
@@ -111,7 +138,7 @@ namespace Aurora.UI.Common
         /// <param name="packageName"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public SimpleTexture LoadTexture(String packageName,Int32 index)
+        public ITexture LoadTexture(String packageName,Int32 index)
         {
             if (this.TextureCache.GetValue(packageName + index, out var texture))
             {
@@ -138,9 +165,9 @@ namespace Aurora.UI.Common
         /// <param name="packageName"></param>
         /// <param name="indexs"></param>
         /// <returns></returns>
-        public SimpleTexture[] LoadTextures(String packageName, params Int32[] indexs)
+        public ITexture[] LoadTextures(String packageName, params Int32[] indexs)
         {
-            var result = new SimpleTexture[indexs.Length];
+            var result = new ITexture[indexs.Length];
             if (!this.packages.TryGetValue(packageName, out var package)) return null;
             for (int i = 0; i < indexs.Length; i++)
             {

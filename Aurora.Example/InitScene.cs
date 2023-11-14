@@ -11,8 +11,8 @@ namespace Aurora.Example
     
     internal class InitScene : PlayScene
     {
-        private SimpleTexture[] itemEffect = new SimpleTexture[0];
-        private SimpleTexture[] items = new SimpleTexture[0];
+        private ITexture[] itemEffect = new ITexture[0];
+        private ITexture[] items = new ITexture[0];
 
 
 
@@ -33,8 +33,8 @@ namespace Aurora.Example
             }
 
 
-            this.items = AuroraState.PackageManager.LoadTextures("ui",112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127);
-            this.itemEffect = AuroraState.PackageManager.LoadTextures("ui", 96,97,98,99,100,101,102,103,104,105);
+            this.items = AuroraState.PackageManager.LoadLazyTextures("ui",112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127);
+            this.itemEffect = AuroraState.PackageManager.LoadLazyTextures("ui", 96,97,98,99,100,101,102,103,104,105);
         }
 
 

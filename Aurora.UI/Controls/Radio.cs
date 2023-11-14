@@ -72,10 +72,6 @@ namespace Aurora.UI.Controls
 
         public new event XamlClickEventHandler<Radio> Click;
 
-        //public SimpleTexture Icon;
-
-        //public Boolean Value;
-
         public String GroupName;
 
         public Int32 Index;

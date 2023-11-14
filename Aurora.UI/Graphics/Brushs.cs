@@ -72,14 +72,14 @@ namespace Aurora.UI.Graphics
         public FillMode FillMode;
 
 
-        public readonly SimpleTexture Texture;
+        public readonly ITexture Texture;
 
-        public TextureBrush(SimpleTexture texture)
+        public TextureBrush(ITexture texture)
         {
             this.Texture = texture;
             this.FillMode = FillMode.None;
         }
-        public TextureBrush(SimpleTexture texture, FillMode fillMode)
+        public TextureBrush(ITexture texture, FillMode fillMode)
         {
             this.Texture = texture;
             this.FillMode = fillMode;
@@ -114,9 +114,9 @@ namespace Aurora.UI.Graphics
     /// </summary>
     public class NineGridBrush : IXamlBrush
     {
-        private readonly SimpleTexture Texture;
+        private readonly ITexture Texture;
 
-        public NineGridBrush(SimpleTexture texture)
+        public NineGridBrush(ITexture texture)
         {
             this.Texture = texture;
         }

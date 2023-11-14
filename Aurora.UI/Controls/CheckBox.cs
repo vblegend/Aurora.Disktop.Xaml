@@ -91,7 +91,7 @@ namespace Aurora.UI.Controls
 
         public new event XamlClickEventHandler<CheckBox> Click;
 
-        public SimpleTexture Icon;
+        public ITexture Icon;
 
         public Boolean Value;
     }

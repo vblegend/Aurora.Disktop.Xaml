@@ -10,7 +10,7 @@ namespace Aurora.UI.Graphics
     public class SpriteObject
     {
         private Rectangle[] sheets;
-        public SimpleTexture Texture { get; private set; }
+        public ITexture Texture { get; private set; }
         public Int32 FrameCount { get; private set; }
         public Int32 Width { get; private set; }
         public Int32 Height { get; private set; }
@@ -18,7 +18,7 @@ namespace Aurora.UI.Graphics
         public Int32 Columns { get; private set; }
 
 
-        public SpriteObject(SimpleTexture texture, Int32 rows, Int32 columns)
+        public SpriteObject(ITexture texture, Int32 rows, Int32 columns)
         {
             this.sheets = new Rectangle[0];
             if (rows < 1) throw new Exception("");

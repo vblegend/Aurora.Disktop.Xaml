@@ -22,7 +22,7 @@ namespace Aurora.UI.Xaml.Converters
                 // package://texture,pkgName,1000
                 // package://grid,pkgName,1000
                 var tokens = value.Substring(10).Split(',');
-                var texture = AuroraState.PackageManager.LazyLoadTexture(tokens[1], Int32.Parse(tokens[2]));
+                var texture = AuroraState.PackageManager.LoadLazyTexture(tokens[1], Int32.Parse(tokens[2]));
                 if (tokens[0] == "texture")
                 {
                     Graphics.FillMode fill = Graphics.FillMode.None;

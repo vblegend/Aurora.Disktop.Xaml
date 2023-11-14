@@ -1,31 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Resource.Package.Assets.Common;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace Aurora.UI.Graphics
 {
 
     public abstract class ITexture : IDisposable
     {
+        private bool disposedValue;
+        public GraphicsDevice device { get; private set; }
+        public Vector2 Offset;
+        internal Rectangle sourceRect;
+        protected Texture2D tex { get; set; }
 
         internal ITexture(GraphicsDevice graphics)
         {
             this.device = graphics;
         }
-        protected Texture2D tex { get; set; }
-
-        public Vector2 Offset;
-        private bool disposedValue;
-
-        //public BlendState BlendState;
 
         public abstract Texture2D Tex();
-
-        public GraphicsDevice device { get; private set; }
-
-
 
         /// <summary>
         /// 获取纹理大小范围
@@ -64,9 +57,6 @@ namespace Aurora.UI.Graphics
             }
         }
 
-        public Rectangle sourceRect;
-
-
         public Boolean GetPixel(Point position, out Color color)
         {
             Color[] colors = new Color[1];
@@ -97,7 +87,6 @@ namespace Aurora.UI.Graphics
             }
         }
 
-        // TODO: 仅当“Dispose(bool disposing)”拥有用于释放未托管资源的代码时才替代终结器
         ~ITexture()
         {
             // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
@@ -112,32 +101,17 @@ namespace Aurora.UI.Graphics
         }
     }
 
-    /// <summary>
-    /// 简单纹理
-    /// </summary>
-    public class SimpleTexture : ITexture
-    {
-        public Boolean IsLazyLoading
-        {
-            get => this.isLazy;
-        }
 
-        private Boolean isLazy;
-        private Boolean lazyLoaded;
+    /// <summary>
+    /// 懒加载纹理
+    /// </summary>
+    public class LazyTexture : ITexture
+    {
+        private Boolean loaded;
         private Func<Byte[]> LazyReader;
 
-
-
-
-
-        private SimpleTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        public LazyTexture(GraphicsDevice graphics) : base(graphics)
         {
-
-        }
-
-        private void FromStrean(Stream stream, Action<byte[]> colorProcessor)
-        {
-            this.tex = Texture2D.FromStream(this.device, stream, colorProcessor);
         }
 
 
@@ -147,26 +121,13 @@ namespace Aurora.UI.Graphics
         /// <param name="graphicsDevice"></param>
         /// <param name="info"></param>
         /// <returns></returns>
-        public static SimpleTexture FromAssetPackageLazy(GraphicsDevice graphicsDevice, IReadOnlyLazyInfo info)
+        public static LazyTexture FromAssetPackageNode(GraphicsDevice graphicsDevice, IReadOnlyLazyInfo info)
         {
-            var context = new SimpleTexture(graphicsDevice);
-            if (info.Width > 0 && info.Height > 0)
-            {
-                context.LazyReader = info.GetReader();
-                context.Width = info.Width;
-                context.Height = info.Height;
-            }
-            context.isLazy = true;
+            var context = new LazyTexture(graphicsDevice);
+            context.LazyReader = info.GetReader();
+            context.Width = info.Width;
+            context.Height = info.Height;
             context.Offset = new Vector2(info.OffsetX, info.OffsetY);
-            return context;
-        }
-
-
-
-        public static SimpleTexture FromTexture2D(Texture2D texture)
-        {
-            var context = new SimpleTexture(texture.GraphicsDevice);
-            context.tex = texture;
             return context;
         }
 
@@ -174,25 +135,46 @@ namespace Aurora.UI.Graphics
 
         public override Texture2D Tex()
         {
-            if (this.tex == null && this.isLazy && !this.lazyLoaded)
+            if (this.tex == null && !this.loaded)
             {
-                // lazy load
                 var data = this.LazyReader();
                 this.tex = new Texture2D(this.device, this.Width, this.Height);
                 this.tex.SetData(data);
-                this.lazyLoaded = true;
+                this.loaded = true;
             }
             return this.tex;
         }
+    }
 
 
 
 
 
 
+    /// <summary>
+    /// 简单纹理
+    /// </summary>
+    public class SimpleTexture : ITexture
+    {
+        private SimpleTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
 
+        }
 
         #region MyRegion
+
+        private void FromStrean(Stream stream, Action<byte[]> colorProcessor)
+        {
+            this.tex = Texture2D.FromStream(this.device, stream, colorProcessor);
+            this.sourceRect = new Rectangle(0, 0, this.tex.Width, this.tex.Height);
+        }
+
+        public static SimpleTexture FromTexture2D(Texture2D texture)
+        {
+            var context = new SimpleTexture(texture.GraphicsDevice);
+            context.tex = texture;
+            return context;
+        }
 
         public static SimpleTexture FromAssetPackageNode(GraphicsDevice graphicsDevice, IReadOnlyDataBlock block, Action<byte[]> colorProcessor = null)
         {
@@ -237,6 +219,10 @@ namespace Aurora.UI.Graphics
         }
         #endregion
 
+        public override Texture2D Tex()
+        {
+            return this.tex;
+        }
     }
 
 
@@ -244,7 +230,7 @@ namespace Aurora.UI.Graphics
     /// <summary>
     /// 渲染目标纹理
     /// </summary>
-    public class TargetTexture : ITexture, IDisposable
+    public class TargetTexture : ITexture
     {
 
         private TargetTexture(GraphicsDevice graphicsDevice) : base(graphicsDevice)
@@ -260,19 +246,11 @@ namespace Aurora.UI.Graphics
             return context;
         }
 
-        public void Dispose()
-        {
-            if (this.tex != null)
-            {
-                this.tex.Dispose();
-                this.tex = null;
-            }
-        }
-
         public void Resize(Int32 width, Int32 height)
         {
             var raw = this.tex;
             this.tex = new RenderTarget2D(device, width, height);
+            this.sourceRect = new Rectangle(0, 0, width, height);
             if (raw != null)
             {
                 raw.Dispose();

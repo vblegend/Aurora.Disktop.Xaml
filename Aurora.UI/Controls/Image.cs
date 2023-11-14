@@ -40,7 +40,7 @@ namespace Aurora.UI.Controls
         }
 
 
-        public SimpleTexture Texture
+        public ITexture Texture
         {
             get
             {
@@ -87,7 +87,7 @@ namespace Aurora.UI.Controls
         // Declare the event.
         public event XamlClickEventHandler<Image> Click;
 
-        private SimpleTexture texture;
+        private ITexture texture;
 
         public FillMode FillMode { get; set; }
     }

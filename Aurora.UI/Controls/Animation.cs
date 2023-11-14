@@ -16,7 +16,7 @@ namespace Aurora.UI.Controls
 
         public Animation()
         {
-            this.textures = new SimpleTexture[0];
+            this.textures = new ITexture[0];
             this.Interval = new TimeSpan(0, 0, 1);
             this.FillMode = FillMode.None;
             this.IgnoreMouseEvents = true;
@@ -73,7 +73,7 @@ namespace Aurora.UI.Controls
             }
         }
 
-        public SimpleTexture[] Textures
+        public ITexture[] Textures
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Aurora.UI.Controls
         // Declare the event.
         public event XamlClickEventHandler<Animation> Click;
 
-        private SimpleTexture[] textures;
+        private ITexture[] textures;
 
         public FillMode FillMode { get; set; }
     }

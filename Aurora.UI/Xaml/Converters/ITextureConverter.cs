@@ -5,8 +5,8 @@ using System.Diagnostics;
 namespace Aurora.UI.Xaml.Converters
 {
 
-    [XamlConverter(typeof(SimpleTexture))]
-    internal class SimpleTextureConverter : IXamlPropertyConverter
+    [XamlConverter(typeof(ITexture))]
+    internal class ITextureConverter : IXamlPropertyConverter
     {
         public Object Convert(Type propertyType, string value)
         {
@@ -15,7 +15,7 @@ namespace Aurora.UI.Xaml.Converters
             {
                 // package://pkgName,1000
                 var tokens = value.Substring(10).Split(',');
-                var texture = AuroraState.PackageManager.LazyLoadTexture(tokens[0], Int32.Parse(tokens[1]));
+                var texture = AuroraState.PackageManager.LoadLazyTexture(tokens[0], Int32.Parse(tokens[1]));
                 return texture;
             }
             else if (value.StartsWith("file://"))
@@ -32,8 +32,8 @@ namespace Aurora.UI.Xaml.Converters
 
 
 
-    [XamlConverter(typeof(SimpleTexture[]))]
-    internal class SimpleTextureArrayConverter : IXamlPropertyConverter
+    [XamlConverter(typeof(ITexture[]))]
+    internal class ITextureArrayConverter : IXamlPropertyConverter
     {
         public Object Convert(Type propertyType, string value)
         {
@@ -59,14 +59,14 @@ namespace Aurora.UI.Xaml.Converters
                     }
                 }
 
-                var textures = AuroraState.PackageManager.LoadTextures(tokens[0], indexs.ToArray());
+                var textures = AuroraState.PackageManager.LoadLazyTextures(tokens[0], indexs.ToArray());
                 return textures;
             }
             else if (value.StartsWith("file://"))
             {
                 // file://filename
                 var filenames = value.Substring(7).Split(",", StringSplitOptions.RemoveEmptyEntries);
-                var result = new SimpleTexture[filenames.Length];
+                var result = new ITexture[filenames.Length];
                 for (int i = 0; i < filenames.Length; i++)
                 {
                     var device = AuroraState.Services.GetService<GraphicsDevice>();
