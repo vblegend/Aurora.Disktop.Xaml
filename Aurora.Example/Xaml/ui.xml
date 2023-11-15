@@ -2,9 +2,10 @@
 <Template xmlns="http://schemas.l2030.com/xaml/ui/controls"
 	  xmlns:x="http://schemas.l2030.com/xaml/ui/default"
 	  xmlns:sys="http://schemas.l2030.com/xaml/ui/system">
-	
+
 	<Template.Resource DefaultFont="Microsoft YaHei" Debuging="True">
 		<sys:Package Name="ui" Path="./ui.asset" Password="" ></sys:Package>
+		<sys:Font Name="Fixedsy" Path="./Fonts/Fixedsy.ttf" ></sys:Font>
 		<sys:Font Name="Microsoft YaHei" Path="./Fonts/Microsoft YaHei.ttf" ></sys:Font>
 		<sys:Font Name="HanYi XieJing" Path="./Fonts/HanYi XieJing.ttf" ></sys:Font>
 	</Template.Resource>
@@ -21,23 +22,20 @@
 
 
 	<Dialog Name="Window02" Background="package://texture,ui,48" AutoTop="True"  Pinned="False" Click="xxxxx_ssss"  Size="309,439" HorizontalAlignment="Center" VerticalAlignment="Center">
-		<Label Name="Label01" Content="这是一段字符串" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-			   TextColor="#d6c79c" Margin="48,80,0,0" Size="200,75" />
+		<Label Name="Label01" Content="这是一段字符串" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" TextColor="#d6c79c" Margin="48,80,0,0" Size="200,75" />
 		<Label Name="Label02" TextColor="#e7dbb5" Margin="0,190,0,0" Size="200,160" HorizontalAlignment="Center" Padding="20,15">
-			<Button Name="LabBtn" Image="package://ui,66,3,1"  TextColor="#e7dbb5" Content="我在Label里"  Margin="0,0,0,0" HorizontalAlignment="Stretch"  VerticalAlignment="Top"   Click="Button_Click" />
+			<Button Name="LabBtn" Image="package://ui,66,3,1"  TextColor="#e7dbb5" Content="我在Label里" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="Button_Click" />
 		</Label>
-		<Button Name="Btn02" Image="package://ui,66,3,1" VerticalAlignment="Bottom" HorizontalAlignment="Center"
-				Size="auto,auto"	Content="DENG LU"	Margin="0,0,0,50" Click="Button_Click" />
+		<Button Name="Btn02" Image="package://ui,66,3,1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Size="auto,auto"	Content="DENG LU"	Margin="0,0,0,50" Click="Button_Click" />
 		<ScrollBar Name="滚动条" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,30,25,20"   Size="24,auto" >
 			<ScrollBar.Slots>
-				<Button x:Name="#BUTTON_DEC"  />
-				<Button x:Name="#BUTTON_SLIDE"  />
-				<Button x:Name="#BUTTON_INC"  />
+				<Button x:Name="#BUTTON_DEC" />
+				<Button x:Name="#BUTTON_SLIDE" />
+				<Button x:Name="#BUTTON_INC" />
 			</ScrollBar.Slots>
-
 			<Button Name="BUTTON_DEC" Image="package://ui,35,3,1"  Margin="0,0,0,0" Size="126,24"  HorizontalAlignment="Stretch" VerticalAlignment="Top" />
 			<Button Name="BUTTON_SLIDE" Image="package://ui,37,3,1" Margin="0,50,0,0" Size="126,24" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
-			<Button Name="BUTTON_INC" Image="package://ui,36,3,1" Margin="0,0,0,0" Size="126,24" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />			
+			<Button Name="BUTTON_INC" Image="package://ui,36,3,1" Margin="0,0,0,0" Size="126,24" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
 		</ScrollBar>
 	</Dialog>
 
@@ -64,19 +62,12 @@
 		<Animation Name="Animation01" Margin="0,20,20,0" Textures="package://ui,0-15" Size="80,80" HorizontalAlignment="Right" FillMode="Stretch" Interval="50" ></Animation>
 		<CheckBox Name="Debug"  Image="package://ui,32,3,1" Icon="package://ui,33" FontSize="16" Content="Debuging"  Margin="25,25,0,0" Value="True" Click="Debuging_Click" />
 		<CheckBox Name="Full Screen"  Image="package://ui,32,3,1" Icon="package://ui,33" Content="Full Screen"  Margin="25,55,0,0" Value="False" Click="FullScreen_Click" />
-
-
 		<Radio Name="Select A" GroupName="A"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Select A"  Margin="825,35,0,0" Value="True"  />
 		<Radio Name="Select B" GroupName="A"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Select B"  Margin="925,35,0,0" Value="False"  />
 		<Radio Name="Select C" GroupName="A"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="禁用C"  Margin="1025,35,0,0" Value="False" Enabled="False" />
-
-
 		<Radio Name="Enabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Enabled"  Margin="825,70,0,0" Value="False"  />
 		<Radio Name="Disabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Disabled"  Margin="925,70,0,0" Value="True"  />
-
 		<TextBox Name="InputBox" Background="package://grid,ui,37" Padding="5,5,5,5" Font="textbox-font" FontSize="18" Text="&#x2593;12345&#x000A;67890" Margin="610,40,0,0"  Size="150,34"/>
-
-
 		<ItemMatrix Margin="155,32,0,0" Padding="9,9,9,9" Columns="6" Rows ="1" ItemSize="38,38" Space="10,10" Size="auto,auto"
 			 Items =""
 			 ItemMouseEnter = "ImageMatrix_ItemMouseEnter"
@@ -86,17 +77,12 @@
 			 ItemMouseDown = "ImageMatrix_ItemMouseDown"
 			 ItemMouseUp = "ImageMatrix_ItemMouseUp"
 			 ItemDrawing = "ImageMatrix_ItemDrawing">
-			
 			<sys:NewClass Property="Parser" Class="Aurora.Example.InitScene" />
-			
 		</ItemMatrix>
-		
-		
 	</Dialog>
 
 
 	<Dialog Name="BackPack" Background="package://texture,ui,55" AutoTop="True" Pinned="False"  Margin="100,100,0,0" Size="auto,auto">
-
 		<ItemMatrix Margin="30,72,0,0" Padding="9,9,9,9" Columns="10" Rows ="10" ItemSize="38,38" Space="1,1" Size="auto,auto" 
 					 Items =""
 					 ItemMouseEnter = "ImageMatrix_ItemMouseEnter" 

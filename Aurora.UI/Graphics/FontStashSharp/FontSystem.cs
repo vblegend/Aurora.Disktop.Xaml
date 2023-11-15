@@ -335,9 +335,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
 
             if (font.TryGetGlyph(codepoint, isize, iblur, out glyph))
             {
-                if (!isBitmapRequired || glyph.X0 >= 0 && glyph.Y0 >= 0)
-                    return glyph;
-
+                if (!isBitmapRequired || glyph.X0 >= 0 && glyph.Y0 >= 0) return glyph;
             }
 
             g = font._font.fons__tt_getGlyphIndex(codepoint);
@@ -410,8 +408,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return glyph;
         }
 
-        private void GetQuad(Font font, int prevGlyphIndex, FontGlyph glyph, float scale,
-            float spacing, ref float x, ref float y, FontGlyphSquad* q)
+        private void GetQuad(Font font, int prevGlyphIndex, FontGlyph glyph, float scale, float spacing, ref float x, ref float y, FontGlyphSquad* q)
         {
             if (prevGlyphIndex != -1)
             {
