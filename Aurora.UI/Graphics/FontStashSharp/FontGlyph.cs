@@ -2,6 +2,7 @@
 {
     internal class FontGlyph
     {
+        public Font Font;
         public int Codepoint;
         public int Index;
         public int Size;

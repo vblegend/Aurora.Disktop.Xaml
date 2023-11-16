@@ -90,7 +90,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
                 var glyph = GetGlyph(font, codepoint, isize, true);
                 if (glyph != null)
                 {
-                    GetQuad(font, prevGlyphIndex, glyph, scale, ref originX, ref originY, &q);
+                    GetQuad(glyph.Font, prevGlyphIndex, glyph, scale, ref originX, ref originY, &q);
 
                     q.X0 = (int)(q.X0 * vScale.X);
                     q.X1 = (int)(q.X1 * vScale.X);
@@ -107,7 +107,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
 
                     _renderItems.Add(renderItem);
                 }
-                prevGlyphIndex.Font = font;
+                prevGlyphIndex.Font = glyph.Font;
                 prevGlyphIndex.Index = glyph != null ? glyph.Index : -1;
                 //prevGlyphIndex = glyph != null ? glyph.Index : -1;
             }
@@ -163,7 +163,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
                 var glyph = GetGlyph(font, codepoint, isize, false);
                 if (glyph != null)
                 {
-                    GetQuad(font, prevGlyphIndex, glyph, scale, ref x, ref y, &q);
+                    GetQuad(glyph.Font, prevGlyphIndex, glyph, scale, ref x, ref y, &q);
                     if (q.X0 < minx) minx = q.X0;
                     if (x > maxx) maxx = x;
 
@@ -171,7 +171,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
                     if (q.Y1 > maxy) maxy = q.Y1;
 
                 }
-                prevGlyphIndex.Font = font;
+                prevGlyphIndex.Font = glyph.Font;
                 prevGlyphIndex.Index = glyph != null ? glyph.Index : -1;
                 //prevGlyphIndex = glyph != null ? glyph.Index : -1;
             }
@@ -285,7 +285,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
 
             if (glyph == null)
             {
-                glyph = new FontGlyph { Codepoint = codepoint, Size = isize };
+                glyph = new FontGlyph { Codepoint = codepoint, Size = isize, Font = font };
                 font.SetGlyph(codepoint, isize, glyph);
             }
 
