@@ -1,92 +1,65 @@
-using Aurora.UI.Common.StbTrueType;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static Aurora.UI.Common.StbTrueType.StbTrueType;
-using static System.Formats.Asn1.AsnWriter;
+
 
 namespace Aurora.UI.Graphics.FontStashSharp
 {
+
+    internal struct PrevGlyphInfo
+    {
+        public PrevGlyphInfo()
+        {
+            Font = null;
+            Index = -1;
+        }
+
+        public Font Font;
+        public int Index;
+
+    }
     public unsafe class FontSystem
     {
-        private FontSystemParams _params_ = new FontSystemParams();
-        private readonly List<FontAtlas> _atlases = new List<FontAtlas>();
-        private readonly Dictionary<String, Font> _fonts = new Dictionary<String, Font>();
+        private Int32 BufferWidth;
+        private Int32 BufferHeight;
         private float _ith;
         private float _itw;
+
+
+
+
+
+        private readonly List<FontAtlas> _atlases = new List<FontAtlas>();
+        private readonly Dictionary<String, Font> _fonts = new Dictionary<String, Font>();
+
         private readonly List<RenderItem> _renderItems = new List<RenderItem>();
         private FontAtlas _currentAtlas;
-
-        public Alignment Alignment;
-        public float BlurValue;
-        public float Spacing;
-        public Vector2 Scale;
-
 
 
         public String DefaultFont = "";
         public char DefaultChar = '\u2593';
-        public FontAtlas CurrentAtlas
-        {
-            get
-            {
-                if (_currentAtlas == null)
-                {
-                    _currentAtlas = new FontAtlas(_params_.Width, _params_.Height, 256, _atlases.Count);
-                    _atlases.Add(_currentAtlas);
-                }
 
-                return _currentAtlas;
-            }
+
+        public FontSystem(Int32 bufferWidth, Int32 bufferHeight)
+        {
+            this.BufferWidth = bufferWidth;
+            this.BufferHeight = bufferHeight;
+            _itw = 1.0f / this.BufferWidth;
+            _ith = 1.0f / this.BufferHeight;
         }
 
-        public List<FontAtlas> Atlases
-        {
-            get
-            {
-                return _atlases;
-            }
-        }
 
-        public event EventHandler CurrentAtlasFull;
-
-        public FontSystem(FontSystemParams p)
+        private FontAtlas CreateAtlas()
         {
-            _params_ = p;
-            _itw = 1.0f / _params_.Width;
-            _ith = 1.0f / _params_.Height;
-            ClearState();
-        }
-
-        public void ClearState()
-        {
-            BlurValue = 0;
-            Spacing = 0;
-            Alignment = Alignment.Top;
+            _currentAtlas = new FontAtlas(this.BufferWidth, this.BufferHeight, 256, _atlases.Count);
+            _atlases.Add(_currentAtlas);
+            return _currentAtlas;
         }
 
         public int AddFontMem(string name, byte[] data)
         {
-            var ascent = 0;
-            var descent = 0;
-            var fh = 0;
-            var lineGap = 0;
-            var font = new Font
-            {
-                Name = name,
-                Data = data
-            };
-            fixed (byte* ptr = data)
-            {
-                if (LoadFont(font._font, ptr, data.Length) == 0)
-                    return -1;
-            }
-
-            font._font.fons__tt_getFontVMetrics(&ascent, &descent, &lineGap);
-            fh = ascent - descent;
-            font.Ascent = ascent;
-            font.Ascender = ascent / (float)fh;
-            font.Descender = descent / (float)fh;
-            font.LineHeight = (fh + lineGap) / (float)fh;
+            var font = new Font { Name = name };
+            if (!font.LoadFont(data)) return -1;
             _fonts.Add(name, font);
             if (String.IsNullOrEmpty(this.DefaultFont)) this.DefaultFont = name;
             return _fonts.Count - 1;
@@ -96,7 +69,6 @@ namespace Aurora.UI.Graphics.FontStashSharp
         {
             if (_fonts.TryGetValue(name, out var font)) return font;
             if (_fonts.TryGetValue(this.DefaultFont, out var font2)) return font2;
-            //throw new Exception("");
             return null;
         }
 
@@ -104,38 +76,21 @@ namespace Aurora.UI.Graphics.FontStashSharp
         {
             if (String.IsNullOrEmpty(str) || font == null) return 0.0f;
             var q = new FontGlyphSquad();
-            var prevGlyphIndex = -1;
+            var prevGlyphIndex = new PrevGlyphInfo();
             var isize = (int)(fontSize * 10.0f);
-            var iblur = (int)BlurValue;
-            if (font.Data == null) return x;
-            var scale = font._font.fons__tt_getPixelHeightScale(isize / 10.0f);
-            if ((Alignment & Alignment.Left) != 0)
-            {
-            }
-            else if ((Alignment & Alignment.Right) != 0)
-            {
-                var bounds = new Bounds();
-                var width = TextBounds(x, y, font, fontSize, str, ref bounds);
-                x -= width;
-            }
-            else if ((Alignment & Alignment.Center) != 0)
-            {
-                var bounds = new Bounds();
-                var width = TextBounds(x, y, font, fontSize, str, ref bounds);
-                x -= width * 0.5f;
-            }
-
+            if (font == null) return x;
+            var scale = font.GetPixelHeightScale(isize / 10.0f);
             float originX = 0.0f;
             float originY = 0.0f;
 
-            originY += GetVertAlign(font, Alignment, isize);
+            originY += font.Ascender * isize / 10.0f;
             for (int i = 0; i < str.Length; i += char.IsSurrogatePair(str, i) ? 2 : 1)
             {
                 var codepoint = char.ConvertToUtf32(str, i);
-                var glyph = GetGlyph(font, codepoint, isize, iblur, true);
+                var glyph = GetGlyph(font, codepoint, isize, true);
                 if (glyph != null)
                 {
-                    GetQuad(font, prevGlyphIndex, glyph, scale, Spacing, ref originX, ref originY, &q);
+                    GetQuad(font, prevGlyphIndex, glyph, scale, ref originX, ref originY, &q);
 
                     q.X0 = (int)(q.X0 * vScale.X);
                     q.X1 = (int)(q.X1 * vScale.X);
@@ -145,24 +100,19 @@ namespace Aurora.UI.Graphics.FontStashSharp
                     var renderItem = new RenderItem
                     {
                         Atlas = _atlases[glyph.AtlasIndex],
-                        _verts = new Rectangle((int)(x + q.X0),
-                                (int)(y + q.Y0),
-                                (int)(q.X1 - q.X0),
-                                (int)(q.Y1 - q.Y0)),
-                        _textureCoords = new Rectangle((int)(q.S0 * _params_.Width),
-                                (int)(q.T0 * _params_.Height),
-                                (int)((q.S1 - q.S0) * _params_.Width),
-                                (int)((q.T1 - q.T0) * _params_.Height)),
-                        _colors = color
+                        _verts = new Rectangle((int)(x + q.X0), (int)(y + q.Y0), (int)(q.X1 - q.X0), (int)(q.Y1 - q.Y0)),
+                        _textureCoords = new Rectangle((int)(q.S0 * this.BufferWidth), (int)(q.T0 * this.BufferHeight), (int)((q.S1 - q.S0) * this.BufferWidth), (int)((q.T1 - q.T0) * this.BufferHeight)),
+                        _color = color
                     };
 
                     _renderItems.Add(renderItem);
                 }
-
-                prevGlyphIndex = glyph != null ? glyph.Index : -1;
+                prevGlyphIndex.Font = font;
+                prevGlyphIndex.Index = glyph != null ? glyph.Index : -1;
+                //prevGlyphIndex = glyph != null ? glyph.Index : -1;
             }
 
-            Flush(batch, 0.0f);
+            Flush(batch);
             return x;
         }
 
@@ -198,12 +148,10 @@ namespace Aurora.UI.Graphics.FontStashSharp
         {
             if (String.IsNullOrEmpty(str) || font == null) return 0.0f;
             var q = new FontGlyphSquad();
-            var prevGlyphIndex = -1;
+            var prevGlyphIndex = new PrevGlyphInfo();
             var isize = (int)(fontSize * 10.0f);
-            var iblur = (int)BlurValue;
-            if (font.Data == null) return 0;
-            var scale = font._font.fons__tt_getPixelHeightScale(isize / 10.0f);
-            y += GetVertAlign(font, Alignment, isize);
+            var scale = font.GetPixelHeightScale(isize / 10.0f);
+            y += font.Ascender * isize / 10.0f;
             var minx = x;
             var maxx = x;
             var miny = y;
@@ -212,40 +160,22 @@ namespace Aurora.UI.Graphics.FontStashSharp
             for (int i = 0; i < str.Length; i += char.IsSurrogatePair(str, i) ? 2 : 1)
             {
                 var codepoint = char.ConvertToUtf32(str, i);
-                var glyph = GetGlyph(font, codepoint, isize, iblur, false);
+                var glyph = GetGlyph(font, codepoint, isize, false);
                 if (glyph != null)
                 {
-                    GetQuad(font, prevGlyphIndex, glyph, scale, Spacing, ref x, ref y, &q);
+                    GetQuad(font, prevGlyphIndex, glyph, scale, ref x, ref y, &q);
                     if (q.X0 < minx) minx = q.X0;
                     if (x > maxx) maxx = x;
-                    if (_params_.IsAlignmentTopLeft)
-                    {
-                        if (q.Y0 < miny) miny = q.Y0;
-                        if (q.Y1 > maxy) maxy = q.Y1;
-                    }
-                    else
-                    {
-                        if (q.Y1 < miny) miny = q.Y1;
-                        if (q.Y0 > maxy) maxy = q.Y0;
-                    }
+
+                    if (q.Y0 < miny) miny = q.Y0;
+                    if (q.Y1 > maxy) maxy = q.Y1;
+
                 }
-                prevGlyphIndex = glyph != null ? glyph.Index : -1;
+                prevGlyphIndex.Font = font;
+                prevGlyphIndex.Index = glyph != null ? glyph.Index : -1;
+                //prevGlyphIndex = glyph != null ? glyph.Index : -1;
             }
             var advance = x - startx;
-            if ((Alignment & Alignment.Left) != 0)
-            {
-            }
-            else if ((Alignment & Alignment.Right) != 0)
-            {
-                minx -= advance;
-                maxx -= advance;
-            }
-            else if ((Alignment & Alignment.Center) != 0)
-            {
-                minx -= advance * 0.5f;
-                maxx -= advance * 0.5f;
-            }
-
             bounds.X = minx;
             bounds.Y = miny;
             bounds.X2 = maxx;
@@ -260,7 +190,6 @@ namespace Aurora.UI.Graphics.FontStashSharp
             var isize = (int)(fontSize * 10.0f);
             var theFont = GetFontByName(font);
             if (theFont == null) return;
-            if (theFont.Data == null) return;
             ascender = theFont.Ascender * isize / 10.0f;
             descender = theFont.Descender * isize / 10.0f;
             lineh = theFont.LineHeight * isize / 10.0f;
@@ -271,19 +200,9 @@ namespace Aurora.UI.Graphics.FontStashSharp
             var isize = (int)(fontSize * 10.0f);
             var theFont = GetFontByName(font);
             if (theFont == null) return;
-
-            if (theFont.Data == null) return;
-            y += GetVertAlign(theFont, Alignment, isize);
-            if (_params_.IsAlignmentTopLeft)
-            {
-                miny = y - theFont.Ascender * isize / 10.0f;
-                maxy = miny + theFont.LineHeight * isize / 10.0f;
-            }
-            else
-            {
-                maxy = y + theFont.Descender * isize / 10.0f;
-                miny = maxy - theFont.LineHeight * isize / 10.0f;
-            }
+            y += theFont.Ascender * isize / 10.0f;
+            miny = y - theFont.Ascender * isize / 10.0f;
+            maxy = miny + theFont.LineHeight * isize / 10.0f;
         }
 
         public void Reset(int width, int height)
@@ -293,18 +212,16 @@ namespace Aurora.UI.Graphics.FontStashSharp
             {
                 item.Value.Glyphs.Clear();
             }
-            if (width == _params_.Width && height == _params_.Height)
-                return;
-
-            _params_.Width = width;
-            _params_.Height = height;
-            _itw = 1.0f / _params_.Width;
-            _ith = 1.0f / _params_.Height;
+            if (width == this.BufferWidth && height == this.BufferHeight) return;
+            this.BufferWidth = width;
+            this.BufferHeight = height;
+            _itw = 1.0f / width;
+            _ith = 1.0f / height;
         }
 
         public void Reset()
         {
-            Reset(_params_.Width, _params_.Height);
+            Reset(this.BufferWidth, this.BufferHeight);
         }
 
         private int LoadFont(stbtt_fontinfo font, byte* data, int dataSize)
@@ -312,61 +229,47 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return stbtt_InitFont(font, data, 0);
         }
 
-        private FontGlyph GetGlyph(Font font, int codepoint, int isize, int iblur, bool isBitmapRequired)
+        private FontGlyph GetGlyph(Font font, int codepoint, int isize, bool isBitmapRequired)
         {
-            var g = 0;
             var advance = 0;
             var lsb = 0;
             var x0 = 0;
             var y0 = 0;
             var x1 = 0;
             var y1 = 0;
-            var gw = 0;
-            var gh = 0;
             var gx = 0;
             var gy = 0;
-            float scale = 0;
             FontGlyph glyph = null;
             var size = isize / 10.0f;
-            if (isize < 2)
-                return null;
-            if (iblur > 20)
-                iblur = 20;
+            if (isize < 2) return null;
 
-            if (font.TryGetGlyph(codepoint, isize, iblur, out glyph))
+            if (font.TryGetGlyph(codepoint, isize, out glyph))
             {
                 if (!isBitmapRequired || glyph.X0 >= 0 && glyph.Y0 >= 0) return glyph;
             }
 
-            g = font._font.fons__tt_getGlyphIndex(codepoint);
-            if (g == 0) g = font._font.fons__tt_getGlyphIndex(DefaultChar);
+            var g = font.GetGlyphIndex(codepoint);
+            if (g == 0) g = font.GetGlyphIndex(DefaultChar);
             if (g == 0)
             {
                 throw new Exception(string.Format("Could not find glyph for codepoint {0}", codepoint));
             }
 
-            scale = font._font.fons__tt_getPixelHeightScale(size);
-            font._font.fons__tt_buildGlyphBitmap(g, size, scale, &advance, &lsb, &x0, &y0, &x1, &y1);
+            var scale = font.GetPixelHeightScale(size);
+            font.BuildGlyphBitmap(g, size, scale, &advance, &lsb, &x0, &y0, &x1, &y1);
 
-            var pad = FontGlyph.PadFromBlur(iblur);
-            gw = x1 - x0 + pad * 2;
-            gh = y1 - y0 + pad * 2;
+            var pad = 2;
+            var gw = x1 - x0 + pad * 2;
+            var gh = y1 - y0 + pad * 2;
 
-            var currentAtlas = CurrentAtlas;
+            if (_currentAtlas == null) this.CreateAtlas();
+            var currentAtlas = _currentAtlas;
             if (isBitmapRequired)
             {
                 if (!currentAtlas.AddRect(gw, gh, ref gx, ref gy))
                 {
-                    var ev = CurrentAtlasFull;
-                    if (ev != null)
-                    {
-                        ev(this, EventArgs.Empty);
-                    }
-
                     // This code will force creation of new atlas
-                    _currentAtlas = null;
-                    currentAtlas = CurrentAtlas;
-
+                    currentAtlas = CreateAtlas();
                     // Try to add again
                     if (!currentAtlas.AddRect(gw, gh, ref gx, ref gy))
                     {
@@ -382,14 +285,8 @@ namespace Aurora.UI.Graphics.FontStashSharp
 
             if (glyph == null)
             {
-                glyph = new FontGlyph
-                {
-                    Codepoint = codepoint,
-                    Size = isize,
-                    Blur = iblur
-                };
-
-                font.SetGlyph(codepoint, isize, iblur, glyph);
+                glyph = new FontGlyph { Codepoint = codepoint, Size = isize };
+                font.SetGlyph(codepoint, isize, glyph);
             }
 
             glyph.Index = g;
@@ -408,48 +305,27 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return glyph;
         }
 
-        private void GetQuad(Font font, int prevGlyphIndex, FontGlyph glyph, float scale, float spacing, ref float x, ref float y, FontGlyphSquad* q)
+        private void GetQuad(Font font, PrevGlyphInfo prevGlyphIndex, FontGlyph glyph, float scale, ref float x, ref float y, FontGlyphSquad* q)
         {
-            if (prevGlyphIndex != -1)
+            if (font == prevGlyphIndex.Font && prevGlyphIndex.Index != -1)
             {
-                var adv = font._font.fons__tt_getGlyphKernAdvance(prevGlyphIndex, glyph.Index) * scale;
-                x += (int)(adv + spacing + 0.5f);
+                var adv = font.GetGlyphKernAdvance(prevGlyphIndex.Index, glyph.Index) * scale;
+                x += (int)(adv + 0.5f);
             }
-
-            float rx = 0;
-            float ry = 0;
-
-            if (_params_.IsAlignmentTopLeft)
-            {
-                rx = x + glyph.XOffset;
-                ry = y + glyph.YOffset;
-                q->X0 = rx;
-                q->Y0 = ry;
-                q->X1 = rx + (glyph.X1 - glyph.X0);
-                q->Y1 = ry + (glyph.Y1 - glyph.Y0);
-                q->S0 = glyph.X0 * _itw;
-                q->T0 = glyph.Y0 * _ith;
-                q->S1 = glyph.X1 * _itw;
-                q->T1 = glyph.Y1 * _ith;
-            }
-            else
-            {
-                rx = x + glyph.XOffset;
-                ry = y - glyph.YOffset;
-                q->X0 = rx;
-                q->Y0 = ry;
-                q->X1 = rx + (glyph.X1 - glyph.X0);
-                q->Y1 = ry - (glyph.Y1 + glyph.Y0);
-                q->S0 = glyph.X0 * _itw;
-                q->T0 = glyph.Y0 * _ith;
-                q->S1 = glyph.X1 * _itw;
-                q->T1 = glyph.Y1 * _ith;
-            }
-
+            var rx = x + glyph.XOffset;
+            var ry = y + glyph.YOffset;
+            q->X0 = rx;
+            q->Y0 = ry;
+            q->X1 = rx + (glyph.X1 - glyph.X0);
+            q->Y1 = ry + (glyph.Y1 - glyph.Y0);
+            q->S0 = glyph.X0 * _itw;
+            q->T0 = glyph.Y0 * _ith;
+            q->S1 = glyph.X1 * _itw;
+            q->T1 = glyph.Y1 * _ith;
             x += (int)(glyph.XAdvance / 10.0f + 0.5f);
         }
 
-        private void Flush(SpriteBatch batch, float depth)
+        private void Flush(SpriteBatch batch)
         {
             foreach (var atlas in _atlases)
             {
@@ -459,62 +335,10 @@ namespace Aurora.UI.Graphics.FontStashSharp
             for (var i = 0; i < _renderItems.Count; ++i)
             {
                 var renderItem = _renderItems[i];
-                batch.Draw(renderItem.Atlas.Texture,
-                    renderItem._verts,
-                    renderItem._textureCoords,
-                    renderItem._colors,
-                    0f,
-                    Vector2.Zero,
-                    SpriteEffects.None,
-                    depth);
+                batch.Draw(renderItem.Atlas.Texture, renderItem._verts, renderItem._textureCoords, renderItem._color);
             }
 
             _renderItems.Clear();
-        }
-
-        private float GetVertAlign(Font font, Alignment align, int isize)
-        {
-            float result = 0.0f; ;
-            if (_params_.IsAlignmentTopLeft)
-            {
-                if ((align & Alignment.Top) != 0)
-                {
-                    result = font.Ascender * isize / 10.0f;
-                }
-                else if ((align & Alignment.Middle) != 0)
-                {
-                    result = (font.Ascender + font.Descender) / 2.0f * isize / 10.0f;
-                }
-                else if ((align & Alignment.Baseline) != 0)
-                {
-                }
-                else if ((align & Alignment.Bottom) != 0)
-                {
-                    result = font.Descender * isize / 10.0f;
-                }
-            }
-            else
-            {
-                if ((align & Alignment.Top) != 0)
-                {
-                    result = -font.Ascender * isize / 10.0f;
-                }
-                else
-                if ((align & Alignment.Middle) != 0)
-                {
-                    result = -(font.Ascender + font.Descender) / 2.0f * isize / 10.0f;
-                }
-                else
-                if ((align & Alignment.Baseline) != 0)
-                {
-                }
-                else if ((align & Alignment.Bottom) != 0)
-                {
-                    result = -font.Descender * isize / 10.0f;
-                }
-            }
-
-            return result;
         }
     }
 }

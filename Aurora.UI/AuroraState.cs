@@ -11,7 +11,7 @@ namespace Aurora.UI
 
         public static PackageManager PackageManager { get; private set; } = new PackageManager();
 
-        public static FontSystem FontSystem { get; private set; } = new FontSystem(new FontSystemParams() { Width = 1024, Height = 1024, IsAlignmentTopLeft = true });
+        public static FontSystem FontSystem { get; private set; } = new FontSystem(1024, 1024);
 
     }
 

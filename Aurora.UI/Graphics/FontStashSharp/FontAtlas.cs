@@ -226,15 +226,12 @@ namespace Aurora.UI.Graphics.FontStashSharp
 
         internal void RenderGlyph(Font renderFont, FontGlyph glyph, int gw, int gh, float scale)
         {
-            var pad = glyph.Pad;
-
+            var pad = 2;
             var g = glyph.Index;
             fixed (byte* dst = &_texData[glyph.X0 + pad + (glyph.Y0 + pad) * Width])
             {
-                renderFont._font.fons__tt_renderGlyphBitmap(dst, gw - pad * 2, gh - pad * 2, Width, scale,
-                    scale, g);
+                renderFont.RenderGlyphBitmap(dst, gw - pad * 2, gh - pad * 2, Width, scale, scale, g);
             }
-
             fixed (byte* dst = &_texData[glyph.X0 + glyph.Y0 * Width])
             {
                 for (var y = 0; y < gh; y++)
@@ -249,91 +246,15 @@ namespace Aurora.UI.Graphics.FontStashSharp
                     dst[x + (gh - 1) * Width] = 0;
                 }
             }
-
-            if (glyph.Blur > 0)
-            {
-                fixed (byte* bdst = &_texData[glyph.X0 + glyph.Y0 * Width])
-                {
-                    Blur(bdst, gw, gh, Width, glyph.Blur);
-                }
-            }
-
             _dirtyRect[0] = Math.Min(_dirtyRect[0], glyph.X0);
             _dirtyRect[1] = Math.Min(_dirtyRect[1], glyph.Y0);
             _dirtyRect[2] = Math.Max(_dirtyRect[2], glyph.X1);
             _dirtyRect[3] = Math.Max(_dirtyRect[3], glyph.Y1);
         }
 
-        private void Blur(byte* dst, int w, int h, int dstStride, int blur)
-        {
-            var alpha = 0;
-            float sigma = 0;
-            if (blur < 1)
-                return;
-            sigma = blur * 0.57735f;
-            alpha = (int)((1 << 16) * (1.0f - Math.Exp(-2.3f / (sigma + 1.0f))));
-            BlurRows(dst, w, h, dstStride, alpha);
-            BlurCols(dst, w, h, dstStride, alpha);
-            BlurRows(dst, w, h, dstStride, alpha);
-            BlurCols(dst, w, h, dstStride, alpha);
-        }
-
-        private static void BlurCols(byte* dst, int w, int h, int dstStride, int alpha)
-        {
-            var x = 0;
-            var y = 0;
-            for (y = 0; y < h; y++)
-            {
-                var z = 0;
-                for (x = 1; x < w; x++)
-                {
-                    z += alpha * ((dst[x] << 7) - z) >> 16;
-                    dst[x] = (byte)(z >> 7);
-                }
-
-                dst[w - 1] = 0;
-                z = 0;
-                for (x = w - 2; x >= 0; x--)
-                {
-                    z += alpha * ((dst[x] << 7) - z) >> 16;
-                    dst[x] = (byte)(z >> 7);
-                }
-
-                dst[0] = 0;
-                dst += dstStride;
-            }
-        }
-
-        private static void BlurRows(byte* dst, int w, int h, int dstStride, int alpha)
-        {
-            var x = 0;
-            var y = 0;
-            for (x = 0; x < w; x++)
-            {
-                var z = 0;
-                for (y = dstStride; y < h * dstStride; y += dstStride)
-                {
-                    z += alpha * ((dst[y] << 7) - z) >> 16;
-                    dst[y] = (byte)(z >> 7);
-                }
-
-                dst[(h - 1) * dstStride] = 0;
-                z = 0;
-                for (y = (h - 2) * dstStride; y >= 0; y -= dstStride)
-                {
-                    z += alpha * ((dst[y] << 7) - z) >> 16;
-                    dst[y] = (byte)(z >> 7);
-                }
-
-                dst[0] = 0;
-                dst++;
-            }
-        }
-
         public void Flush(GraphicsDevice graphicsDevice)
         {
-            if (Texture == null)
-                Texture = new Texture2D(graphicsDevice, Width, Height);
+            if (Texture == null) Texture = new Texture2D(graphicsDevice, Width, Height);
 
             if (_dirtyRect[0] < _dirtyRect[2] && _dirtyRect[1] < _dirtyRect[3])
             {

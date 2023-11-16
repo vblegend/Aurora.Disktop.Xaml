@@ -7,6 +7,6 @@ namespace Aurora.UI.Graphics.FontStashSharp
         public FontAtlas Atlas;
         public Rectangle _textureCoords;
         public Rectangle _verts;
-        public Color _colors;
+        public Color _color;
     }
 }
