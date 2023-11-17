@@ -235,26 +235,17 @@ namespace Aurora.UI.Controls
 
         private void InvalidateDrawing()
         {
-
             if (this.finalTexture != null)
             {
                 using (this.Renderer.TargetRender(this.finalTexture))
                 {
                     var s = this.Text.AsSpan().Slice(textArea.Left, this.Length - textArea.Left);
-
                     var y = (this.finalTexture.Height - this.FontSize) / 2;
-
                     this.Renderer.DrawString(this.Font, this.FontSize, s.ToString(), new Vector2(0, y), this.TextColor);
-
                     //this.Font.MeasureString("")
                 }
             }
-
         }
-
-
-
-
 
 
         #region 不会动的属性

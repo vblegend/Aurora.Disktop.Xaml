@@ -1,3 +1,4 @@
+using Aurora.UI.Xaml.System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static Aurora.UI.Common.StbTrueType.StbTrueType;
@@ -26,11 +27,13 @@ namespace Aurora.UI.Graphics.FontStashSharp
         private float _itw;
 
 
-
-
-
         private readonly List<FontAtlas> _atlases = new List<FontAtlas>();
         private readonly Dictionary<String, Font> _fonts = new Dictionary<String, Font>();
+
+
+        private readonly Dictionary<String, Font[]> _fontcollection = new Dictionary<String, Font[]>();
+
+
 
         private readonly List<RenderItem> _renderItems = new List<RenderItem>();
         private FontAtlas _currentAtlas;
@@ -65,33 +68,49 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return _fonts.Count - 1;
         }
 
-        private Font GetFontByName(string name)
+        private Font[] GetFontByName(string name)
         {
-            if (_fonts.TryGetValue(name, out var font)) return font;
-            if (_fonts.TryGetValue(this.DefaultFont, out var font2)) return font2;
-            return null;
+            if (this._fontcollection.TryGetValue(name, out var fontColl)) return fontColl;
+            var fonts = name.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            List<Font> fontList = new List<Font>();
+
+            for (int i = 0; i < fonts.Length; i++)
+            {
+                if (_fonts.TryGetValue(fonts[i], out var font)) fontList.Add(font);
+            }
+
+            if (fontList.Count == 0)
+            {
+                if (_fonts.TryGetValue(this.DefaultFont, out var font2))  fontList.Add(font2);
+            }
+            var result = fontList.ToArray();
+            this._fontcollection.Add(name, result);
+            return result;
         }
 
-        internal float DrawText(SpriteBatch batch, Font font, float fontSize, float x, float y, String str, Color color, Vector2 vScale)
+        internal float DrawText(SpriteBatch batch, Font[] fonts, float fontSize, float x, float y, String str, Color color, Vector2 vScale)
         {
-            if (String.IsNullOrEmpty(str) || font == null) return 0.0f;
+            if (String.IsNullOrEmpty(str) || fonts.Length == 0) return x;
             var q = new FontGlyphSquad();
             var prevGlyphIndex = new PrevGlyphInfo();
             var isize = (int)(fontSize * 10.0f);
-            if (font == null) return x;
-            var scale = font.GetPixelHeightScale(isize / 10.0f);
+            var scale = 0.0f;
             float originX = 0.0f;
             float originY = 0.0f;
 
-            originY += font.Ascender * isize / 10.0f;
+
             for (int i = 0; i < str.Length; i += char.IsSurrogatePair(str, i) ? 2 : 1)
             {
                 var codepoint = char.ConvertToUtf32(str, i);
-                var glyph = GetGlyph(font, codepoint, isize, true);
+                var glyph = GetGlyph(fonts, codepoint, isize, true);
                 if (glyph != null)
                 {
+                    if (glyph.Font != prevGlyphIndex.Font)
+                    {
+                        scale = glyph.Font.GetPixelHeightScale(isize / 10.0f);
+                        originY = glyph.Font.Ascender * isize / 10.0f;
+                    }
                     GetQuad(glyph.Font, prevGlyphIndex, glyph, scale, ref originX, ref originY, &q);
-
                     q.X0 = (int)(q.X0 * vScale.X);
                     q.X1 = (int)(q.X1 * vScale.X);
                     q.Y0 = (int)(q.Y0 * vScale.Y);
@@ -144,14 +163,13 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return new Rectangle((int)bounds.X, (int)bounds.Y, (int)(bounds.X2 - bounds.X), (int)(bounds.Y2 - bounds.Y));
         }
 
-        internal float TextBounds(float x, float y, Font font, float fontSize, String str, ref Bounds bounds)
+        internal float TextBounds(float x, float y, Font[] fonts, float fontSize, String str, ref Bounds bounds)
         {
-            if (String.IsNullOrEmpty(str) || font == null) return 0.0f;
+            if (String.IsNullOrEmpty(str) || fonts.Length == 0) return 0.0f;
             var q = new FontGlyphSquad();
             var prevGlyphIndex = new PrevGlyphInfo();
             var isize = (int)(fontSize * 10.0f);
-            var scale = font.GetPixelHeightScale(isize / 10.0f);
-            y += font.Ascender * isize / 10.0f;
+            var scale = 0.0f;
             var minx = x;
             var maxx = x;
             var miny = y;
@@ -160,9 +178,17 @@ namespace Aurora.UI.Graphics.FontStashSharp
             for (int i = 0; i < str.Length; i += char.IsSurrogatePair(str, i) ? 2 : 1)
             {
                 var codepoint = char.ConvertToUtf32(str, i);
-                var glyph = GetGlyph(font, codepoint, isize, false);
+                var glyph = GetGlyph(fonts, codepoint, isize, false);
                 if (glyph != null)
                 {
+
+                    if (prevGlyphIndex.Font != glyph.Font)
+                    {
+                        scale = glyph.Font.GetPixelHeightScale(isize / 10.0f);
+                        y = glyph.Font.Ascender * isize / 10.0f;
+                    }
+
+
                     GetQuad(glyph.Font, prevGlyphIndex, glyph, scale, ref x, ref y, &q);
                     if (q.X0 < minx) minx = q.X0;
                     if (x > maxx) maxx = x;
@@ -184,26 +210,26 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return advance;
         }
 
-        public void VertMetrics(String font, float fontSize, out float ascender, out float descender, out float lineh)
-        {
-            ascender = descender = lineh = 0;
-            var isize = (int)(fontSize * 10.0f);
-            var theFont = GetFontByName(font);
-            if (theFont == null) return;
-            ascender = theFont.Ascender * isize / 10.0f;
-            descender = theFont.Descender * isize / 10.0f;
-            lineh = theFont.LineHeight * isize / 10.0f;
-        }
+        //public void VertMetrics(String font, float fontSize, out float ascender, out float descender, out float lineh)
+        //{
+        //    ascender = descender = lineh = 0;
+        //    var isize = (int)(fontSize * 10.0f);
+        //    var theFont = GetFontByName(font);
+        //    if (theFont == null) return;
+        //    ascender = theFont.Ascender * isize / 10.0f;
+        //    descender = theFont.Descender * isize / 10.0f;
+        //    lineh = theFont.LineHeight * isize / 10.0f;
+        //}
 
-        public void LineBounds(String font, float y, float fontSize, ref float miny, ref float maxy)
-        {
-            var isize = (int)(fontSize * 10.0f);
-            var theFont = GetFontByName(font);
-            if (theFont == null) return;
-            y += theFont.Ascender * isize / 10.0f;
-            miny = y - theFont.Ascender * isize / 10.0f;
-            maxy = miny + theFont.LineHeight * isize / 10.0f;
-        }
+        //public void LineBounds(String font, float y, float fontSize, ref float miny, ref float maxy)
+        //{
+        //    var isize = (int)(fontSize * 10.0f);
+        //    var theFont = GetFontByName(font);
+        //    if (theFont == null) return;
+        //    y += theFont.Ascender * isize / 10.0f;
+        //    miny = y - theFont.Ascender * isize / 10.0f;
+        //    maxy = miny + theFont.LineHeight * isize / 10.0f;
+        //}
 
         public void Reset(int width, int height)
         {
@@ -229,7 +255,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return stbtt_InitFont(font, data, 0);
         }
 
-        private FontGlyph GetGlyph(Font font, int codepoint, int isize, bool isBitmapRequired)
+        private FontGlyph GetGlyph(Font[] fonts, int codepoint, int isize, bool isBitmapRequired)
         {
             var advance = 0;
             var lsb = 0;
@@ -240,16 +266,42 @@ namespace Aurora.UI.Graphics.FontStashSharp
             var gx = 0;
             var gy = 0;
             FontGlyph glyph = null;
+            Font font = null;
             var size = isize / 10.0f;
             if (isize < 2) return null;
 
-            if (font.TryGetGlyph(codepoint, isize, out glyph))
-            {
-                if (!isBitmapRequired || glyph.X0 >= 0 && glyph.Y0 >= 0) return glyph;
-            }
 
-            var g = font.GetGlyphIndex(codepoint);
-            if (g == 0) g = font.GetGlyphIndex(DefaultChar);
+            for (int i = 0; i < fonts.Length; i++)
+            {
+                if (fonts[i].TryGetGlyph(codepoint, isize, out glyph))
+                {
+                    if (!isBitmapRequired || glyph.X0 >= 0 && glyph.Y0 >= 0) return glyph;
+                }
+            }
+            
+
+            Int32 g = 0;
+            for (int i = 0; i < fonts.Length; i++)
+            {
+                g = fonts[i].GetGlyphIndex(codepoint);
+                if (g > 0)
+                {
+                    font = fonts[i];
+                    break;
+                }
+            }
+            if (g == 0)
+            {
+                for (int i = 0; i < fonts.Length; i++)
+                {
+                    g = fonts[i].GetGlyphIndex(DefaultChar);
+                    if (g > 0)
+                    {
+                        font = fonts[i];
+                        break;
+                    }
+                }
+            }
             if (g == 0)
             {
                 throw new Exception(string.Format("Could not find glyph for codepoint {0}", codepoint));
