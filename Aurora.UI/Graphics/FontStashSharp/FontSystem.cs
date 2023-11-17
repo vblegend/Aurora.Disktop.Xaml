@@ -40,7 +40,7 @@ namespace Aurora.UI.Graphics.FontStashSharp
 
 
         public String DefaultFont = "";
-        public char DefaultChar = '\u2593';
+        public char DefaultChar = ' '; // \u2593
 
 
         public FontSystem(Int32 bufferWidth, Int32 bufferHeight)

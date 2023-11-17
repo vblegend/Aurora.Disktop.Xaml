@@ -114,7 +114,7 @@ namespace Aurora.UI
             this.GraphicContext.Begin();
             this.Scene?.Draw(gameTime);
             base.Draw(gameTime);
-            this.GraphicContext.DrawString("", 36, $"Fps：{this.FpsCounter.Fps} Called: {this.GraphicContext.CalledNumber}", new Vector2(5, 10), Color.White);
+            this.GraphicContext.DrawString("", 36, $"Fps: {this.FpsCounter.Fps} Called: {this.GraphicContext.CalledNumber}", new Vector2(5, 10), Color.White);
             this.GraphicContext.End();
         }
 

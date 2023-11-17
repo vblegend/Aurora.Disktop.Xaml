@@ -5,6 +5,11 @@
 
 	<Template.Resource DefaultFont="Microsoft YaHei" Debuging="True">
 		<sys:Package Name="ui" Path="./ui.asset" Password="" ></sys:Package>
+		<sys:Font Name="Molesk" Path="./Fonts/Molesk.ttf" ></sys:Font>
+		<sys:Font Name="Gotthard" Path="./Fonts/Gotthard.ttf" ></sys:Font>
+
+		
+		
 		<sys:Font Name="Fixedsy" Path="./Fonts/Fixedsy.ttf" ></sys:Font>
 		<sys:Font Name="Microsoft YaHei" Path="./Fonts/Microsoft YaHei.ttf" ></sys:Font>
 		<sys:Font Name="HanYi XieJing" Path="./Fonts/HanYi XieJing.ttf" ></sys:Font>
