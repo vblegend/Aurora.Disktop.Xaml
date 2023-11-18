@@ -147,6 +147,14 @@ namespace Aurora.UI.Graphics.FontStashSharp
             return DrawText(batch, theFont, fontSize, pos.X, pos.Y, text, color, scale);
         }
 
+
+        public Single[] MeasureChars(String font, Single fontSize, string text)
+        {
+            var theFont = GetFontByName(font);
+            return this.CharBounds(theFont, fontSize, text);
+        }
+
+
         public Vector2 MeasureString(string font, float fontSize, string text)
         {
             Bounds bounds = new Bounds();
@@ -181,14 +189,11 @@ namespace Aurora.UI.Graphics.FontStashSharp
                 var glyph = GetGlyph(fonts, codepoint, isize, false);
                 if (glyph != null)
                 {
-
                     if (prevGlyphIndex.Font != glyph.Font)
                     {
                         scale = glyph.Font.GetPixelHeightScale(isize / 10.0f);
                         y = glyph.Font.Ascender * isize / 10.0f;
                     }
-
-
                     GetQuad(glyph.Font, prevGlyphIndex, glyph, scale, ref x, ref y, &q);
                     if (q.X0 < minx) minx = q.X0;
                     if (x > maxx) maxx = x;
@@ -209,6 +214,35 @@ namespace Aurora.UI.Graphics.FontStashSharp
 
             return advance;
         }
+
+
+        internal Single [] CharBounds(Font[] fonts, float fontSize, String str)
+        {
+            var ws = new List<float>();
+            if (String.IsNullOrEmpty(str) || fonts.Length == 0) return ws.ToArray();
+            var q = new FontGlyphSquad();
+            var prevGlyphIndex = new PrevGlyphInfo();
+            var isize = (int)(fontSize * 10.0f);
+            var scale = 0.0f;
+
+            for (int i = 0; i < str.Length; i += char.IsSurrogatePair(str, i) ? 2 : 1)
+            {
+                var codepoint = char.ConvertToUtf32(str, i);
+                var glyph = GetGlyph(fonts, codepoint, isize, false);
+                if (glyph != null)
+                {
+                    var x = 0.0f;
+                    var y = 0.0f;
+                    if (prevGlyphIndex.Font != glyph.Font) scale = glyph.Font.GetPixelHeightScale(isize / 10.0f);
+                    GetQuad(glyph.Font, prevGlyphIndex, glyph, scale, ref x, ref y, &q);
+                    ws.Add(x);
+                }
+                prevGlyphIndex.Font = glyph.Font;
+                prevGlyphIndex.Index = glyph != null ? glyph.Index : -1;
+            }
+            return ws.ToArray();
+        }
+
 
         //public void VertMetrics(String font, float fontSize, out float ascender, out float descender, out float lineh)
         //{

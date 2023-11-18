@@ -497,12 +497,29 @@ namespace Aurora.UI.Graphics
             return val;
         }
 
-
+        /// <summary>
+        /// 测量字符串的宽度和高度
+        /// </summary>
+        /// <param name="font"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public Vector2 MeasureString(String font, Single fontSize, string text)
         {
             return AuroraState.FontSystem.MeasureString(font, fontSize, text);
         }
 
+        /// <summary>
+        /// 测量每个字符的宽度
+        /// </summary>
+        /// <param name="font"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public Single[] MeasureChars(String font, Single fontSize, string text)
+        {
+            return AuroraState.FontSystem.MeasureChars(font, fontSize, text);
+        }
 
         public Rectangle DrawString(String font, Single fontSize, Point pos, string _string_)
         {

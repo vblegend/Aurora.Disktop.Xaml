@@ -8,6 +8,18 @@ using System.Diagnostics;
 
 namespace Aurora.UI.Controls
 {
+    public struct TextViewPort
+    {
+        public Int32 Start;
+        public Int32 End;
+        public Int32 Length()
+        {
+            return this.End - this.Start;
+        }
+    }
+
+
+
     public class TextBox : Control
     {
         public TextBox()
@@ -19,9 +31,9 @@ namespace Aurora.UI.Controls
         }
 
 
-        const int UnicodeSimplifiedChineseMin = 0x4E00;
-        const int UnicodeSimplifiedChineseMax = 0x9FA5;
-        private readonly TimeSpan OneSecond = new TimeSpan(0, 0, 0, 0, 500);
+        //const int UnicodeSimplifiedChineseMin = 0x4E00;
+        //const int UnicodeSimplifiedChineseMax = 0x9FA5;
+        private readonly TimeSpan CurrsorFlashInterval = new TimeSpan(0, 0, 0, 0, 500);
 
 
 
@@ -32,34 +44,20 @@ namespace Aurora.UI.Controls
                 this.CurrsorArea.Height = (Int32)this.FontSize;
                 this.CurrsorArea.Width = 2;
             }
-
-            if (gameTime.TotalGameTime - lastCurrsorTime > OneSecond)
+            if (gameTime.TotalGameTime - lastCurrsorTime > CurrsorFlashInterval)
             {
                 this.currsorVisable = this.IsFocus && !this.currsorVisable;
                 lastCurrsorTime = gameTime.TotalGameTime;
             }
-
-
-
             base.OnUpdate(gameTime);
-
-
         }
-
-
-
-
-
-
 
         protected override void OnRender(GameTime gameTime)
         {
             base.OnRender(gameTime);
             var padding = new Point(this.padding.Left, this.padding.Top);
-
             if (this.finalTexture != null)
             {
-
                 // 显示最终渲染结果
                 this.Renderer.Draw(this.finalTexture, this.GlobalBounds.Location.Add(padding), Color.White);
             }
@@ -67,15 +65,13 @@ namespace Aurora.UI.Controls
             // 显示光标
             if (this.currsorVisable)
             {
-                var text = this._text.Substring(textArea.Left, this.cursorPosition - textArea.Left);
+                var text = this._text.Substring(viewport.Start, this.cursorPosition - viewport.Start);
                 var lr = this.MeasureStringWidth(text);
                 this.Renderer.FillRectangle(this.CurrsorArea.Add(this.GlobalBounds.Location).Add(new Point(lr, 0)).Add(padding), this.CursorColor);
             }
             // 焦点突出显示边框
             if (this.IsFocus) this.Renderer.DrawRectangle(this.GlobalBounds, this.ActivedBorder);
         }
-
-
 
         private void ImeHandler_TextInput(object sender, MonoGame.IMEHelper.TextInputEventArgs e)
         {
@@ -114,18 +110,39 @@ namespace Aurora.UI.Controls
             {
                 case Microsoft.Xna.Framework.Input.Keys.Left:
                     if (this.cursorPosition > 0) this.cursorPosition--;
+                    if (this.cursorPosition < this.viewport.Start)
+                    {
+                        this.viewport.Start--;
+                        this.MeasureViewportStart();
+                        this.InvalidateDrawing();
+                    }
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.Right:
                     if (this.cursorPosition < this._text.Length) this.cursorPosition++;
+                    if (this.cursorPosition > this.viewport.End)
+                    {
+                        this.viewport.End++;
+                        this.MeasureViewportEnd();
+                        this.InvalidateDrawing();
+                    }
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.Home:
                     if (this.cursorPosition > 0) this.cursorPosition = 0;
+
+                    this.viewport.Start = 0;
+                    this.MeasureViewportStart();
+                    this.InvalidateDrawing();
+
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.End:
                     this.cursorPosition = this._text.Length;
+                    this.viewport.End = this._text.Length;
+                    this.MeasureViewportEnd();
+                    this.InvalidateDrawing();
+
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.A:
@@ -174,57 +191,97 @@ namespace Aurora.UI.Controls
             {
                 this.cursorPosition = Math.Max(this.cursorPosition - 1, 0);
                 this._text = this._text.Remove(this.cursorPosition, 1);
-                if (this.cursorPosition <= this.textArea.X && this.textArea.X > 0)
-                {
-                    this.textArea.X--;
-                }
             }
             else if (dir == 1 && this.cursorPosition < this._text.Length)
             {
                 this._text = this._text.Remove(this.cursorPosition, 1);
             }
+
+            if (this.cursorPosition <= this.viewport.Start && this.viewport.Start > 0)
+            {
+                this.viewport.Start--;
+                this.MeasureViewportStart();
+            }
+            else
+            {
+                this.MeasureViewportEnd();
+            }
         }
-
-
 
         private void AppendString(String text)
         {
             if (cursorPosition > this._text.Length) cursorPosition = this._text.Length;
-            if (cursorPosition == this._text.Length)
+            var left = this._text.Substring(0, cursorPosition);
+            var right = this._text.Substring(cursorPosition);
+            this._text = left + text + right;
+            cursorPosition += text.Length;
+            if (cursorPosition>= this.viewport.End)
             {
-                this._text += text;
-            }
-            else if (cursorPosition == 0)
-            {
-                this._text = text + this._text;
+                this.viewport.End += text.Length;
+                this.MeasureViewportEnd();
             }
             else
             {
-                var left = this._text.Substring(0, cursorPosition);
-                var right = this._text.Substring(cursorPosition);
-                this._text = left + text + right;
+                this.MeasureViewportStart();
             }
-            cursorPosition += text.Length;
-
-
-
-            //  this.textArea.Width += this._text.Length;
-
-            //var dis = this._text.Substring(this.textArea.Left, this.cursorPosition - this.textArea.Left);
-            //if (this.MeasureStringWidth(dis) > this.globalBounds.Width)
-            //{
-            //    this.textArea.X += text.Length;
-            //}
-
         }
 
-
-        private void InsertString(String text)
+        /// <summary>
+        /// 从后方测量Viewport Start
+        /// </summary>
+        private void MeasureViewportEnd()
         {
-
-
-
+            if (this.viewport.Start < 0) this.viewport.Start = 0;
+            if (this.viewport.End > this._text.Length) this.viewport.End = this._text.Length;
+            var width = this.GlobalBounds.Width - (this.padding.Left + this.padding.Right);
+            var viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+            var chars = this.Renderer.MeasureChars(this.Font, this.FontSize, viewText);
+            var charW = 0.0f;
+            var index = chars.Length - 1;
+            while (index >= 0)
+            {
+                charW += chars[index];
+                if (charW > width)
+                {
+                    break;
+                }
+                index--;
+            }
+            if (index >= 0)
+            {
+                this.viewport.Start = this.viewport.Start + index + 1;
+            }
         }
+
+
+        /// <summary>
+        /// 从前方测量Viewport End
+        /// </summary>
+        private void MeasureViewportStart()
+        {
+            if (this.viewport.Start < 0) this.viewport.Start = 0;
+            if (this.viewport.End > this._text.Length) this.viewport.End = this._text.Length;
+            var width = this.GlobalBounds.Width - (this.padding.Left + this.padding.Right);
+            var viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+            var chars = this.Renderer.MeasureChars(this.Font, this.FontSize, viewText);
+            var charW = 0.0f;
+            var index = 0;
+            while (index < chars.Length)
+            {
+                charW += chars[index];
+                if (charW > width)
+                {
+                    break;
+                }
+                index++;
+            }
+            if (index >= 0)
+            {
+                this.viewport.End = this.viewport.Start + index;
+            }
+        }
+
+
 
         private Int32 MeasureStringWidth(String text)
         {
@@ -239,10 +296,9 @@ namespace Aurora.UI.Controls
             {
                 using (this.Renderer.TargetRender(this.finalTexture))
                 {
-                    var s = this.Text.AsSpan().Slice(textArea.Left, this.Length - textArea.Left);
+                    var s = this.Text.AsSpan().Slice(viewport.Start, this.Length - viewport.Start);
                     var y = (this.finalTexture.Height - this.FontSize) / 2;
                     this.Renderer.DrawString(this.Font, this.FontSize, s.ToString(), new Vector2(0, y), this.TextColor);
-                    //this.Font.MeasureString("")
                 }
             }
         }
@@ -274,12 +330,16 @@ namespace Aurora.UI.Controls
 
         protected override void CalcAutoSize()
         {
-            var oldTex = this.finalTexture;
-            this.finalTexture = this.Renderer.CreateRenderTarget(this.GlobalBounds.Width - (this.padding.Left + this.padding.Right), this.GlobalBounds.Height - (this.padding.Top + this.padding.Bottom));
-            this.InvalidateDrawing();
-            if (oldTex != null)
+            var width = this.GlobalBounds.Width - (this.padding.Left + this.padding.Right);
+            var height = this.GlobalBounds.Height - (this.padding.Top + this.padding.Bottom);
+            if (width > 0 && height > 0)
             {
-                oldTex.Dispose();
+                if (this.finalTexture == null) this.finalTexture = this.Renderer.CreateRenderTarget(1, 1);
+                if (this.finalTexture.Width != width || this.finalTexture.Height != height)
+                {
+                    this.finalTexture.Resize(width, height);
+                }
+                this.InvalidateDrawing();
             }
         }
 
@@ -315,6 +375,14 @@ namespace Aurora.UI.Controls
         }
 
 
+        public void Clear()
+        {
+            this._text = "";
+            this.cursorPosition = 0;
+            this.viewport.Start = 0;
+            this.viewport.End = 0;
+            this.InvalidateDrawing();
+        }
 
         private TargetTexture finalTexture;
         /// <summary>
@@ -329,7 +397,7 @@ namespace Aurora.UI.Controls
         /// <summary>
         /// 文本区域
         /// </summary>
-        private Rectangle textArea;
+        private TextViewPort viewport;
 
 
         /// <summary>
@@ -390,14 +458,8 @@ namespace Aurora.UI.Controls
                 var neatValue = value.Replace("\n", "").Replace("\t", this.TabChar);
                 if (this._text != neatValue)
                 {
-                    this._text = neatValue;
-                    if (this._text.Length > this.maxLength)
-                    {
-                        this._text = this._text.Substring(0, this.maxLength);
-                    }
-                    //this.textArea.Width = this.Text.Length;
-                    this.cursorPosition = this._text.Length;
-                    this.InvalidateDrawing();
+                    this.Clear();
+                    if (neatValue.Length > 0) this.AppendString(neatValue);
                 }
             }
         }
@@ -420,10 +482,6 @@ namespace Aurora.UI.Controls
                     throw new InvalidDataException("");
                 }
                 this.maxLength = value;
-                if (this._text.Length > this.maxLength)
-                {
-                    this._text = this._text.Substring(0, this.maxLength);
-                }
             }
         }
         private Int32 maxLength;
