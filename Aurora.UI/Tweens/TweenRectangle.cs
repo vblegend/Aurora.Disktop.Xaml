@@ -3,7 +3,7 @@
 
 namespace Aurora.UI.Tweens
 {
-    public sealed class TweenRectangle : Tween<Rectangle>
+    public sealed class TweenRectangle : Tween<TweenRectangle, Rectangle>
     {
 
         internal sealed override Rectangle Lerp(Rectangle from, Rectangle to, double time)

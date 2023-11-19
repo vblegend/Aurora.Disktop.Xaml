@@ -3,7 +3,7 @@
 
 namespace Aurora.UI.Tweens
 {
-    public sealed class TweenPoint : Tween<Point>
+    public sealed class TweenPoint : Tween<TweenPoint, Point>
     {
 
         internal sealed override Point Lerp(Point from, Point to, double time)

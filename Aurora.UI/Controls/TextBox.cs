@@ -8,13 +8,37 @@ using System.Diagnostics;
 
 namespace Aurora.UI.Controls
 {
-    public struct TextViewPort
+    public struct TextRange
     {
+        public TextRange()
+        {
+            this.Start = 0;
+            this.End = 0;
+        }
+        public TextRange(Int32 start, Int32 end)
+        {
+            this.Start = start;
+            this.End = end;
+        }
+
+
+
+
         public Int32 Start;
         public Int32 End;
         public Int32 Length()
         {
             return this.End - this.Start;
+        }
+
+
+
+
+
+
+        public override string ToString()
+        {
+            return $"Start = {Start}, End = {End}";
         }
     }
 
@@ -24,6 +48,8 @@ namespace Aurora.UI.Controls
     {
         public TextBox()
         {
+            this._text = "";
+            this.passwordChar = null;
             this.maxLength = 100;
             this.Size = new Point(85, 22);
             this.TextColor = Color.White;
@@ -31,8 +57,7 @@ namespace Aurora.UI.Controls
         }
 
 
-        //const int UnicodeSimplifiedChineseMin = 0x4E00;
-        //const int UnicodeSimplifiedChineseMax = 0x9FA5;
+
         private readonly TimeSpan CurrsorFlashInterval = new TimeSpan(0, 0, 0, 0, 500);
 
 
@@ -61,7 +86,6 @@ namespace Aurora.UI.Controls
                 // 显示最终渲染结果
                 this.Renderer.Draw(this.finalTexture, this.GlobalBounds.Location.Add(padding), Color.White);
             }
-
             // 显示光标
             if (this.currsorVisable)
             {
@@ -81,16 +105,17 @@ namespace Aurora.UI.Controls
                     // 退格
                     this.RemoveString(-1);
                     this.InvalidateDrawing();
+                    this.ActiveCurrsor();
                     break;
-                case 9:
-                    AppendString(this.TabChar);
-                    this.InvalidateDrawing();
-                    break;
+
                 case 127:
-                    // 退格
+                    // Delete
                     this.RemoveString(1);
                     this.InvalidateDrawing();
+                    this.ActiveCurrsor();
                     break;
+
+                case 9:  // Tab
                 case 27: // Esc
                 case 13: // Enter
                     break;
@@ -99,6 +124,7 @@ namespace Aurora.UI.Controls
                     var inputChar = e.Character;
                     AppendString(inputChar.ToString());
                     this.InvalidateDrawing();
+                    this.ActiveCurrsor();
                     break;
             }
         }
@@ -106,35 +132,82 @@ namespace Aurora.UI.Controls
 
         protected override void OnKeyDown(IKeyboardMessage args)
         {
+            var front = false;
             switch (args.Key)
             {
                 case Microsoft.Xna.Framework.Input.Keys.Left:
+
+                    if (!args.Shift)
+                    {
+                        this.selection = null;
+                    }
+                    else
+                    {   // Pressed shift
+                        if (!this.selection.HasValue) this.selection = new TextRange(this.cursorPosition, this.cursorPosition);
+                        front = this.cursorPosition == this.selection.Value.Start;
+                    }
+                    // cursor
                     if (this.cursorPosition > 0) this.cursorPosition--;
                     if (this.cursorPosition < this.viewport.Start)
                     {
                         this.viewport.Start--;
                         this.MeasureViewportStart();
-                        this.InvalidateDrawing();
+                        //this.InvalidateDrawing();
                     }
+                    if (this.selection.HasValue)
+                    {
+                        if (front)
+                        {
+                            this.selection = new TextRange(this.cursorPosition, this.selection.Value.End);
+                        }
+                        else
+                        {
+                            this.selection = new TextRange(this.selection.Value.Start, this.cursorPosition);
+                        }
+                        if (this.selection.Value.Start == this.selection.Value.End) this.selection = null;
+                    }
+                    this.InvalidateDrawing();
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.Right:
+
+                    if (!args.Shift)
+                    {
+                        this.selection = null;
+                    }
+                    else
+                    {   // Pressed shift
+                        if (!this.selection.HasValue) this.selection = new TextRange(this.cursorPosition, this.cursorPosition);
+                        front = !(this.cursorPosition == this.selection.Value.End);
+                    }
+                    // cursor
                     if (this.cursorPosition < this._text.Length) this.cursorPosition++;
                     if (this.cursorPosition > this.viewport.End)
                     {
                         this.viewport.End++;
                         this.MeasureViewportEnd();
-                        this.InvalidateDrawing();
+                        //this.InvalidateDrawing();
                     }
+                    if (this.selection.HasValue)
+                    {
+                        if (front)
+                        {
+                            this.selection = new TextRange(this.cursorPosition, this.selection.Value.End);
+                        }
+                        else
+                        {
+                            this.selection = new TextRange(this.selection.Value.Start, this.cursorPosition);
+                        }
+                        if (this.selection.Value.Start == this.selection.Value.End) this.selection = null;
+                    }
+                    this.InvalidateDrawing();
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.Home:
                     if (this.cursorPosition > 0) this.cursorPosition = 0;
-
                     this.viewport.Start = 0;
                     this.MeasureViewportStart();
                     this.InvalidateDrawing();
-
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.End:
@@ -142,16 +215,19 @@ namespace Aurora.UI.Controls
                     this.viewport.End = this._text.Length;
                     this.MeasureViewportEnd();
                     this.InvalidateDrawing();
-
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.A:
                     if (args.Ctrl)
                     {
-                        Trace.WriteLine("全选");
+                        this.selection = new TextRange(0, this._text.Length);
+                        this.cursorPosition = this._text.Length;
+                        this.viewport.End = this._text.Length;
+                        this.MeasureViewportEnd();
+                        this.InvalidateDrawing();
+                        this.ActiveCurrsor();
                     }
                     break;
-
                 case Microsoft.Xna.Framework.Input.Keys.X:
                     if (args.Ctrl)
                     {
@@ -215,7 +291,7 @@ namespace Aurora.UI.Controls
             var right = this._text.Substring(cursorPosition);
             this._text = left + text + right;
             cursorPosition += text.Length;
-            if (cursorPosition>= this.viewport.End)
+            if (cursorPosition >= this.viewport.End)
             {
                 this.viewport.End += text.Length;
                 this.MeasureViewportEnd();
@@ -234,7 +310,15 @@ namespace Aurora.UI.Controls
             if (this.viewport.Start < 0) this.viewport.Start = 0;
             if (this.viewport.End > this._text.Length) this.viewport.End = this._text.Length;
             var width = this.GlobalBounds.Width - (this.padding.Left + this.padding.Right);
-            var viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+            String viewText;
+            if (this.passwordChar.HasValue)
+            {
+                viewText = "".PadLeft(this.viewport.Length(), this.passwordChar.Value);
+            }
+            else
+            {
+                viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+            }
             var chars = this.Renderer.MeasureChars(this.Font, this.FontSize, viewText);
             var charW = 0.0f;
             var index = chars.Length - 1;
@@ -262,7 +346,16 @@ namespace Aurora.UI.Controls
             if (this.viewport.Start < 0) this.viewport.Start = 0;
             if (this.viewport.End > this._text.Length) this.viewport.End = this._text.Length;
             var width = this.GlobalBounds.Width - (this.padding.Left + this.padding.Right);
-            var viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+            String viewText;
+            if (this.passwordChar.HasValue)
+            {
+                viewText = "".PadLeft(this.viewport.Length(), this.passwordChar.Value);
+            }
+            else
+            {
+                viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+            }
+
             var chars = this.Renderer.MeasureChars(this.Font, this.FontSize, viewText);
             var charW = 0.0f;
             var index = 0;
@@ -296,9 +389,45 @@ namespace Aurora.UI.Controls
             {
                 using (this.Renderer.TargetRender(this.finalTexture))
                 {
-                    var s = this.Text.AsSpan().Slice(viewport.Start, this.Length - viewport.Start);
+                    String viewText;
+                    if (this.passwordChar.HasValue)
+                    {
+                        viewText = "".PadLeft(this.viewport.Length(), this.passwordChar.Value);
+                    }
+                    else
+                    {
+                        viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+                    }
+
+
+
+                    if (this.selection.HasValue)
+                    {
+                        var st = Math.Max(this.selection.Value.Start, this.viewport.Start)- this.viewport.Start;
+                        var en = Math.Min(this.selection.Value.End, this.viewport.End) - this.viewport.Start;
+                        if (en > st)
+                        {
+                            var offset = st - this.selection.Value.Start;
+
+                            var s =  this.Renderer.MeasureString(this.Font, this.FontSize, viewText.Substring(0,st));
+                            var s2 = this.Renderer.MeasureString(this.Font, this.FontSize, viewText.Substring(st, en - st));
+
+                            //     this.Renderer.MeasureString(this.Font, this.FontSize, "");
+
+
+
+
+                            this.Renderer.FillRectangle(new Rectangle((Int32)s.X, 0, (Int32)s2.X, 100), new Color(0, 120, 215));
+                        }
+                    }
+
+
+
+
+
+
                     var y = (this.finalTexture.Height - this.FontSize) / 2;
-                    this.Renderer.DrawString(this.Font, this.FontSize, s.ToString(), new Vector2(0, y), this.TextColor);
+                    this.Renderer.DrawString(this.Font, this.FontSize, viewText.ToString(), new Vector2(0, y), this.TextColor);
                 }
             }
         }
@@ -397,17 +526,9 @@ namespace Aurora.UI.Controls
         /// <summary>
         /// 文本区域
         /// </summary>
-        private TextViewPort viewport;
+        private TextRange viewport;
 
-
-        /// <summary>
-        /// 光标所在位置
-        /// </summary>
-        private Int32 CurrsorPos = 0;
-        /// <summary>
-        /// 选中区域
-        /// </summary>
-        private Rectangle selectionArea;
+        private TextRange? selection { get; set; }
 
         /// <summary>
         /// 制表符长度
@@ -430,6 +551,25 @@ namespace Aurora.UI.Controls
         }
 
         private String TabChar = "    ";
+
+
+
+
+
+
+        public Char? PasswordChar
+        {
+            get
+            {
+                return this.passwordChar;
+            }
+            set
+            {
+                this.passwordChar = value;
+            }
+
+        }
+        private Char? passwordChar;
 
 
 
@@ -486,6 +626,11 @@ namespace Aurora.UI.Controls
         }
         private Int32 maxLength;
         private String _text;
+
+
+
+
+
         #endregion
 
     }

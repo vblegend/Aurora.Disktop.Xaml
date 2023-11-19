@@ -3,13 +3,14 @@ using Aurora.UI.Graphics;
 using Aurora.UI.Tweens;
 using Microsoft.Xna.Framework;
 
-
 namespace Aurora.UI.Controls
 {
     public class ProgressBar : Control
     {
 
         private TweenDouble _percent = new TweenDouble();
+
+        private Double? shaowValue = 00.0f;
 
 
         public ProgressBar()
@@ -18,20 +19,51 @@ namespace Aurora.UI.Controls
             this.FillMode = FillMode.None;
             this.Direction = XamlDirection.TopToBottom;
             this._percent.ChangeTo(0);
-            this._percent.Easing =  Easing.Circular.InOut;
+            this._percent.Easing = Easing.Circular.InOut;
+            this._percent.OnBegin += _percent_OnBegin;
+            this._percent.OnComplete += _percent_OnComplete;
         }
 
+        private void _percent_OnBegin(TweenDouble sender)
+        {
+
+        }
+
+        private void _percent_OnComplete(TweenDouble sender)
+        {
+            this.shaowValue = null;
+        }
 
         protected override void OnRender(GameTime gameTime)
         {
             base.OnRender(gameTime);
+
+
+
+            this.DrawProgressBar(this._percent.Value, Color.White);
+
+            if (this.shaowValue.HasValue)
+            {
+                //var state = this.Renderer.SetState(blendState: Microsoft.Xna.Framework.Graphics.BlendState.Additive);
+                this.DrawProgressBar(this.shaowValue.Value, new Color(255, 255, 255, 128));
+                //if (state.HasValue)
+                //{
+                //    this.Renderer.RestoreState(state.Value);
+                //}
+            }
+        }
+
+
+
+        private void DrawProgressBar(Double percent, Color color)
+        {
+
             if (this.texture != null)
             {
                 Rectangle tmpTarget;
                 Rectangle tmpSource;
                 var width = this.GlobalBounds.Width;
                 var height = this.GlobalBounds.Height;
-                Double percent = this._percent.Value;
                 switch (this.Direction)
                 {
                     case XamlDirection.LeftToRight:
@@ -57,9 +89,13 @@ namespace Aurora.UI.Controls
                     default:
                         return;
                 }
-                this.Renderer.Draw(this.texture, tmpTarget, tmpSource, Color.White);
+                this.Renderer.Draw(this.texture, tmpTarget, tmpSource, color);
             }
+
+
         }
+
+
 
 
 
@@ -133,8 +169,12 @@ namespace Aurora.UI.Controls
             }
             if (value != this._percent.ToValue)
             {
-               var duration = (Int32)(Math.Abs(this._percent.Value - value) / 100.0f * DelayTime);
-               this._percent.ChangeTo(value, new TimeSpan(0,0,0,0, animation ? duration : 0));
+                var duration = (Int32)(Math.Abs(this._percent.Value - value) / 100.0f * DelayTime);
+                this._percent.ChangeTo(value, new TimeSpan(0, 0, 0, 0, animation ? duration : 0));
+                if (animation && duration > 0)
+                {
+                    this.shaowValue = Math.Max(value, this._percent.Value);
+                }
             }
         }
 

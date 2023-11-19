@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Aurora.UI.Controls;
+using Microsoft.Xna.Framework;
 
 
 namespace Aurora.UI.Tweens
@@ -10,7 +11,7 @@ namespace Aurora.UI.Tweens
     }
 
 
-
+    public delegate void TweenCompleteEventHandler<T>(T sender) where T : Tween;
     public partial class Tween
     {
         public bool IsCompleted { get; protected set; }
@@ -19,7 +20,7 @@ namespace Aurora.UI.Tweens
     }
 
 
-    public abstract class Tween<DataType> : Tween, ITweenUpdateable
+    public abstract class Tween<TweenType, DataType> : Tween, ITweenUpdateable where TweenType : Tween
     {
         private DataType from;
         private DataType to;
@@ -75,7 +76,7 @@ namespace Aurora.UI.Tweens
         /// <param name="to"></param>
         /// <param name="duration"></param>
         /// <returns></returns>
-        public Tween<DataType> ChangeTo(DataType from, DataType to, TimeSpan duration)
+        public Tween<TweenType, DataType> ChangeTo(DataType from, DataType to, TimeSpan duration)
         {
             if (!_startTime.HasValue)
             {
@@ -94,6 +95,7 @@ namespace Aurora.UI.Tweens
             if (!_startTime.HasValue)
             {
                 _startTime = time.TotalGameTime;
+                this.OnBegin?.Invoke(this as TweenType);
             }
             var elapsed = (time.TotalGameTime - _startTime.Value) / Duration;
             elapsed = elapsed > 1 ? 1 : elapsed;
@@ -104,6 +106,7 @@ namespace Aurora.UI.Tweens
             {
                 _startTime = null;
                 IsCompleted = true;
+                this.OnComplete?.Invoke(this as TweenType);
                 return false;
             }
             return true;
@@ -126,6 +129,10 @@ namespace Aurora.UI.Tweens
             }
         }
 
+
+        public event TweenCompleteEventHandler<TweenType> OnBegin;
+
+        public event TweenCompleteEventHandler<TweenType> OnComplete;
 
 
         internal abstract DataType Lerp(DataType from, DataType to, double time);

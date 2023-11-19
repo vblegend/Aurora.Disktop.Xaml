@@ -2,7 +2,7 @@
 
 namespace Aurora.UI.Tweens
 {
-    public sealed class TweenVector2 : Tween<Vector2>
+    public sealed class TweenVector2 : Tween<TweenVector2, Vector2>
     {
 
         internal sealed override Vector2 Lerp(Vector2 from, Vector2 to, double time)
