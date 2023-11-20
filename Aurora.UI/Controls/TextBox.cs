@@ -5,6 +5,7 @@ using Aurora.UI.Platforms.Windows;
 using Microsoft.Xna.Framework;
 using MonoGame.IMEHelper;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Aurora.UI.Controls
 {
@@ -20,22 +21,12 @@ namespace Aurora.UI.Controls
             this.Start = start;
             this.End = end;
         }
-
-
-
-
         public Int32 Start;
         public Int32 End;
         public Int32 Length()
         {
             return this.End - this.Start;
         }
-
-
-
-
-
-
         public override string ToString()
         {
             return $"Start = {Start}, End = {End}";
@@ -50,7 +41,7 @@ namespace Aurora.UI.Controls
         {
             this._text = "";
             this.passwordChar = null;
-            this.maxLength = 100;
+            this.maxLength = 10;
             this.Size = new Point(85, 22);
             this.TextColor = Color.White;
             this.ActivedBorder = ColorExtends.FromHtml("#00a2e8");
@@ -89,9 +80,7 @@ namespace Aurora.UI.Controls
             // 显示光标
             if (this.currsorVisable)
             {
-                var text = this._text.Substring(viewport.Start, this.cursorPosition - viewport.Start);
-                var lr = this.MeasureStringWidth(text);
-                this.Renderer.FillRectangle(this.CurrsorArea.Add(this.GlobalBounds.Location).Add(new Point(lr, 0)).Add(padding), this.CursorColor);
+                this.Renderer.FillRectangle(this.CurrsorArea.Add(this.GlobalBounds.Location).Add(padding), this.CursorColor);
             }
             // 焦点突出显示边框
             if (this.IsFocus) this.Renderer.DrawRectangle(this.GlobalBounds, this.ActivedBorder);
@@ -136,7 +125,6 @@ namespace Aurora.UI.Controls
             switch (args.Key)
             {
                 case Microsoft.Xna.Framework.Input.Keys.Left:
-
                     if (!args.Shift)
                     {
                         this.selection = null;
@@ -152,7 +140,6 @@ namespace Aurora.UI.Controls
                     {
                         this.viewport.Start--;
                         this.MeasureViewportStart();
-                        //this.InvalidateDrawing();
                     }
                     if (this.selection.HasValue)
                     {
@@ -170,7 +157,6 @@ namespace Aurora.UI.Controls
                     this.ActiveCurrsor();
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.Right:
-
                     if (!args.Shift)
                     {
                         this.selection = null;
@@ -186,7 +172,6 @@ namespace Aurora.UI.Controls
                     {
                         this.viewport.End++;
                         this.MeasureViewportEnd();
-                        //this.InvalidateDrawing();
                     }
                     if (this.selection.HasValue)
                     {
@@ -231,26 +216,37 @@ namespace Aurora.UI.Controls
                 case Microsoft.Xna.Framework.Input.Keys.X:
                     if (args.Ctrl)
                     {
-                        Trace.WriteLine("剪切");
+                        if (this.selection.HasValue)
+                        {
+                            var txt = this._text.Substring(this.selection.Value.Start, this.selection.Value.Length());
+                            Clipboard.WriteText(txt);
+                            this.AppendString("");
+                            this.InvalidateDrawing();
+                            this.ActiveCurrsor();
+                        }
                     }
                     break;
-
                 case Microsoft.Xna.Framework.Input.Keys.C:
                     if (args.Ctrl)
                     {
-                        Trace.WriteLine("拷贝");
-                        Clipboard.WriteText("#Clipboard#");
+                        if (this.selection.HasValue)
+                        {
+                            var txt = this._text.Substring(this.selection.Value.Start, this.selection.Value.Length());
+                            Clipboard.WriteText(txt);
+                        }
                     }
                     break;
-
                 case Microsoft.Xna.Framework.Input.Keys.V:
                     if (args.Ctrl)
                     {
                         var text = Clipboard.ReadText();
+               
                         if (!String.IsNullOrEmpty(text))
                         {
+                            text = this.Purification(text);
                             this.AppendString(text);
                             this.InvalidateDrawing();
+                            this.ActiveCurrsor();
                         }
                     }
                     break;
@@ -263,7 +259,15 @@ namespace Aurora.UI.Controls
 
         private void RemoveString(Int32 dir)
         {
-            if (dir == -1 && this.cursorPosition > 0)
+            if (this.selection.HasValue)
+            {
+                var left = this._text.Substring(0, this.selection.Value.Start);
+                var right = this._text.Substring(this.selection.Value.End);
+                this._text = left + right;
+                this.cursorPosition = this.selection.Value.Start;
+                this.selection = null;
+            }
+            else if (dir == -1 && this.cursorPosition > 0)
             {
                 this.cursorPosition = Math.Max(this.cursorPosition - 1, 0);
                 this._text = this._text.Remove(this.cursorPosition, 1);
@@ -287,8 +291,26 @@ namespace Aurora.UI.Controls
         private void AppendString(String text)
         {
             if (cursorPosition > this._text.Length) cursorPosition = this._text.Length;
-            var left = this._text.Substring(0, cursorPosition);
-            var right = this._text.Substring(cursorPosition);
+            var left = "";
+            var right = "";
+            if (this.selection.HasValue)
+            {
+                left = this._text.Substring(0, this.selection.Value.Start);
+                right = this._text.Substring(this.selection.Value.End);
+                this._text = left + right;
+                this.cursorPosition = this.selection.Value.Start;
+                this.selection = null;
+                if (this.viewport.Start > this.cursorPosition) this.viewport.Start = this.cursorPosition;
+            }
+
+            if (text.Length + this.Length > this.maxLength)
+            {
+                var len = this.maxLength - this.Length;
+                text = text.Substring(0, len);
+            }
+
+            left = this._text.Substring(0, cursorPosition);
+            right = this._text.Substring(cursorPosition);
             this._text = left + text + right;
             cursorPosition += text.Length;
             if (cursorPosition >= this.viewport.End)
@@ -353,7 +375,8 @@ namespace Aurora.UI.Controls
             }
             else
             {
-                viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
+                // 未控制长度
+                viewText = this._text.Substring(this.viewport.Start);
             }
 
             var chars = this.Renderer.MeasureChars(this.Font, this.FontSize, viewText);
@@ -374,19 +397,11 @@ namespace Aurora.UI.Controls
             }
         }
 
-
-
-        private Int32 MeasureStringWidth(String text)
-        {
-            var lr = this.Renderer.MeasureString(this.Font, this.FontSize, text);
-            return (Int32)lr.X;
-        }
-
-
         private void InvalidateDrawing()
         {
             if (this.finalTexture != null)
             {
+                var y = (this.finalTexture.Height - this.FontSize) / 2;
                 using (this.Renderer.TargetRender(this.finalTexture))
                 {
                     String viewText;
@@ -398,43 +413,63 @@ namespace Aurora.UI.Controls
                     {
                         viewText = this._text.Substring(this.viewport.Start, this.viewport.Length());
                     }
-
-
-
                     if (this.selection.HasValue)
                     {
-                        var st = Math.Max(this.selection.Value.Start, this.viewport.Start)- this.viewport.Start;
+                        var st = Math.Max(this.selection.Value.Start, this.viewport.Start) - this.viewport.Start;
                         var en = Math.Min(this.selection.Value.End, this.viewport.End) - this.viewport.Start;
                         if (en > st)
                         {
-                            var offset = st - this.selection.Value.Start;
-
-                            var s =  this.Renderer.MeasureString(this.Font, this.FontSize, viewText.Substring(0,st));
+                            var s = this.Renderer.MeasureString(this.Font, this.FontSize, viewText.Substring(0, st));
                             var s2 = this.Renderer.MeasureString(this.Font, this.FontSize, viewText.Substring(st, en - st));
-
-                            //     this.Renderer.MeasureString(this.Font, this.FontSize, "");
-
-
-
-
                             this.Renderer.FillRectangle(new Rectangle((Int32)s.X, 0, (Int32)s2.X, 100), new Color(0, 120, 215));
                         }
                     }
 
-
-
-
-
-
-                    var y = (this.finalTexture.Height - this.FontSize) / 2;
                     this.Renderer.DrawString(this.Font, this.FontSize, viewText.ToString(), new Vector2(0, y), this.TextColor);
                 }
+
+
+            }
+        }
+
+        private void ReCalcCurrsorPosition()
+        {
+            var y = (this.finalTexture.Height - this.FontSize) / 2;
+            var pos = this.cursorPosition - this.viewport.Start;
+            if (pos >= 0)
+            {
+                var txt = this._text.Substring(this.viewport.Start, pos);
+                var size = this.Renderer.MeasureString(this.Font, this.FontSize, txt);
+                this.CurrsorArea.X = (Int32)size.X;
+                this.CurrsorArea.Y = (Int32)y;
             }
         }
 
 
+
+
         #region 不会动的属性
 
+        /// <summary>
+        /// 提纯字符串
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private String Purification(String value)
+        {
+            if (String.IsNullOrEmpty(value)) return "";
+            return value.Replace("\n", "").Replace("\r", "").Replace("\t", " ");
+        }
+
+
+        /// <summary>
+        /// 光标的大小
+        /// </summary>
+        public Rectangle CurrsorArea;
+        public Color CursorColor { get; set; } = Color.White;
+
+        private Boolean currsorVisable = false;
+        private TimeSpan lastCurrsorTime;
 
         public int CursorPosition
         {
@@ -454,6 +489,7 @@ namespace Aurora.UI.Controls
         {
             this.currsorVisable = false;
             this.lastCurrsorTime = new TimeSpan();
+            this.ReCalcCurrsorPosition();
         }
 
 
@@ -514,47 +550,14 @@ namespace Aurora.UI.Controls
         }
 
         private TargetTexture finalTexture;
-        /// <summary>
-        /// 光标的大小
-        /// </summary>
-        public Rectangle CurrsorArea;
-        public Color CursorColor { get; set; } = Color.White;
 
-        private Boolean currsorVisable = false;
-        private TimeSpan lastCurrsorTime;
 
         /// <summary>
         /// 文本区域
         /// </summary>
         private TextRange viewport;
 
-        private TextRange? selection { get; set; }
-
-        /// <summary>
-        /// 制表符长度
-        /// </summary>
-        public Int32 TabSize
-        {
-            get
-            {
-                return this.TabChar.Length;
-            }
-            set
-            {
-                if (value <= 0 || value >= 8)
-                {
-                    throw new Exception("");
-                }
-                this.TabChar = "".PadLeft(value);
-            }
-
-        }
-
-        private String TabChar = "    ";
-
-
-
-
+        private TextRange? selection;
 
 
         public Char? PasswordChar
@@ -595,7 +598,7 @@ namespace Aurora.UI.Controls
             get => this._text;
             set
             {
-                var neatValue = value.Replace("\n", "").Replace("\t", this.TabChar);
+                var neatValue = this.Purification(value);
                 if (this._text != neatValue)
                 {
                     this.Clear();
