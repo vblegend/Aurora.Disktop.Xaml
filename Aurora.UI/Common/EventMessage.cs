@@ -56,10 +56,11 @@ namespace Aurora.UI.Common
 
     public interface IMouseMessage : IInputMessage
     {
+        public void Capture();
+        public void Release();
         public Point Location { get; }
         public MouseButtons Button { get; }
         public Int32 Wheel { get; }
-
         public Point GetLocation(Control control);
     }
 
@@ -68,6 +69,27 @@ namespace Aurora.UI.Common
         public Keys Key { get; }
 
     }
+
+
+    public class IntenelEventMessage : IInputMessage
+    {
+        public IntenelEventMessage(WM_MESSAGE Message , IInputMessage baseMessage)
+        {
+            this.Message = Message;
+            this.Ctrl = baseMessage.Ctrl;
+            this.Shift = baseMessage.Shift;
+        }
+
+        public WM_MESSAGE Message { get; private set; }
+
+        public bool Shift { get; private set; }
+
+        public bool Ctrl { get; private set; }
+    }
+
+
+
+
 
     public class IntenelMouseMessage : IMouseMessage
     {
@@ -92,7 +114,14 @@ namespace Aurora.UI.Common
             }
         }
 
+        public void Capture()
+        {
 
+        }
+        public void Release()
+        {
+
+        }
 
         public Boolean Shift { get; set; }
         public Boolean Ctrl { get; set; }
@@ -130,7 +159,7 @@ namespace Aurora.UI.Common
 
     public interface IMessageHandler
     {
-        void ProcessMessage(IInputMessage msg);
+        void OnMessage(IInputMessage msg);
     }
 
 }

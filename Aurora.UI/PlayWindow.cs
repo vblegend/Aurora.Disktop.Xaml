@@ -79,7 +79,7 @@ namespace Aurora.UI
             {
                 await scene.Initialize();
                 this.Scene = scene;
-                this.MessageManager.SetHandler(this.Scene);
+                this.MessageManager.SetHandler(this.Scene.EventManager);
                 return (T)scene;
             }
             return null;

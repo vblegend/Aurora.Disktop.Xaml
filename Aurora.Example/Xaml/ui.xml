@@ -70,7 +70,7 @@
 		<Radio Name="Enabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Enabled"  Margin="825,70,0,0" Value="False"  />
 		<Radio Name="Disabled B" GroupName="B"  Image="package://ui,35,3,1" Icon="package://ui,36" Content="Disabled"  Margin="925,70,0,0" Value="True"  />
 		<TextBox Name="InputBox" Background="package://grid,ui,37" Padding="5,5,5,5" Font="Fixedsy,Microsoft YaHei" FontSize="18"  Margin="610,40,0,0"  Size="150,34" Text="&#x2593;12345&#x000A;67890"/>
-		<ItemMatrix Margin="155,32,0,0" Padding="9,9,9,9" Columns="6" Rows ="1" ItemSize="38,38" Space="10,10" Size="auto,auto"
+		<ItemMatrix Name="Shortcuts" Margin="155,32,0,0" Padding="9,9,9,9" Columns="6" Rows ="1" ItemSize="38,38" Space="10,10" Size="auto,auto"
 			 Items =""
 			 ItemMouseEnter = "ImageMatrix_ItemMouseEnter"
 			 ItemMouseLeave = "ImageMatrix_ItemMouseLeave"
@@ -85,7 +85,7 @@
 
 
 	<Dialog Name="BackPack" Background="package://texture,ui,55" AutoTop="True" Pinned="False"  Margin="100,100,0,0" Size="auto,auto">
-		<ItemMatrix Margin="30,72,0,0" Padding="9,9,9,9" Columns="10" Rows ="10" ItemSize="38,38" Space="1,1" Size="auto,auto" 
+		<ItemMatrix Name="BackPackItems" Margin="30,72,0,0" Padding="9,9,9,9" Columns="10" Rows ="10" ItemSize="38,38" Space="1,1" Size="auto,auto" 
 					 Items =""
 					 ItemMouseEnter = "ImageMatrix_ItemMouseEnter" 
 					 ItemMouseLeave = "ImageMatrix_ItemMouseLeave"  

@@ -15,10 +15,14 @@ namespace Aurora.UI
 
 
 
-    public abstract class PlayScene : Panel,IMessageHandler
+    public abstract class PlayScene : Panel
     {
+        /// <summary>
+        /// 获取场景的事件管理器
+        /// </summary>
+        public MessageHandler EventManager { get; private set; }
 
-        private MessageHandler eventManager;
+        public TimeSpan CurrentTimeSpan { get; private set; }
 
         public PlayScene(PlayWindow Window)
         {
@@ -26,7 +30,7 @@ namespace Aurora.UI
             this.Name = "ROOT";
             this.Window = Window;
             this.Cursor = new CursorComponent(Window);
-            this.eventManager = new MessageHandler(this);
+            this.EventManager = new MessageHandler(this);
             this.Window.Window.ClientSizeChanged += Window_ClientSizeChanged;
             this.Size = new Point(this.Window.Graphics.PreferredBackBufferWidth, this.Window.Graphics.PreferredBackBufferHeight);
         }
@@ -63,6 +67,7 @@ namespace Aurora.UI
 
         internal void Update(GameTime gameTime)
         {
+            this.CurrentTimeSpan = gameTime.TotalGameTime;
             this.OnUpdate(gameTime);
             this.Cursor.Update(gameTime);
             (this as IRenderable).ProcessUpdate(gameTime);
@@ -73,11 +78,6 @@ namespace Aurora.UI
             var parser = new XamlUIParser(this, this);
             var xml = File.ReadAllText(fileName);
             parser.Parse(xml);
-        }
-
-        void IMessageHandler.ProcessMessage(IInputMessage msg)
-        {
-            this.eventManager.ProcessMessage(this, msg);
         }
 
         public Boolean Debuging;

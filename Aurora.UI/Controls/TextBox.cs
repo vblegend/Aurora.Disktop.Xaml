@@ -4,8 +4,7 @@ using Aurora.UI.Graphics;
 using Aurora.UI.Platforms.Windows;
 using Microsoft.Xna.Framework;
 using MonoGame.IMEHelper;
-using System.Diagnostics;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace Aurora.UI.Controls
 {
@@ -41,7 +40,7 @@ namespace Aurora.UI.Controls
         {
             this._text = "";
             this.passwordChar = null;
-            this.maxLength = 10;
+            this.maxLength = 100;
             this.Size = new Point(85, 22);
             this.TextColor = Color.White;
             this.ActivedBorder = ColorExtends.FromHtml("#00a2e8");
@@ -50,8 +49,6 @@ namespace Aurora.UI.Controls
 
 
         private readonly TimeSpan CurrsorFlashInterval = new TimeSpan(0, 0, 0, 0, 500);
-
-
 
         protected override void OnUpdate(GameTime gameTime)
         {
@@ -205,12 +202,7 @@ namespace Aurora.UI.Controls
                 case Microsoft.Xna.Framework.Input.Keys.A:
                     if (args.Ctrl)
                     {
-                        this.selection = new TextRange(0, this._text.Length);
-                        this.cursorPosition = this._text.Length;
-                        this.viewport.End = this._text.Length;
-                        this.MeasureViewportEnd();
-                        this.InvalidateDrawing();
-                        this.ActiveCurrsor();
+                        this.SelectAll();
                     }
                     break;
                 case Microsoft.Xna.Framework.Input.Keys.X:
@@ -253,7 +245,72 @@ namespace Aurora.UI.Controls
                 default:
                     break;
             }
+
+
+            base.OnKeyDown(args);
         }
+
+        /// <summary>
+        /// 选中全部文本
+        /// </summary>
+        public void SelectAll()
+        {
+            this.selection = new TextRange(0, this._text.Length);
+            this.cursorPosition = this._text.Length;
+            this.viewport.End = this._text.Length;
+            this.MeasureViewportEnd();
+            this.InvalidateDrawing();
+            this.ActiveCurrsor();
+        }
+
+
+
+        protected override void OnMouseDown(IMouseMessage args)
+        {
+            if (this.Root.CurrentTimeSpan - this.lastParssedTime < new TimeSpan(0,0,0,0,300))
+            {
+               this.SelectAll();
+                return;
+            }
+            this.lastParssedTime =  this.Root.CurrentTimeSpan;
+            base.OnMouseDown(args);
+            var pos = args.GetLocation(this);
+            String viewText;
+            if (this.passwordChar.HasValue)
+            {
+                viewText = "".PadLeft(this.viewport.Length(), this.passwordChar.Value);
+            }
+            else
+            {
+                // 未控制长度
+                viewText = this._text.Substring(this.viewport.Start);
+            }
+            var chars = this.Renderer.MeasureChars(this.Font, this.FontSize, viewText);
+            var lw = this.padding.Left + 0.0f;
+            var index = 0;
+            for (int i = 0; i < chars.Length; i++)
+            {
+                if (lw + chars[i] / 2 > pos.X)
+                {
+                    break;
+                }
+                lw += chars[i];
+                index++;
+            }
+            this.Root.EventManager.CaptureMouse(this);
+            this.selection = null;
+            this.cursorPosition = this.viewport.Start + index;
+            this.InvalidateDrawing();
+            this.ActiveCurrsor();
+        }
+
+
+        protected override void OnMouseUp(IMouseMessage args)
+        {
+            base.OnMouseUp(args);
+            this.Root.EventManager.ReleaseMouse();
+        }
+
 
 
 
@@ -279,7 +336,7 @@ namespace Aurora.UI.Controls
 
             if (this.cursorPosition <= this.viewport.Start && this.viewport.Start > 0)
             {
-                this.viewport.Start--;
+                this.viewport.Start = this.cursorPosition - 1;
                 this.MeasureViewportStart();
             }
             else
@@ -471,6 +528,7 @@ namespace Aurora.UI.Controls
         private Boolean currsorVisable = false;
         private TimeSpan lastCurrsorTime;
 
+        private TimeSpan lastParssedTime;
         public int CursorPosition
         {
             get { return cursorPosition; }
@@ -546,6 +604,7 @@ namespace Aurora.UI.Controls
             this.cursorPosition = 0;
             this.viewport.Start = 0;
             this.viewport.End = 0;
+            this.selection = null;
             this.InvalidateDrawing();
         }
 

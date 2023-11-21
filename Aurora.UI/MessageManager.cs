@@ -23,6 +23,7 @@ namespace Aurora.UI
         private IntenelKeyBoardMessage keyboardMessage = new IntenelKeyBoardMessage();
         private PlayWindow gameWindow;
         private IntenelMouseMessage mouseMessage = new IntenelMouseMessage();
+        private GameTime gameTime;
 
         public MessageManager(PlayWindow window)
         {
@@ -69,7 +70,7 @@ namespace Aurora.UI
             this.keyboardMessage.Ctrl = this.CtrlPressed;
             this.keyboardMessage.Shift = this.ShiftPressed;
             this.keyboardMessage.Key = key;
-            Handler.ProcessMessage(this.keyboardMessage);
+            Handler.OnMessage(this.keyboardMessage);
         }
 
         private void DispatchMouseEvent(WM_MESSAGE msg, Point position, MouseButtons? buttons = null, Int32? wheel = null)
@@ -80,7 +81,7 @@ namespace Aurora.UI
             this.mouseMessage.Location = position;
             if (buttons.HasValue) this.mouseMessage.Button = buttons.Value;
             if (wheel.HasValue) this.mouseMessage.Wheel = wheel.Value;
-            Handler.ProcessMessage(this.mouseMessage);
+            Handler.OnMessage(this.mouseMessage);
         }
 
 

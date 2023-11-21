@@ -1,45 +1,82 @@
 ﻿using Aurora.UI.Common;
 using Aurora.UI.Controls;
+using Microsoft.Xna.Framework;
 
 
 namespace Aurora.UI
 {
-    internal class MessageHandler
+    public class MessageHandler : IMessageHandler
     {
         private readonly Control Root;
-
 
         /// <summary>
         /// 焦点所在控件
         /// </summary>
-        internal Control Activeed { get; private set; }
+        public Control Activeed { get; private set; }
 
         /// <summary>
         /// 鼠标悬停的控件
         /// </summary>
-        internal Control Hovering { get; private set; }
+        public Control Hovering { get; private set; }
 
         /// <summary>
-        /// 鼠标按下的控件
+        /// 鼠标捕获的控件
         /// </summary>
-        internal Control Pressed { get; private set; }
+        private Control Captured;
+
+        /// <summary>
+        /// 捕获中断，仅处理被捕获的控件消息
+        /// </summary>
+        private Boolean CaptureInterrupt;
 
 
-        internal List<Control> FocusPath { get; private set; }
 
-        public MessageHandler(Control control)
+
+
+        private List<Control> FocusPath;
+
+        internal MessageHandler(Control control)
         {
             this.Root = control;
             this.FocusPath = new List<Control>();
         }
 
+        void IMessageHandler.OnMessage(IInputMessage msg)
+        {
+            this.DistributeMessage(this.Root, msg);
+        }
 
 
-        internal Control ProcessMessage(Control control, IInputMessage msg)
+        /// <summary>
+        /// 强制捕获鼠标消息给某个控件。
+        /// </summary>
+        /// <param name="control"></param>
+        public void CaptureMouse(Control control)
+        {
+            this.Captured = control;
+            this.CaptureInterrupt = true;
+        }
+
+        /// <summary>
+        /// 释放被捕获的鼠标消息
+        /// </summary>
+        public void ReleaseMouse()
+        {
+            this.CaptureInterrupt = false;
+            if (this.Captured != null)
+            {
+                this.Captured = null;
+            }
+        }
+
+
+
+
+        private Control DistributeMessage(Control control, IInputMessage msg)
         {
             if (msg is IMouseMessage mouseMessage)
             {
-                return this.HandleMouseMessage(control, mouseMessage);
+               return this.HandleMouseMessage(control, mouseMessage);
             }
             else if (msg is IKeyboardMessage keyboardMessage)
             {
@@ -49,7 +86,7 @@ namespace Aurora.UI
         }
 
 
-        internal Control HandleKeyboardMessage(Control control, IKeyboardMessage msg)
+        private Control HandleKeyboardMessage(Control control, IKeyboardMessage msg)
         {
             var focus = this.Activeed;
             (focus as IXamlEventHandler)?.MessageHandler(msg);
@@ -57,31 +94,35 @@ namespace Aurora.UI
         }
 
 
-        internal Control HandleMouseMessage(Control control, IMouseMessage msg)
+        private Control HandleMouseMessage(Control control, IMouseMessage msg)
         {
             if (control == null) return null;
             if (control.IgnoreMouseEvents) return null;
             var mouseInControl = control.HitTest(msg.Location);
-            if (!mouseInControl && this.Pressed == null)
+            if (!mouseInControl && this.Captured == null)
             {
                 if (!control.ExtendBounds.Contains(msg.Location)) return null;
             }
             var controlHandler = control as IXamlEventHandler;
             // 处理被标记为吃掉消息的控件
-            if (this.Pressed != null)
+            if (this.Captured != null)
             {
                 if (msg.Message == WM_MESSAGE.MOUSE_UP)
                 {
                 }
 
-                (this.Pressed as IXamlEventHandler)?.MessageHandler(msg);
+                (this.Captured as IXamlEventHandler)?.MessageHandler(msg);
                 if (msg.Message == WM_MESSAGE.MOUSE_UP)
                 {
-                    var r = this.Pressed;
-                    this.Pressed = null;
+                    var r = this.Captured;
+                    this.Captured = null;
                     return r;
                 }
-                //return this.Pressed;
+
+                if (this.CaptureInterrupt)
+                {
+                    return this.Captured;
+                }
             }
             // Panel 控件 处理子控件消息
             if (control is IPanelControl panel)
@@ -91,7 +132,7 @@ namespace Aurora.UI
                     var item = panel[i];
                     if (item != null)
                     {
-                        var result = this.ProcessMessage(item, msg);
+                        var result = this.DistributeMessage(item, msg);
                         if (result != null && item is Dialog dialog && msg.Message == WM_MESSAGE.MOUSE_DOWN && dialog.AutoTop)
                         {
                             dialog.MoveTop();
@@ -102,7 +143,7 @@ namespace Aurora.UI
             }
             else if (control is ContentControl item && item.Content is Control contentControl)
             {
-                var result = this.ProcessMessage(contentControl, msg);
+                var result = this.DistributeMessage(contentControl, msg);
                 if (result != null) return result;
             }
             // 鼠标未在控件本体区域内
@@ -110,9 +151,11 @@ namespace Aurora.UI
             // 处理当前控件消息
             if (msg.Message == WM_MESSAGE.MOUSE_DOWN)
             {
-                this.focusControl(control);
+                this.Captured = control;
+                this.CaptureInterrupt = false;
+                this.focusControl(control, msg);
                 (control as IXamlEventHandler)?.MessageHandler(msg);
-                this.Pressed = control;
+
             }
             else if (msg.Message == WM_MESSAGE.MOUSE_WHEEL)
             {
@@ -124,12 +167,12 @@ namespace Aurora.UI
                 {
                     if (this.Hovering != null)
                     {
-                        (Hovering as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.MOUSE_LEAVE));
+                        (Hovering as IXamlEventHandler)?.MessageHandler(new IntenelEventMessage(WM_MESSAGE.MOUSE_LEAVE, msg));
                     }
                     this.Hovering = control;
                     if (this.Hovering != null)
                     {
-                        (Hovering as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.MOUSE_ENTER));
+                        (Hovering as IXamlEventHandler)?.MessageHandler(new IntenelEventMessage(WM_MESSAGE.MOUSE_ENTER, msg));
                     }
                 }
                 controlHandler?.MessageHandler(msg);
@@ -155,7 +198,7 @@ namespace Aurora.UI
         /// 聚焦控件，转移焦点
         /// </summary>
         /// <param name="control"></param>
-        private void focusControl(Control control)
+        private void focusControl(Control control, IMouseMessage msg)
         {
             if (this.FocusPath.Count > 0 && this.FocusPath[0] == control)
             {
@@ -164,13 +207,11 @@ namespace Aurora.UI
             var currentPath = this.GetControlPath(control);
             foreach (var lostFocus in this.FocusPath.Except(currentPath))
             {
-                //Trace.WriteLine($"Focus Lost ({lostFocus.Name})");
-                (lostFocus as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.LOSTFOCUS));
+                (lostFocus as IXamlEventHandler)?.MessageHandler(new IntenelEventMessage(WM_MESSAGE.LOSTFOCUS, msg));
             }
             foreach (var gotFocus in currentPath.Except(this.FocusPath).Reverse())
             {
-                //Trace.WriteLine($"Focus Got ({gotFocus.Name})");
-                (gotFocus as IXamlEventHandler)?.MessageHandler(new IntenelMouseMessage(WM_MESSAGE.GOTFOCUS));
+                (gotFocus as IXamlEventHandler)?.MessageHandler(new IntenelEventMessage(WM_MESSAGE.GOTFOCUS, msg));
             }
             this.FocusPath = currentPath;
 
@@ -183,7 +224,7 @@ namespace Aurora.UI
             {
                 this.Activeed = null;
             }
-          
+
         }
 
     }
