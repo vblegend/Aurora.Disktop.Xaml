@@ -181,6 +181,7 @@ namespace Aurora.UI.Controls
 
         void IXamlEventHandler.MessageHandler(IInputMessage msg)
         {
+            msg.Handled = true;
             if (msg.Message == WM_MESSAGE.MOUSE_ENTER)
             {
                 this.IsHover = true;
@@ -229,10 +230,6 @@ namespace Aurora.UI.Controls
                     this.OnKeyUp(keyboard);
                 }
             }
-
-
-
-
             if (msg.Message == WM_MESSAGE.GOTFOCUS)
             {
                 this.IsFocus = true;

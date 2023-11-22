@@ -70,6 +70,7 @@ namespace Aurora.UI
             this.keyboardMessage.Ctrl = this.CtrlPressed;
             this.keyboardMessage.Shift = this.ShiftPressed;
             this.keyboardMessage.Key = key;
+            this.keyboardMessage.Handled = false;
             Handler.OnMessage(this.keyboardMessage);
         }
 
@@ -79,6 +80,7 @@ namespace Aurora.UI
             this.mouseMessage.Ctrl = this.CtrlPressed;
             this.mouseMessage.Shift = this.ShiftPressed;
             this.mouseMessage.Location = position;
+            this.mouseMessage.Handled = false;
             if (buttons.HasValue) this.mouseMessage.Button = buttons.Value;
             if (wheel.HasValue) this.mouseMessage.Wheel = wheel.Value;
             Handler.OnMessage(this.mouseMessage);

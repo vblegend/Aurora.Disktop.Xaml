@@ -51,6 +51,11 @@ namespace Aurora.UI.Common
         public WM_MESSAGE Message { get; }
         public Boolean Shift { get; }
         public Boolean Ctrl { get; }
+
+        /// <summary>
+        /// if Handled is false ，events bubbled upward
+        /// </summary>
+        public Boolean Handled { get; set; }
     }
 
 
@@ -62,6 +67,11 @@ namespace Aurora.UI.Common
         public MouseButtons Button { get; }
         public Int32 Wheel { get; }
         public Point GetLocation(Control control);
+
+
+
+
+
     }
 
     public interface IKeyboardMessage : IInputMessage
@@ -85,6 +95,8 @@ namespace Aurora.UI.Common
         public bool Shift { get; private set; }
 
         public bool Ctrl { get; private set; }
+
+        public Boolean Handled { get; set; }
     }
 
 
@@ -130,6 +142,7 @@ namespace Aurora.UI.Common
         public MouseButtons Button { get; set; }
         public Int32 Wheel { get; set; }
 
+        public Boolean Handled { get; set; }
         public Point GetLocation(Control control)
         {
             var p1 = this.Location;
@@ -154,6 +167,8 @@ namespace Aurora.UI.Common
         public Keys Key { get; set; }
         public Boolean Shift { get; set; }
         public Boolean Ctrl { get; set; }
+
+        public Boolean Handled { get; set; }
     }
 
 

@@ -107,10 +107,6 @@ namespace Aurora.UI
             // 处理被标记为吃掉消息的控件
             if (this.Captured != null)
             {
-                if (msg.Message == WM_MESSAGE.MOUSE_UP)
-                {
-                }
-
                 (this.Captured as IXamlEventHandler)?.MessageHandler(msg);
                 if (msg.Message == WM_MESSAGE.MOUSE_UP)
                 {
@@ -154,12 +150,6 @@ namespace Aurora.UI
                 this.Captured = control;
                 this.CaptureInterrupt = false;
                 this.focusControl(control, msg);
-                (control as IXamlEventHandler)?.MessageHandler(msg);
-
-            }
-            else if (msg.Message == WM_MESSAGE.MOUSE_WHEEL)
-            {
-                (control as IXamlEventHandler)?.MessageHandler(msg);
             }
             else if (msg.Message == WM_MESSAGE.MOUSE_MOVE)
             {
@@ -175,8 +165,8 @@ namespace Aurora.UI
                         (Hovering as IXamlEventHandler)?.MessageHandler(new IntenelEventMessage(WM_MESSAGE.MOUSE_ENTER, msg));
                     }
                 }
-                controlHandler?.MessageHandler(msg);
             }
+            controlHandler?.MessageHandler(msg);
             return control;
         }
 

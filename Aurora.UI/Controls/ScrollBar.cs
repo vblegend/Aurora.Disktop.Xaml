@@ -1,9 +1,6 @@
 ﻿using Aurora.UI.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Aurora.UI.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace Aurora.UI.Controls
 {
@@ -26,7 +23,7 @@ namespace Aurora.UI.Controls
             this._value = 0;
             this._orientation = XamlOrientation.Vertical;
 
-            this._dec_button = new Button() { Name = "BUTTON_DEC" , VerticalAlignment = XamlVerticalAlignment.Top, HorizontalAlignment = XamlHorizontalAlignment.Stretch };
+            this._dec_button = new Button() { Name = "BUTTON_DEC", VerticalAlignment = XamlVerticalAlignment.Top, HorizontalAlignment = XamlHorizontalAlignment.Stretch };
             this._slide_button = new Button() { Name = "BUTTON_SLIDE", HorizontalAlignment = XamlHorizontalAlignment.Stretch };
             this._inc_button = new Button() { Name = "BUTTON_INC", VerticalAlignment = XamlVerticalAlignment.Bottom, HorizontalAlignment = XamlHorizontalAlignment.Stretch };
 
@@ -48,6 +45,48 @@ namespace Aurora.UI.Controls
         {
             Updates();
         }
+
+
+
+        private void UpdateSkin()
+        {
+            if (this.skin == null) return;
+            var rect = this.skin.SourceRect;
+            var eleHeight = rect.Height / 3;
+            var dec = new Rectangle(0, 0, rect.Width, eleHeight);
+            var inc = new Rectangle(0, eleHeight, rect.Width, eleHeight);
+            var slide = new Rectangle(0, eleHeight * 2, rect.Width, eleHeight);
+            if (this._dec_button != null) this._dec_button.Image = new SpriteObject(this.skin, dec, 1, 3);
+            if (this._inc_button != null) this._inc_button.Image = new SpriteObject(this.skin, inc, 1, 3);
+            if (this._slide_button != null) this._slide_button.Image = new SpriteObject(this.skin, slide, 1, 3);
+
+            this._slide_button.Margin = new Thickness(0,100,0,0);
+
+
+        }
+
+
+
+
+
+
+
+        public ITexture Skin
+        {
+            get
+            {
+                return this.skin;
+            }
+            set
+            {
+                this.skin = value;
+                this.UpdateSkin();
+            }
+
+        }
+        private ITexture skin;
+
+
 
 
         #region Properties
