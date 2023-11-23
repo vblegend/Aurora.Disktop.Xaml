@@ -112,34 +112,39 @@ namespace Aurora.UI.Controls
         /// <returns></returns>
         protected override void CalcAutoSize()
         {
-            if (this.NeedCalcAutoHeight && this.Image != null)
+            if (this.NeedCalcAutoHeight && this.sprite != null)
             {
-                this.globalBounds.Height = Image.Height + this.Padding.Left + this.Padding.Right;
+                this.globalBounds.Height = this.sprite.Height + this.Padding.Left + this.Padding.Right;
             }
-            if (this.NeedCalcAutoWidth && this.Image != null)
+            if (this.NeedCalcAutoWidth && this.sprite != null)
             {
-                this.globalBounds.Width = Image.Width + this.Padding.Top + this.Padding.Bottom;
+                this.globalBounds.Width = this.sprite.Width + this.Padding.Top + this.Padding.Bottom;
             }
         }
 
 
 
-        public SpriteObject Image
+        public ITexture Texture
         {
             get
             {
-                return this.sprite;
+                return this.sprite.Texture;
             }
             set
             {
-                this.sprite = value;
-                if (this.Size.Equals(Point.Zero) && this.sprite != null)
-                {
-                    this.Size = new Point(this.sprite.Width, this.sprite.Height);
-                }
+                this.sprite = new SpriteObject(value, 3, 1);
+                this.CalcAutoSize();
             }
-
         }
+
+
+        public void SetTexture(ITexture texture, Rectangle sourceRect, Int32 rows = 3, Int32 columns = 1)
+        {
+            this.sprite = new SpriteObject(rows, columns);
+            this.sprite.SetTexture(texture, sourceRect);
+            this.CalcAutoSize();
+        }
+
 
 
 

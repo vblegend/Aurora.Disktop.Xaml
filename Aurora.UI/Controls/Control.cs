@@ -56,6 +56,8 @@ namespace Aurora.UI.Controls
             this.Renderer = AuroraState.Services.GetService<GraphicContext>();
             this.Enabled = true;
             this.Visible = true;
+            this.AutoWidth = true;
+            this.AutoHeight = true;
             this.UserData = new PrivateUserData();
             this.HorizontalAlignment = XamlHorizontalAlignment.Left;
             this.VerticalAlignment = XamlVerticalAlignment.Top;
@@ -547,16 +549,10 @@ namespace Aurora.UI.Controls
             }
             set
             {
-                if (value.X == Int32.MinValue)
-                {
-                    this.AutoWidth = true;
-                    value.X = 0;
-                }
-                if (value.Y == Int32.MinValue)
-                {
-                    this.AutoHeight = true;
-                    value.Y = 0;
-                }
+                this.AutoWidth = value.X == Int32.MinValue;
+                this.AutoHeight = value.Y == Int32.MinValue;
+                if (this.AutoWidth) value.X = 0;
+                if (this.AutoHeight) value.Y = 0;
                 this.globalBounds.Size = value;
             }
         }

@@ -50,19 +50,16 @@ namespace Aurora.UI.Controls
 
         private void UpdateSkin()
         {
-            if (this.skin == null) return;
-            var rect = this.skin.SourceRect;
+            if (this.texture == null) return;
+            var rect = this.texture.SourceRect;
             var eleHeight = rect.Height / 3;
             var dec = new Rectangle(0, 0, rect.Width, eleHeight);
             var inc = new Rectangle(0, eleHeight, rect.Width, eleHeight);
             var slide = new Rectangle(0, eleHeight * 2, rect.Width, eleHeight);
-            if (this._dec_button != null) this._dec_button.Image = new SpriteObject(this.skin, dec, 1, 3);
-            if (this._inc_button != null) this._inc_button.Image = new SpriteObject(this.skin, inc, 1, 3);
-            if (this._slide_button != null) this._slide_button.Image = new SpriteObject(this.skin, slide, 1, 3);
-
-            this._slide_button.Margin = new Thickness(0,100,0,0);
-
-
+            if (this._dec_button != null) this._dec_button.SetTexture(this.texture, dec, 1, 3);
+            if (this._inc_button != null) this._inc_button.SetTexture(this.texture, inc, 1, 3);
+            if (this._slide_button != null) this._slide_button.SetTexture(this.texture, slide, 1, 3);
+            this._slide_button.Margin = new Thickness(0, 100, 0, 0);
         }
 
 
@@ -71,20 +68,20 @@ namespace Aurora.UI.Controls
 
 
 
-        public ITexture Skin
+        public ITexture Texture
         {
             get
             {
-                return this.skin;
+                return this.texture;
             }
             set
             {
-                this.skin = value;
+                this.texture = value;
                 this.UpdateSkin();
             }
 
         }
-        private ITexture skin;
+        private ITexture texture;
 
 
 
