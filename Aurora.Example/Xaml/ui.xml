@@ -29,7 +29,7 @@
 			<Button Name="LabBtn" Texture="package://ui,66"  TextColor="#e7dbb5" Content="我在Label里" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Click="Button_Click" />
 		</Label>
 		<Button Name="Btn02" Texture="package://ui,66" VerticalAlignment="Bottom" HorizontalAlignment="Center" Size="auto,auto"	Content="DENG LU"	Margin="0,0,0,50" Click="Button_Click" />
-		<ScrollBar Name="滚动条" Background="package://texture,ui,46,Stretch" HorizontalAlignment="Right" Texture="package://ui,44" VerticalAlignment="Stretch" Margin="0,30,25,20"   Size="24,auto" >
+		<ScrollBar Name="滚动条" Background="package://texture,ui,46,Stretch" Texture="package://ui,44" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,30,25,20"   Size="24,auto" >
 			<ScrollBar.Slots>
 				<Button x:Name="#BUTTON_DEC" />
 				<Button x:Name="#BUTTON_SLIDE" />
