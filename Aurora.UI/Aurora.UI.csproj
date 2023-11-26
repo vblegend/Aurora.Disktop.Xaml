@@ -2,9 +2,8 @@
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<Platforms>AnyCPU;x64</Platforms>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
