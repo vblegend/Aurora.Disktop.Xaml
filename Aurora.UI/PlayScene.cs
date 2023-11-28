@@ -21,9 +21,19 @@ namespace Aurora.UI
         /// 获取场景的事件管理器
         /// </summary>
         public MessageHandler EventManager { get; private set; }
-
+        // 光标管理器
+        public CursorComponent Cursor { get; private set; }
+        // debug模式
+        public Boolean Debuging;
+        // 控件默认字体
+        public String DefaultFont { get; set; }
+        // 当前时间 
         public TimeSpan CurrentTimeSpan { get; private set; }
+        // 窗口对象
+        public PlayWindow Window { get; private set; }
 
+
+        
         public PlayScene(PlayWindow Window)
         {
             this.Root = this;
@@ -31,22 +41,13 @@ namespace Aurora.UI
             this.Window = Window;
             this.Cursor = new CursorComponent(Window);
             this.EventManager = new MessageHandler(this);
-            this.Window.Window.ClientSizeChanged += Window_ClientSizeChanged;
             this.Size = new Point(this.Window.Graphics.PreferredBackBufferWidth, this.Window.Graphics.PreferredBackBufferHeight);
         }
 
 
 
-        public PlayWindow Window { get; private set; }
-
         protected abstract Task OnInitialize();
         protected abstract Task OnUnInitialize();
-
-
-        private void Window_ClientSizeChanged(object sender, EventArgs e)
-        {
-
-        }
 
         internal async Task Initialize()
         {
@@ -80,9 +81,5 @@ namespace Aurora.UI
             parser.Parse(xml);
         }
 
-        public Boolean Debuging;
-        public String DefaultFont { get; set; }
-
-        public CursorComponent Cursor { get; private set; }
     }
 }

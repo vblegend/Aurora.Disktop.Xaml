@@ -30,8 +30,15 @@ namespace Aurora.UI
             this.gameWindow = window;
             window.Window.KeyDown += Window_KeyDown;
             window.Window.KeyUp += Window_KeyUp;
+            Window.Window.ClientSizeChanged += Window_ClientSizeChanged;
             //window.Window.TextInput += Window_TextInput;
         }
+
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+
+        }
+
 
         private void Window_TextInput(object sender, TextInputEventArgs e)
         {
