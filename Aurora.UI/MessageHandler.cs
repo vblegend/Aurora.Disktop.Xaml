@@ -76,7 +76,7 @@ namespace Aurora.UI
         {
             if (msg is IMouseMessage mouseMessage)
             {
-               return this.HandleMouseMessage(control, mouseMessage);
+                return this.HandleMouseMessage(control, mouseMessage);
             }
             else if (msg is IKeyboardMessage keyboardMessage)
             {
@@ -105,7 +105,7 @@ namespace Aurora.UI
             }
             var controlHandler = control as IXamlEventHandler;
             // 处理被标记为吃掉消息的控件
-            if (this.Captured != null)
+            if (msg is IMouseMessage && this.Captured != null)
             {
                 (this.Captured as IXamlEventHandler)?.MessageHandler(msg);
                 if (msg.Message == WM_MESSAGE.MOUSE_UP)
@@ -167,7 +167,8 @@ namespace Aurora.UI
                 }
             }
             controlHandler?.MessageHandler(msg);
-            return control;
+
+            return msg.Handled ? control : null;
         }
 
 

@@ -52,6 +52,10 @@
 	    <Generator>MSBuild:Compile</Generator>
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="Xaml\ui2.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <Generator>MSBuild:Compile</Generator>
+	  </None>
 	  <None Update="Xaml\ui.xml">
 	    <Generator>MSBuild:Compile</Generator>
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>

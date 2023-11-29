@@ -51,7 +51,7 @@ namespace Aurora.UI.Common
         public WM_MESSAGE Message { get; }
         public Boolean Shift { get; }
         public Boolean Ctrl { get; }
-
+        public TimeSpan TotalGameTime { get; }
         /// <summary>
         /// if Handled is false ，events bubbled upward
         /// </summary>
@@ -97,6 +97,8 @@ namespace Aurora.UI.Common
         public bool Ctrl { get; private set; }
 
         public Boolean Handled { get; set; }
+
+        public TimeSpan TotalGameTime { get; set; }
     }
 
 
@@ -142,6 +144,7 @@ namespace Aurora.UI.Common
         public MouseButtons Button { get; set; }
         public Int32 Wheel { get; set; }
 
+        public TimeSpan TotalGameTime { get; set; }
         public Boolean Handled { get; set; }
         public Point GetLocation(Control control)
         {
@@ -167,7 +170,7 @@ namespace Aurora.UI.Common
         public Keys Key { get; set; }
         public Boolean Shift { get; set; }
         public Boolean Ctrl { get; set; }
-
+        public TimeSpan TotalGameTime { get; set; }
         public Boolean Handled { get; set; }
     }
 

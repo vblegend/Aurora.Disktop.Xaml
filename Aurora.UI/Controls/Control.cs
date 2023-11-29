@@ -69,8 +69,12 @@ namespace Aurora.UI.Controls
         /// </summary>
         void ILayoutUpdatable.LayoutUpdate(Boolean updateChildren, Boolean force)
         {
-            this.CalcAutoSize();
-            this.CalcGlobalBounds();
+            if (this.Parent != null)
+            {
+                this.CalcAutoSize();
+                this.CalcGlobalBounds();
+                this.OnLayoutUpdate();
+            }
         }
 
 
@@ -79,7 +83,10 @@ namespace Aurora.UI.Controls
         /// </summary>
         protected abstract void CalcAutoSize();
 
+        protected virtual void OnLayoutUpdate()
+        {
 
+        }
 
         protected virtual Boolean CalcGlobalBounds()
         {
@@ -301,7 +308,7 @@ namespace Aurora.UI.Controls
         protected virtual void OnMouseWheel(IMouseMessage args)
         {
             // 已实现
-            Trace.WriteLine($"Wheel {this.Name} {args.Wheel}");
+            this.MouseWheel?.Invoke(this, args);
         }
 
         protected virtual void OnRender(GameTime gameTime)
@@ -461,7 +468,7 @@ namespace Aurora.UI.Controls
         public virtual event XamlEventHandler<Control, IMouseMessage> MouseDown;
         public virtual event XamlEventHandler<Control, IMouseMessage> MouseMove;
         public virtual event XamlEventHandler<Control, IMouseMessage> MouseUp;
-
+        public virtual event XamlEventHandler<Control, IMouseMessage> MouseWheel;
 
 
         #endregion
@@ -554,6 +561,7 @@ namespace Aurora.UI.Controls
                 if (this.AutoWidth) value.X = 0;
                 if (this.AutoHeight) value.Y = 0;
                 this.globalBounds.Size = value;
+                (this as ILayoutUpdatable).LayoutUpdate(true);
             }
         }
 

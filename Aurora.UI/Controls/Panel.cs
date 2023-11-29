@@ -126,6 +126,7 @@ namespace Aurora.UI.Controls
                     }
                 }
             }
+            this.OnLayoutUpdate();
         }
 
         protected override void CalcAutoSize()

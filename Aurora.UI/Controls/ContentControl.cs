@@ -114,6 +114,7 @@ namespace Aurora.UI.Controls
                     updatable.LayoutUpdate(true);
                 }
             }
+            this.OnLayoutUpdate();
         }
 
 

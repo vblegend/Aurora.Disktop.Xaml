@@ -25,7 +25,7 @@ namespace Aurora.Example
         {
             try
             {
-                this.LoadXamlFromFile("Xaml\\ui.xml");
+                this.LoadXamlFromFile("Xaml\\ui2.xml");
             }
             catch (Exception ex)
             {

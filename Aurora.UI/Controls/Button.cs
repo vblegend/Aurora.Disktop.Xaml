@@ -22,6 +22,7 @@ namespace Aurora.UI.Controls
             {
                 this.SpriteIndex = ButtonIndexs.Pressed;
             }
+            base.OnMouseDown(args);
         }
 
         protected override void OnMouseUp(IMouseMessage args)
@@ -34,6 +35,7 @@ namespace Aurora.UI.Controls
                     this.Click?.Invoke(this);
                 }
             }
+            base.OnMouseUp(args);
         }
 
 

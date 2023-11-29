@@ -30,7 +30,7 @@ namespace Aurora.UI
             this.gameWindow = window;
             window.Window.KeyDown += Window_KeyDown;
             window.Window.KeyUp += Window_KeyUp;
-            Window.Window.ClientSizeChanged += Window_ClientSizeChanged;
+            window.Window.ClientSizeChanged += Window_ClientSizeChanged;
             //window.Window.TextInput += Window_TextInput;
         }
 
@@ -78,6 +78,7 @@ namespace Aurora.UI
             this.keyboardMessage.Shift = this.ShiftPressed;
             this.keyboardMessage.Key = key;
             this.keyboardMessage.Handled = false;
+            this.keyboardMessage.TotalGameTime = this.gameTime.TotalGameTime;
             Handler.OnMessage(this.keyboardMessage);
         }
 
@@ -87,6 +88,7 @@ namespace Aurora.UI
             this.mouseMessage.Ctrl = this.CtrlPressed;
             this.mouseMessage.Shift = this.ShiftPressed;
             this.mouseMessage.Location = position;
+            this.mouseMessage.TotalGameTime = this.gameTime.TotalGameTime;
             this.mouseMessage.Handled = false;
             if (buttons.HasValue) this.mouseMessage.Button = buttons.Value;
             if (wheel.HasValue) this.mouseMessage.Wheel = wheel.Value;
@@ -102,7 +104,7 @@ namespace Aurora.UI
 
         internal void Update(GameTime gameTime)
         {
-
+            this.gameTime = gameTime;
             if (!this.gameWindow.IsActive) return;
             var state = Mouse.GetState(this.gameWindow.Window);
             if (!state.Position.Equals(this.MousePosition))
