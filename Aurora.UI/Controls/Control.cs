@@ -598,6 +598,19 @@ namespace Aurora.UI.Controls
             }
         }
 
+
+        /// <summary>
+        /// 获取当前游戏启动时间
+        /// </summary>
+        public TimeSpan GameTime
+        {
+            get
+            {
+                return this.Root.CurrentTimeSpan;
+            }
+        }
+
+
         /// <summary>
         /// 获取控件宽度
         /// </summary>

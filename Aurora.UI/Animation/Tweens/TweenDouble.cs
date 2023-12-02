@@ -1,4 +1,6 @@
-﻿namespace Aurora.UI.Tweens
+﻿using Aurora.UI.Animation;
+
+namespace Aurora.UI.Tweens.Tweens
 {
     public sealed class TweenDouble : Tween<TweenDouble, double>
     {

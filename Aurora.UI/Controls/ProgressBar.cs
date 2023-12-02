@@ -1,6 +1,9 @@
-﻿using Aurora.UI.Common;
+﻿using Aurora.UI.Animation;
+using Aurora.UI.Animation.Tweens;
+using Aurora.UI.Common;
 using Aurora.UI.Graphics;
 using Aurora.UI.Tweens;
+using Aurora.UI.Tweens.Tweens;
 using Microsoft.Xna.Framework;
 
 namespace Aurora.UI.Controls
@@ -101,7 +104,7 @@ namespace Aurora.UI.Controls
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            if (this._percent is ITweenUpdateable tween) tween.Update(gameTime);
+            if (this._percent is IAnimationUpdateable tween) tween.Update(gameTime);
         }
 
 

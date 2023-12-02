@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Aurora.UI.Animation;
 
-namespace Aurora.UI.Tweens
+
+namespace Aurora.UI.Tweens.Tweens
 {
     public sealed class TweenVector2 : Tween<TweenVector2, Vector2>
     {

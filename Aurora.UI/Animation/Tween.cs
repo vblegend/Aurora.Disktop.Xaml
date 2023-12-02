@@ -1,16 +1,9 @@
-﻿using Aurora.UI.Controls;
+﻿using Aurora.UI.Animation.Tweens;
 using Microsoft.Xna.Framework;
 
 
-namespace Aurora.UI.Tweens
+namespace Aurora.UI.Animation
 {
-
-    public interface ITweenUpdateable
-    {
-        bool Update(GameTime time);
-    }
-
-
     public delegate void TweenCompleteEventHandler<T>(T sender) where T : Tween;
     public partial class Tween
     {
@@ -20,7 +13,7 @@ namespace Aurora.UI.Tweens
     }
 
 
-    public abstract class Tween<TweenType, DataType> : Tween, ITweenUpdateable where TweenType : Tween
+    public abstract class Tween<TweenType, DataType> : Tween, IAnimationUpdateable where TweenType : Tween
     {
         private DataType from;
         private DataType to;
@@ -88,7 +81,7 @@ namespace Aurora.UI.Tweens
             return this;
         }
 
-        bool ITweenUpdateable.Update(GameTime time)
+        bool IAnimationUpdateable.Update(GameTime time)
         {
             if (IsCompleted) return false;
             if (Duration.Ticks == 0) return false;

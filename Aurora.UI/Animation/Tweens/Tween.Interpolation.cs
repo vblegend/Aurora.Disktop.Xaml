@@ -1,4 +1,4 @@
-﻿namespace Aurora.UI.Tweens
+﻿namespace Aurora.UI.Animation.Tweens
 {
     public delegate double InterpolationFunction(double[] v, double k);
 
